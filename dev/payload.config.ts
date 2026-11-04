@@ -1,20 +1,20 @@
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { MongoMemoryReplSet } from 'mongodb-memory-server'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { payloadBetterAuth } from 'payload-better-auth'
-import sharp from 'sharp'
-import { fileURLToPath } from 'url'
+import { mongooseAdapter } from '@payloadcms/db-mongodb';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import path from 'path';
+import { buildConfig } from 'payload';
+import { payloadBetterAuth } from 'payload-better-auth';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url';
 
-import { testEmailAdapter } from './helpers/testEmailAdapter.js'
-import { seed } from './seed.js'
+import { testEmailAdapter } from './helpers/testEmailAdapter.js';
+import { seed } from './seed.js';
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 if (!process.env.ROOT_DIR) {
-  process.env.ROOT_DIR = dirname
+  process.env.ROOT_DIR = dirname;
 }
 
 const buildConfigWithMemoryDB = async () => {
@@ -24,9 +24,9 @@ const buildConfigWithMemoryDB = async () => {
         count: 3,
         dbName: 'payloadmemory',
       },
-    })
+    });
 
-    process.env.DATABASE_URL = `${memoryDB.getUri()}&retryWrites=true`
+    process.env.DATABASE_URL = `${memoryDB.getUri()}&retryWrites=true`;
   }
 
   return buildConfig({
@@ -55,7 +55,7 @@ const buildConfigWithMemoryDB = async () => {
     editor: lexicalEditor(),
     email: testEmailAdapter,
     onInit: async (payload) => {
-      await seed(payload)
+      await seed(payload);
     },
     plugins: [
       payloadBetterAuth({
@@ -69,7 +69,7 @@ const buildConfigWithMemoryDB = async () => {
     typescript: {
       outputFile: path.resolve(dirname, 'payload-types.ts'),
     },
-  })
-}
+  });
+};
 
-export default buildConfigWithMemoryDB()
+export default buildConfigWithMemoryDB();

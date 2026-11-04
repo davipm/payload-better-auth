@@ -1,20 +1,20 @@
-import type { CollectionSlug, Config } from 'payload'
+import type { CollectionSlug, Config } from 'payload';
 
-import { customEndpointHandler } from './endpoints/customEndpointHandler.js'
+import { customEndpointHandler } from './endpoints/customEndpointHandler.js';
 
 export type PayloadBetterAuthConfig = {
   /**
    * List of collections to add a custom field
    */
-  collections?: Partial<Record<CollectionSlug, true>>
-  disabled?: boolean
-}
+  collections?: Partial<Record<CollectionSlug, true>>;
+  disabled?: boolean;
+};
 
 export const payloadBetterAuth =
   (pluginOptions: PayloadBetterAuthConfig) =>
   (config: Config): Config => {
     if (!config.collections) {
-      config.collections = []
+      config.collections = [];
     }
 
     config.collections.push({
@@ -25,13 +25,13 @@ export const payloadBetterAuth =
           type: 'text',
         },
       ],
-    })
+    });
 
     if (pluginOptions.collections) {
       for (const collectionSlug in pluginOptions.collections) {
         const collection = config.collections.find(
           (collection) => collection.slug === collectionSlug,
-        )
+        );
 
         if (collection) {
           collection.fields.push({
@@ -40,7 +40,7 @@ export const payloadBetterAuth =
             admin: {
               position: 'sidebar',
             },
-          })
+          });
         }
       }
     }
@@ -50,44 +50,42 @@ export const payloadBetterAuth =
      * If your plugin heavily modifies the database schema, you may want to remove this property.
      */
     if (pluginOptions.disabled) {
-      return config
+      return config;
     }
 
     if (!config.endpoints) {
-      config.endpoints = []
+      config.endpoints = [];
     }
 
     if (!config.admin) {
-      config.admin = {}
+      config.admin = {};
     }
 
     if (!config.admin.components) {
-      config.admin.components = {}
+      config.admin.components = {};
     }
 
     if (!config.admin.components.beforeDashboard) {
-      config.admin.components.beforeDashboard = []
+      config.admin.components.beforeDashboard = [];
     }
 
     config.admin.components.beforeDashboard.push(
       `payload-better-auth/client#BeforeDashboardClient`,
-    )
-    config.admin.components.beforeDashboard.push(
-      `payload-better-auth/rsc#BeforeDashboardServer`,
-    )
+    );
+    config.admin.components.beforeDashboard.push(`payload-better-auth/rsc#BeforeDashboardServer`);
 
     config.endpoints.push({
       handler: customEndpointHandler,
       method: 'get',
       path: '/my-plugin-endpoint',
-    })
+    });
 
-    const incomingOnInit = config.onInit
+    const incomingOnInit = config.onInit;
 
     config.onInit = async (payload) => {
       // Ensure we are executing any existing onInit functions before running our own.
       if (incomingOnInit) {
-        await incomingOnInit(payload)
+        await incomingOnInit(payload);
       }
 
       const { totalDocs } = await payload.count({
@@ -97,7 +95,7 @@ export const payloadBetterAuth =
             equals: 'seeded-by-plugin',
           },
         },
-      })
+      });
 
       if (totalDocs === 0) {
         await payload.create({
@@ -105,9 +103,9 @@ export const payloadBetterAuth =
           data: {
             id: 'seeded-by-plugin',
           },
-        })
+        });
       }
-    }
+    };
 
-    return config
-  }
+    return config;
+  };

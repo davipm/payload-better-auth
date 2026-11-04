@@ -18,7 +18,7 @@ Here is a short recap on how to integrate plugins with Payload, to learn more vi
 To install any plugin, simply add it to your payload.config() in the Plugin array.
 
 ```ts
-import myPlugin from 'my-plugin'
+import myPlugin from 'my-plugin';
 
 export const config = buildConfig({
   plugins: [
@@ -27,7 +27,7 @@ export const config = buildConfig({
       enabled: true,
     }),
   ],
-})
+});
 ```
 
 ### Initialization
@@ -83,7 +83,7 @@ plugins: [
       posts: true,
     },
   }),
-]
+];
 ```
 
 Later when you rename the plugin or add additional options, **make sure to update it here**.
@@ -106,8 +106,8 @@ export const myPlugin =
   (config: Config): Config => {
     // do cool stuff with the config here
 
-    return config
-  }
+    return config;
+  };
 ```
 
 First, we receive the existing payload config along with any plugin options.
@@ -128,7 +128,7 @@ Let’s say you want to build a plugin that adds a new collection:
 config.collections = [
   ...(config.collections || []),
   // Add additional collections here
-]
+];
 ```
 
 First we spread the `config.collections` to ensure that we don’t lose the existing collections, then you can add any additional collections just as you would in a regular payload config.
@@ -139,24 +139,24 @@ This same logic is applied to other properties like admin, hooks, globals:
 config.globals = [
   ...(config.globals || []),
   // Add additional globals here
-]
+];
 
 config.hooks = {
   ...(incomingConfig.hooks || {}),
   // Add additional hooks here
-}
+};
 ```
 
 Some properties will be slightly different to extend, for instance the onInit property:
 
 ```ts
-import { onInitExtension } from './onInitExtension' // example file
+import { onInitExtension } from './onInitExtension'; // example file
 
 config.onInit = async (payload) => {
-  if (incomingConfig.onInit) await incomingConfig.onInit(payload)
+  if (incomingConfig.onInit) await incomingConfig.onInit(payload);
   // Add additional onInit code by defining an onInitExtension function
-  onInitExtension(pluginOptions, payload)
-}
+  onInitExtension(pluginOptions, payload);
+};
 ```
 
 If you wish to add to the onInit, you must include the **async/await**. We don’t use spread syntax in this case, instead you must await the existing `onInit` before running additional functionality.
@@ -172,12 +172,12 @@ export type MyPluginConfig = {
   /**
    * List of collections to add a custom field
    */
-  collections?: Partial<Record<CollectionSlug, true>>
+  collections?: Partial<Record<CollectionSlug, true>>;
   /**
    * Disable the plugin
    */
-  disabled?: boolean
-}
+  disabled?: boolean;
+};
 ```
 
 If possible, include JSDoc comments to describe the options and their types. This allows a developer to see details about the options in their editor.
