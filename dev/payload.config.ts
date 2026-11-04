@@ -50,7 +50,7 @@ const buildConfigWithMemoryDB = async () => {
     db: postgresAdapter({
       disableCreateDatabase: false,
       pool: {
-        connectionString: process.env.DATABASE_URI,
+        connectionString: process.env.DATABASE_URL,
       },
       push: false, // Should be false (this is just for demo purposes)
       migrationDir: path.resolve(dirname, 'migrations'),
