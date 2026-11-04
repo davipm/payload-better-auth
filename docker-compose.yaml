@@ -1,0 +1,23 @@
+name: payload-better-auth
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: repo-postgres
+    environment:
+      POSTGRES_DB: repo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - repo_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  repo_postgres_data:
