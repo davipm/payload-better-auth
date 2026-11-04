@@ -1,12 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mongooseAdapter } from '@payloadcms/db-mongodb';
+import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { buildConfig } from 'payload';
 import { payloadBetterAuth } from 'payload-better-auth';
 import sharp from 'sharp';
-
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
 import { seed } from './seed.js';
 
@@ -48,9 +47,13 @@ const buildConfigWithMemoryDB = async () => {
         },
       },
     ],
-    db: mongooseAdapter({
-      ensureIndexes: true,
-      url: process.env.DATABASE_URL || '',
+    db: postgresAdapter({
+      disableCreateDatabase: false,
+      pool: {
+        connectionString: process.env.DATABASE_URI,
+      },
+      push: false, // Should be false (this is just for demo purposes)
+      migrationDir: path.resolve(dirname, 'migrations'),
     }),
     editor: lexicalEditor(),
     email: testEmailAdapter,
