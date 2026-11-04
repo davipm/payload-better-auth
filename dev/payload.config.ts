@@ -52,7 +52,10 @@ const buildConfigWithMemoryDB = async () => {
       pool: {
         connectionString: process.env.DATABASE_URL,
       },
-      push: false, // Should be false (this is just for demo purposes)
+      // Sync the demo schema in dev; production and migration commands use migrations.
+      push:
+        process.env.NODE_ENV === 'development' &&
+        process.env.PAYLOAD_MIGRATING !== 'true',
       migrationDir: path.resolve(dirname, 'migrations'),
     }),
     editor: lexicalEditor(),
