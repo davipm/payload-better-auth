@@ -35,7 +35,7 @@
     "copyfiles": "copyfiles -u 1 \"src/**/*.{html,css,scss,ttf,woff,woff2,eot,svg,jpg,png,json}\" dist/",
     "dev": "next dev dev --turbo",
     "dev:generate-importmap": "bun dev:payload generate:importmap",
-    "dev:generate-types": "bun dev:payload generate:types",
+    "dev:generate-types": "bun dev:payload generate:types && tsx src/scripts/generate-types.ts",
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
     "generate:importmap": "bun dev:generate-importmap",
     "generate:types": "bun dev:generate-types",
@@ -123,6 +123,7 @@
   },
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
+    "@better-auth/oauth-provider": "^1.7.16",
     "better-auth": "^1.7.16",
     "react-hook-form": "^7.91.0",
     "zod": "^4.6.7"
