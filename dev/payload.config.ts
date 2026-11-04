@@ -1,11 +1,11 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import path from 'path';
 import { buildConfig } from 'payload';
 import { payloadBetterAuth } from 'payload-better-auth';
 import sharp from 'sharp';
-import { fileURLToPath } from 'url';
 
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
 import { seed } from './seed.js';
