@@ -8,8 +8,8 @@ Full documentation: <https://payload-auth.dev>
 ## Usage
 
 ```ts
-import { buildConfig } from 'payload'
-import { betterAuthPlugin } from 'payload-auth/better-auth'
+import { buildConfig } from 'payload';
+import { betterAuthPlugin } from 'payload-auth/better-auth';
 
 export default buildConfig({
   admin: { user: 'users' },
@@ -21,7 +21,7 @@ export default buildConfig({
       },
     }),
   ],
-})
+});
 ```
 
 ## What it does
@@ -43,12 +43,12 @@ sessions for the admin panel, with `disableRefresh: true` so it never emits `Set
 
 ## Key exports
 
-| Export | Purpose |
-| --- | --- |
-| `betterAuthPlugin(options)` | The Payload plugin |
-| `getPayloadAuth<O>(config)` | Payload with a typed `betterAuth` attached |
-| `generateVerifyEmailUrl(options)` | Build a signed email-verification URL |
-| `sanitizeBetterAuthOptions(...)` | Internal option resolution, exported for inspection |
+| Export                            | Purpose                                             |
+| --------------------------------- | --------------------------------------------------- |
+| `betterAuthPlugin(options)`       | The Payload plugin                                  |
+| `getPayloadAuth<O>(config)`       | Payload with a typed `betterAuth` attached          |
+| `generateVerifyEmailUrl(options)` | Build a signed email-verification URL               |
+| `sanitizeBetterAuthOptions(...)`  | Internal option resolution, exported for inspection |
 
 Types: `PayloadAuthOptions`, `BetterAuthOptions`, `BetterAuthReturn`, `LoginMethod`,
 `SocialProvider`, `PayloadRequestWithBetterAuth`, `CollectionHookWithBetterAuth`,

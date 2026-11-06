@@ -1,66 +1,58 @@
-import type { CollectionConfig } from "payload";
-import type { SsoProvider } from "@/better-auth/generated-types";
-import type {
-  BuildCollectionProps,
-  FieldOverrides
-} from "@/better-auth/plugin/types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
+import type { CollectionConfig } from 'payload';
+import type { SsoProvider } from '@/better-auth/generated-types';
+import type { BuildCollectionProps, FieldOverrides } from '@/better-auth/plugin/types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildSsoProvidersCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const ssoProviderSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.ssoProvider
-  );
+  const ssoProviderSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.ssoProvider);
   const ssoProviderSchema = resolvedSchemas[baModelKey.ssoProvider];
 
   const existingSsoProviderCollection = incomingCollections.find(
-    (collection) => collection.slug === ssoProviderSlug
+    (collection) => collection.slug === ssoProviderSlug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof SsoProvider> = {
     issuer: () => ({
       index: true,
-      admin: { description: "The issuer of the SSO provider" }
+      admin: { description: 'The issuer of the SSO provider' },
     }),
     domain: () => ({
-      admin: { description: "The domain of the SSO provider" }
+      admin: { description: 'The domain of the SSO provider' },
     }),
     oidcConfig: () => ({
-      admin: { description: "The OIDC config of the SSO provider" }
+      admin: { description: 'The OIDC config of the SSO provider' },
     }),
     userId: () => ({
-      admin: { description: "The user associated with the SSO provider" }
+      admin: { description: 'The user associated with the SSO provider' },
     }),
     providerId: () => ({
       admin: {
         readOnly: true,
-        description:
-          "The provider id. Used to identify a provider and to generate a redirect url"
-      }
+        description: 'The provider id. Used to identify a provider and to generate a redirect url',
+      },
     }),
     organizationId: () => ({
       admin: {
         readOnly: true,
-        description:
-          "The organization Id. If provider is linked to an organization"
-      }
-    })
+        description: 'The organization Id. If provider is linked to an organization',
+      },
+    }),
   };
 
   const collectionFields = getCollectionFields({
     schema: ssoProviderSchema,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let ssoProviderCollection: CollectionConfig = {
@@ -68,37 +60,26 @@ export function buildSsoProvidersCollection({
     slug: ssoProviderSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.ssoProvider,
-        "issuer"
-      ),
-      description:
-        "SSO providers are used to authenticate users with an external provider",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
-      ...existingSsoProviderCollection?.admin
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.ssoProvider, 'issuer'),
+      description: 'SSO providers are used to authenticate users with an external provider',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      ...existingSsoProviderCollection?.admin,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingSsoProviderCollection?.access ?? {})
+      ...(existingSsoProviderCollection?.access ?? {}),
     },
     custom: {
       ...(existingSsoProviderCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.ssoProvider
+      betterAuthModelKey: baModelKey.ssoProvider,
     },
-    fields: [
-      ...(existingSsoProviderCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingSsoProviderCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (
-    typeof pluginOptions.pluginCollectionOverrides?.ssoProviders === "function"
-  ) {
-    ssoProviderCollection =
-      pluginOptions.pluginCollectionOverrides.ssoProviders({
-        collection: ssoProviderCollection
-      });
+  if (typeof pluginOptions.pluginCollectionOverrides?.ssoProviders === 'function') {
+    ssoProviderCollection = pluginOptions.pluginCollectionOverrides.ssoProviders({
+      collection: ssoProviderCollection,
+    });
   }
 
   assertAllSchemaFields(ssoProviderCollection, ssoProviderSchema);

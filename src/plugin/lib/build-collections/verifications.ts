@@ -1,32 +1,25 @@
-import type { CollectionConfig } from "payload";
-import type { Verification } from "@/better-auth/generated-types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
-import type {
-  BuildCollectionProps,
-  FieldOverrides,
-  FieldRule
-} from "../../types";
+import type { CollectionConfig } from 'payload';
+import type { Verification } from '@/better-auth/generated-types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildVerificationsCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const verificationSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.verification
-  );
+  const verificationSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.verification);
   const verificationSchema = resolvedSchemas[baModelKey.verification];
 
   const existingVerificationCollection = incomingCollections.find(
-    (collection) => collection.slug === verificationSlug
+    (collection) => collection.slug === verificationSlug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof Verification> = {
@@ -34,81 +27,70 @@ export function buildVerificationsCollection({
       index: true,
       admin: {
         readOnly: true,
-        description: "The identifier of the verification request"
-      }
+        description: 'The identifier of the verification request',
+      },
     }),
     value: () => ({
       admin: {
         readOnly: true,
-        description: "The value to be verified"
-      }
+        description: 'The value to be verified',
+      },
     }),
     expiresAt: () => ({
       admin: {
         readOnly: true,
-        description:
-          "The date and time when the verification request will expire"
-      }
-    })
+        description: 'The date and time when the verification request will expire',
+      },
+    }),
   };
 
   const verificationFieldRules: FieldRule[] = [
     {
-      condition: (field) =>
-        field.fieldName === "createdAt" || field.fieldName === "updatedAt",
+      condition: (field) => field.fieldName === 'createdAt' || field.fieldName === 'updatedAt',
       transform: (field) => ({
         ...field,
         saveToJWT: false,
         admin: {
           disableBulkEdit: true,
-          hidden: true
+          hidden: true,
         },
         index: true,
         label: ({ t }: any) =>
-          field.fieldName === "createdAt"
-            ? t("general:createdAt")
-            : t("general:updatedAt")
-      })
-    }
+          field.fieldName === 'createdAt' ? t('general:createdAt') : t('general:updatedAt'),
+      }),
+    },
   ];
 
   const collectionFields = getCollectionFields({
     schema: verificationSchema,
     fieldRules: verificationFieldRules,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let verificationCollection: CollectionConfig = {
     ...existingVerificationCollection,
     slug: verificationSlug,
     admin: {
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.verification,
-        "identifier"
-      ),
-      description: "Verifications are used to verify authentication requests",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.verification, 'identifier'),
+      description: 'Verifications are used to verify authentication requests',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
       ...existingVerificationCollection?.admin,
-      hidden: pluginOptions.verifications?.hidden
+      hidden: pluginOptions.verifications?.hidden,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingVerificationCollection?.access ?? {})
+      ...(existingVerificationCollection?.access ?? {}),
     },
     custom: {
       ...(existingVerificationCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.verification
+      betterAuthModelKey: baModelKey.verification,
     },
-    fields: [
-      ...(existingVerificationCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingVerificationCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (typeof pluginOptions.verifications?.collectionOverrides === "function") {
+  if (typeof pluginOptions.verifications?.collectionOverrides === 'function') {
     verificationCollection = pluginOptions.verifications.collectionOverrides({
-      collection: verificationCollection
+      collection: verificationCollection,
     });
   }
 

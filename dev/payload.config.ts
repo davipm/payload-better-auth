@@ -5,13 +5,11 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { type BasePayload, buildConfig } from 'payload';
 import sharp from 'sharp';
-import collections from './payload/collections/index.js';
+import collections from './collections/index.js';
 import { plugins } from './payload/plugins/index.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-
-const allowedOrigins = [process.env.NEXT_PUBLIC_SERVER_URL].filter(Boolean);
 
 function emailAdapter({ payload }: { payload: BasePayload }): {
   defaultFromAddress: string;
@@ -55,24 +53,11 @@ const buildConfigWithMemoryDB = async () => {
       },
     },
     collections,
-    // collections: [
-    //   {
-    //     slug: 'posts',
-    //     fields: [],
-    //   },
-    //   {
-    //     slug: 'media',
-    //     fields: [],
-    //     upload: {
-    //       staticDir: path.resolve(dirname, 'media'),
-    //     },
-    //   },
-    // ],
     db: postgresAdapter({
       disableCreateDatabase: false,
       pool: { connectionString: process.env.DATABASE_URL },
-      // Sync the demo schema in dev; production and migration commands use migrations.
-      push: false,
+      // Keep the demo database schema in sync during development. Production uses migrations.
+      push: true,
       migrationDir: path.resolve(dirname, 'migrations'),
     }),
     email: emailAdapter,

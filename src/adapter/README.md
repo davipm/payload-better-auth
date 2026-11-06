@@ -5,16 +5,16 @@ Implements Better Auth's `DBAdapter` interface on top of Payload's Local API.
 > **You usually do not construct this yourself.** `betterAuthPlugin` installs the adapter,
 > generates the collections, and wires every `modelName` and field mapping for you. Reach
 > for the adapter directly only when you want Better Auth backed by Payload storage
-> *without* the plugin's generated collections and admin views.
+> _without_ the plugin's generated collections and admin views.
 
 Full reference: <https://payload-auth.dev/docs/reference/adapter>
 
 ## Usage
 
 ```ts
-import { betterAuth } from 'better-auth'
-import { payloadAdapter } from 'payload-auth/better-auth/adapter'
-import type { BasePayload } from 'payload'
+import { betterAuth } from 'better-auth';
+import { payloadAdapter } from 'payload-auth/better-auth/adapter';
+import type { BasePayload } from 'payload';
 
 export function auth(payload: BasePayload) {
   return betterAuth({
@@ -26,7 +26,7 @@ export function auth(payload: BasePayload) {
       },
     }),
     // ... your options
-  })
+  });
 }
 ```
 
@@ -35,11 +35,11 @@ than a module-level constant.
 
 ### Options
 
-| Option | Type | Description |
-| --- | --- | --- |
-| `payloadClient` | `BasePayload \| Promise<BasePayload> \| (() => Promise<BasePayload>)` | The Payload instance. A promise or thunk is allowed so it can resolve lazily; the result is cached. |
-| `adapterConfig.idType` | `'number' \| 'text'` | How your database represents IDs. Use `payload.db.defaultIDType`. |
-| `adapterConfig.enableDebugLogs` | `boolean` | Log every database call with inputs and outputs under the `[payload-db-adapter]` prefix. Defaults to `false`. |
+| Option                          | Type                                                                  | Description                                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `payloadClient`                 | `BasePayload \| Promise<BasePayload> \| (() => Promise<BasePayload>)` | The Payload instance. A promise or thunk is allowed so it can resolve lazily; the result is cached.           |
+| `adapterConfig.idType`          | `'number' \| 'text'`                                                  | How your database represents IDs. Use `payload.db.defaultIDType`.                                             |
+| `adapterConfig.enableDebugLogs` | `boolean`                                                             | Log every database call with inputs and outputs under the `[payload-db-adapter]` prefix. Defaults to `false`. |
 
 ## Mapping is your responsibility
 
@@ -53,7 +53,7 @@ betterAuth({
   session: { modelName: 'sessions', fields: { userId: 'user' } },
   account: { modelName: 'accounts', fields: { userId: 'user' } },
   verification: { modelName: 'verifications' },
-})
+});
 ```
 
 A model that resolves to a slug Payload does not know throws
@@ -78,10 +78,10 @@ A `where` clause that is just `id equals X` is routed to `payload.findByID()` ra
 `generateSchema` writes Payload collection configs derived from your Better Auth options:
 
 ```ts
-import { generateSchema } from 'payload-auth/better-auth/adapter'
-import { betterAuthOptions } from './auth/options'
+import { generateSchema } from 'payload-auth/better-auth/adapter';
+import { betterAuthOptions } from './auth/options';
 
-await generateSchema(betterAuthOptions, { outputDir: './src/payload/schema' })
+await generateSchema(betterAuthOptions, { outputDir: './src/payload/schema' });
 ```
 
 It writes `schema.ts` into the output directory, merging with anything already there.

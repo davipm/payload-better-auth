@@ -1,4 +1,5 @@
 ---
+
 title: Preload Based on User Intent
 impact: MEDIUM
 impactDescription: reduces perceived latency
@@ -15,19 +16,15 @@ Preload heavy bundles before they're needed to reduce perceived latency.
 function EditorButton({ onClick }: { onClick: () => void }) {
   const preload = () => {
     if (typeof window !== 'undefined') {
-      void import('./monaco-editor')
+      void import('./monaco-editor');
     }
-  }
+  };
 
   return (
-    <button
-      onMouseEnter={preload}
-      onFocus={preload}
-      onClick={onClick}
-    >
+    <button onMouseEnter={preload} onFocus={preload} onClick={onClick}>
       Open Editor
     </button>
-  )
+  );
 }
 ```
 
@@ -37,13 +34,11 @@ function EditorButton({ onClick }: { onClick: () => void }) {
 function FlagsProvider({ children, flags }: Props) {
   useEffect(() => {
     if (flags.editorEnabled && typeof window !== 'undefined') {
-      void import('./monaco-editor').then(mod => mod.init())
+      void import('./monaco-editor').then((mod) => mod.init());
     }
-  }, [flags.editorEnabled])
+  }, [flags.editorEnabled]);
 
-  return <FlagsContext.Provider value={flags}>
-    {children}
-  </FlagsContext.Provider>
+  return <FlagsContext.Provider value={flags}>{children}</FlagsContext.Provider>;
 }
 ```
 

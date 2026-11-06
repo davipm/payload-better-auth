@@ -81,8 +81,8 @@ export const betterAuthOptions = {
   trustedOrigins: ['http://localhost:3000'],
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
-    // autoSignIn: true,
+    // requireEmailVerification: true,
+    autoSignIn: true,
     async sendResetPassword({ user, url }) {
       console.log('Send reset password for user: ', user.id, 'at url', url);
     },

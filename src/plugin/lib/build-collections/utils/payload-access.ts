@@ -1,4 +1,4 @@
-import type { Access, FieldAccess, PayloadRequest } from "payload";
+import type { Access, FieldAccess, PayloadRequest } from 'payload';
 
 export type AdminRolesConfig = {
   adminRoles?: string[];
@@ -16,22 +16,21 @@ export type AdminOrCurrentUserUpdateConfig = AdminOrCurrentUserConfig & {
 export const isAdminWithRoles =
   (config: AdminRolesConfig = {}): FieldAccess =>
   ({ req }) => {
-    const { adminRoles = ["admin"] } = config;
-    if (!req?.user || !req.user.role || !hasAdminRoles(adminRoles)({ req }))
-      return false;
+    const { adminRoles = ['admin'] } = config;
+    if (!req?.user || !req.user.role || !hasAdminRoles(adminRoles)({ req })) return false;
     return true;
   };
 
 export const isAdminOrCurrentUserWithRoles =
   (config: AdminOrCurrentUserConfig = {}): Access =>
   ({ req }) => {
-    const { adminRoles = ["admin"], idField = "id" } = config;
+    const { adminRoles = ['admin'], idField = 'id' } = config;
     if (isAdminWithRoles({ adminRoles })({ req })) return true;
     if (!req?.user) return false;
     return {
       [idField]: {
-        equals: req?.user?.id
-      }
+        equals: req?.user?.id,
+      },
     };
   };
 
@@ -40,10 +39,10 @@ export const hasAdminRoles = (adminRoles: string[]) => {
     let userRoles: string[] = [];
     if (Array.isArray(req.user?.role)) {
       userRoles = req.user.role;
-    } else if (typeof req.user?.role === "string") {
-      if (req.user.role.includes(",")) {
+    } else if (typeof req.user?.role === 'string') {
+      if (req.user.role.includes(',')) {
         userRoles = req.user.role
-          .split(",")
+          .split(',')
           .map((r: string) => r.trim())
           .filter(Boolean);
       } else if (req.user.role) {
@@ -56,15 +55,10 @@ export const hasAdminRoles = (adminRoles: string[]) => {
 };
 
 export const isAdminOrCurrentUserUpdateWithAllowedFields = (
-  config: AdminOrCurrentUserUpdateConfig
+  config: AdminOrCurrentUserUpdateConfig,
 ): Access => {
   return async ({ req, id, data }) => {
-    const {
-      adminRoles = ["admin"],
-      allowedFields = [],
-      userSlug,
-      idField = "id"
-    } = config;
+    const { adminRoles = ['admin'], allowedFields = [], userSlug, idField = 'id' } = config;
     const user = req.user;
 
     if (isAdminWithRoles({ adminRoles })({ req })) return true;
@@ -75,8 +69,8 @@ export const isAdminOrCurrentUserUpdateWithAllowedFields = (
       const dataKeys = Object.keys(data);
       let effectiveAllowedFields = allowedFields;
 
-      const hasCurrentPassword = dataKeys.includes("currentPassword");
-      const hasPassword = dataKeys.includes("password");
+      const hasCurrentPassword = dataKeys.includes('currentPassword');
+      const hasPassword = dataKeys.includes('password');
 
       if (hasPassword || hasCurrentPassword) {
         if (!(hasCurrentPassword && hasPassword)) return false;
@@ -87,21 +81,19 @@ export const isAdminOrCurrentUserUpdateWithAllowedFields = (
             collection: userSlug,
             data: {
               email: user.email,
-              password: data.currentPassword
-            }
+              password: data.currentPassword,
+            },
           });
 
           if (!result) return false;
 
-          effectiveAllowedFields = [...allowedFields, "password", "currentPassword"];
+          effectiveAllowedFields = [...allowedFields, 'password', 'currentPassword'];
         } catch (error) {
           return false;
         }
       }
 
-      const hasDisallowedField = dataKeys.some(
-        (key) => !effectiveAllowedFields.includes(key)
-      );
+      const hasDisallowedField = dataKeys.some((key) => !effectiveAllowedFields.includes(key));
 
       return !hasDisallowedField;
     }

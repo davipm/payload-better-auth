@@ -1,8 +1,7 @@
 @mixin blur-bg($color: var(--theme-bg), $opacity: 0.75) {
-
   &:before,
   &:after {
-    content: ' ';
+    content: " ";
     position: absolute;
     top: 0;
     right: 0;
@@ -111,7 +110,7 @@
       align-items: center;
       justify-content: flex-end;
 
-      >.btn {
+      > .btn {
         margin-block: 0.5rem !important;
       }
     }

@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
-import React from "react";
+import { redirect } from 'next/navigation';
+import React from 'react';
 
 type RSCRedirectProps = {
   redirectTo: string;
@@ -9,7 +9,7 @@ type RSCRedirectProps = {
 function RSCRedirect({ redirectTo, searchParams }: RSCRedirectProps) {
   // Forward the redirect query param if present
   const redirectParam = searchParams?.redirect;
-  if (redirectParam && typeof redirectParam === "string") {
+  if (redirectParam && typeof redirectParam === 'string') {
     redirect(`${redirectTo}?redirect=${encodeURIComponent(redirectParam)}`);
   }
   redirect(redirectTo);

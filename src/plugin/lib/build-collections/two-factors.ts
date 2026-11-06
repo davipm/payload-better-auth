@@ -1,57 +1,53 @@
-import type { CollectionConfig } from "payload";
-import type { TwoFactor } from "@/better-auth/generated-types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
-import type { BuildCollectionProps, FieldOverrides } from "../../types";
+import type { CollectionConfig } from 'payload';
+import type { TwoFactor } from '@/better-auth/generated-types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
+import type { BuildCollectionProps, FieldOverrides } from '../../types';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildTwoFactorsCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const twoFactorSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.twoFactor
-  );
+  const twoFactorSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.twoFactor);
   const twoFactorSchema = resolvedSchemas[baModelKey.twoFactor];
 
   const existingTwoFactorCollection = incomingCollections.find(
-    (collection) => collection.slug === twoFactorSlug
+    (collection) => collection.slug === twoFactorSlug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof TwoFactor> = {
     userId: () => ({
       admin: {
         readOnly: true,
-        description:
-          "The user that the two factor authentication secret belongs to"
-      }
+        description: 'The user that the two factor authentication secret belongs to',
+      },
     }),
     secret: () => ({
       index: true,
       admin: {
         readOnly: true,
-        description: "The secret used to generate the TOTP code."
-      }
+        description: 'The secret used to generate the TOTP code.',
+      },
     }),
     backupCodes: () => ({
       admin: {
         readOnly: true,
         description:
-          "The backup codes used to recover access to the account if the user loses access to their phone or email"
-      }
-    })
+          'The backup codes used to recover access to the account if the user loses access to their phone or email',
+      },
+    }),
   };
 
   const collectionFields = getCollectionFields({
     schema: twoFactorSchema,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let twoFactorCollection: CollectionConfig = {
@@ -59,34 +55,25 @@ export function buildTwoFactorsCollection({
     slug: twoFactorSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.twoFactor,
-        "userId"
-      ),
-      description: "Two factor authentication secrets",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
-      ...existingTwoFactorCollection?.admin
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.twoFactor, 'userId'),
+      description: 'Two factor authentication secrets',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      ...existingTwoFactorCollection?.admin,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingTwoFactorCollection?.access ?? {})
+      ...(existingTwoFactorCollection?.access ?? {}),
     },
     custom: {
       ...(existingTwoFactorCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.twoFactor
+      betterAuthModelKey: baModelKey.twoFactor,
     },
-    fields: [
-      ...(existingTwoFactorCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingTwoFactorCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (
-    typeof pluginOptions.pluginCollectionOverrides?.twoFactors === "function"
-  ) {
+  if (typeof pluginOptions.pluginCollectionOverrides?.twoFactors === 'function') {
     twoFactorCollection = pluginOptions.pluginCollectionOverrides.twoFactors({
-      collection: twoFactorCollection
+      collection: twoFactorCollection,
     });
   }
 

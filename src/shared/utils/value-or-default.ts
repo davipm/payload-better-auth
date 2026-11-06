@@ -6,9 +6,6 @@
  * @param defaultValue - The default value to return if the provided value is undefined
  * @returns The provided value if defined, otherwise the default value
  */
-export function valueOrDefaultString<T extends string>(
-  value: T | undefined,
-  defaultValue: T
-): T {
+export function valueOrDefaultString<T extends string>(value: T | undefined, defaultValue: T): T {
   return value !== undefined ? value : defaultValue;
 }

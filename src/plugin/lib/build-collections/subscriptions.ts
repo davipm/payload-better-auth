@@ -1,31 +1,25 @@
-import type { CollectionConfig } from "payload";
-import type { Subscription } from "@/better-auth/generated-types";
-import type {
-  BuildCollectionProps,
-  FieldOverrides
-} from "@/better-auth/plugin/types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
+import type { CollectionConfig } from 'payload';
+import type { Subscription } from '@/better-auth/generated-types';
+import type { BuildCollectionProps, FieldOverrides } from '@/better-auth/plugin/types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildSubscriptionsCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const subscriptionsSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.subscription
-  );
+  const subscriptionsSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.subscription);
   const subscriptionsSchema = resolvedSchemas[baModelKey.subscription];
 
   const existingSubscriptionCollection = incomingCollections.find(
-    (collection) => collection.slug === subscriptionsSlug
+    (collection) => collection.slug === subscriptionsSlug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof Subscription> = {
@@ -33,57 +27,55 @@ export function buildSubscriptionsCollection({
       index: true,
       admin: {
         readOnly: true,
-        description: "The name of the subscription plan"
-      }
+        description: 'The name of the subscription plan',
+      },
     }),
     referenceId: () => ({
       index: true,
       admin: {
         readOnly: true,
-        description:
-          "The ID this subscription is associated with (user ID by default)"
-      }
+        description: 'The ID this subscription is associated with (user ID by default)',
+      },
     }),
     stripeCustomerId: () => ({
       index: true,
-      admin: { readOnly: true, description: "The Stripe customer ID" }
+      admin: { readOnly: true, description: 'The Stripe customer ID' },
     }),
     stripeSubscriptionId: () => ({
       index: true,
-      admin: { readOnly: true, description: "The Stripe subscription ID" }
+      admin: { readOnly: true, description: 'The Stripe subscription ID' },
     }),
     status: () => ({
       index: true,
       admin: {
-        description: "The status of the subscription (active, canceled, etc.)"
-      }
+        description: 'The status of the subscription (active, canceled, etc.)',
+      },
     }),
     periodStart: () => ({
-      admin: { description: "Start date of the current billing period" }
+      admin: { description: 'Start date of the current billing period' },
     }),
     periodEnd: () => ({
-      admin: { description: "End date of the current billing period" }
+      admin: { description: 'End date of the current billing period' },
     }),
     cancelAtPeriodEnd: () => ({
       admin: {
-        description:
-          "Whether the subscription will be canceled at the end of the period"
-      }
+        description: 'Whether the subscription will be canceled at the end of the period',
+      },
     }),
     seats: () => ({
-      admin: { description: "Number of seats for team plans" }
+      admin: { description: 'Number of seats for team plans' },
     }),
     trialStart: () => ({
-      admin: { description: "Start date of the trial period" }
+      admin: { description: 'Start date of the trial period' },
     }),
     trialEnd: () => ({
-      admin: { description: "End date of the trial period" }
-    })
+      admin: { description: 'End date of the trial period' },
+    }),
   };
 
   const collectionFields = getCollectionFields({
     schema: subscriptionsSchema,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let subscriptionsCollection: CollectionConfig = {
@@ -91,37 +83,26 @@ export function buildSubscriptionsCollection({
     slug: subscriptionsSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.subscription,
-        "plan"
-      ),
-      description:
-        "Subscriptions are used to manage the subscriptions of the users",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
-      ...existingSubscriptionCollection?.admin
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.subscription, 'plan'),
+      description: 'Subscriptions are used to manage the subscriptions of the users',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      ...existingSubscriptionCollection?.admin,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingSubscriptionCollection?.access ?? {})
+      ...(existingSubscriptionCollection?.access ?? {}),
     },
     custom: {
       ...(existingSubscriptionCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.subscription
+      betterAuthModelKey: baModelKey.subscription,
     },
-    fields: [
-      ...(existingSubscriptionCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingSubscriptionCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (
-    typeof pluginOptions.pluginCollectionOverrides?.subscriptions === "function"
-  ) {
-    subscriptionsCollection =
-      pluginOptions.pluginCollectionOverrides.subscriptions({
-        collection: subscriptionsCollection
-      });
+  if (typeof pluginOptions.pluginCollectionOverrides?.subscriptions === 'function') {
+    subscriptionsCollection = pluginOptions.pluginCollectionOverrides.subscriptions({
+      collection: subscriptionsCollection,
+    });
   }
 
   assertAllSchemaFields(subscriptionsCollection, subscriptionsSchema);

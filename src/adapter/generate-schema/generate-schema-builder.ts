@@ -323,7 +323,7 @@ import type { CollectionConfig } from 'payload';
 
   // Add export statements for all collections
   // Check if we have an existing export statement to adapt
-  if (exports && exports.trim()) {
+  if (exports?.trim()) {
     // Parse the existing exports to get collection names
     const existingExportMatch = exports.match(/export\s*{\s*(.*?)\s*}/);
     const existingCollections = existingExportMatch
@@ -344,8 +344,7 @@ import type { CollectionConfig } from 'payload';
   } else if (Object.keys(tables).length > 0) {
     const collectionNames = Object.keys(tables).map((model) => {
       // Convert model name to PascalCase for export
-      const pascalCase = model.charAt(0).toUpperCase() + model.slice(1);
-      return pascalCase;
+      return model.charAt(0).toUpperCase() + model.slice(1);
     });
 
     result += `export { ${collectionNames.join(', ')} };

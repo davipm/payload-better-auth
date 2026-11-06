@@ -19,8 +19,8 @@ import { getDefaultCollectionSlug } from './get-collection-slug.js';
  * 3. When converting fields, we store them under their original key (`actualFields[key] = field`)
  *    instead of `field.fieldName || key` to avoid accidental renames.
  *
- * @param config - The BetterAuth options fed into `getAuthTables`.
  * @returns A map keyed by static table keys, each value containing `{ modelName, fields, order }`.
+ * @param pluginOptions
  */
 export function getDefaultBetterAuthSchema(pluginOptions: PayloadAuthOptions): BetterAuthSchemas {
   const betterAuthOptions = pluginOptions.betterAuthOptions ?? {};

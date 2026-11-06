@@ -1,40 +1,37 @@
-import type { CollectionConfig } from "payload";
-import { RateLimit } from "@/better-auth/generated-types";
-import type {
-  BuildCollectionProps,
-  FieldOverrides
-} from "@/better-auth/plugin/types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
+import type { CollectionConfig } from 'payload';
+import { RateLimit } from '@/better-auth/generated-types';
+import type { BuildCollectionProps, FieldOverrides } from '@/better-auth/plugin/types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildRateLimitCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
   const slug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.rateLimit);
   const schema = resolvedSchemas[baModelKey.rateLimit];
 
   const existingRateLimitCollection = incomingCollections.find(
-    (collection) => collection.slug === slug
+    (collection) => collection.slug === slug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof RateLimit> = {
     key: () => ({
       index: true,
-      admin: { readOnly: true, description: "The key for the rate limit." }
-    })
+      admin: { readOnly: true, description: 'The key for the rate limit.' },
+    }),
   };
 
   const collectionFields = getCollectionFields({
     schema,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let rateLimitCollection: CollectionConfig = {
@@ -42,34 +39,25 @@ export function buildRateLimitCollection({
     slug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.rateLimit,
-        "key"
-      ),
-      description: "Rate limits for users",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
-      ...existingRateLimitCollection?.admin
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.rateLimit, 'key'),
+      description: 'Rate limits for users',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      ...existingRateLimitCollection?.admin,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingRateLimitCollection?.access ?? {})
+      ...(existingRateLimitCollection?.access ?? {}),
     },
     custom: {
       ...(existingRateLimitCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.rateLimit
+      betterAuthModelKey: baModelKey.rateLimit,
     },
-    fields: [
-      ...(existingRateLimitCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingRateLimitCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (
-    typeof pluginOptions.pluginCollectionOverrides?.rateLimit === "function"
-  ) {
+  if (typeof pluginOptions.pluginCollectionOverrides?.rateLimit === 'function') {
     rateLimitCollection = pluginOptions.pluginCollectionOverrides.rateLimit({
-      collection: rateLimitCollection
+      collection: rateLimitCollection,
     });
   }
 

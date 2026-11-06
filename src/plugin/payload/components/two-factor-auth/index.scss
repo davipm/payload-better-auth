@@ -9,7 +9,7 @@
     height: 100%;
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       inset: 0;
       background: rgba(0, 0, 0, 0.8);
@@ -69,7 +69,7 @@
     }
 
     &__backup-codes {
-      >ul {
+      > ul {
         padding: 1rem;
         background-color: var(--theme-elevation-50);
         border: 1px solid var(--theme-elevation-100);

@@ -39,17 +39,17 @@
 export function set<T extends Record<string, unknown>, V = unknown>(
   target: T,
   rawPath: string,
-  value: V
+  value: V,
 ): T {
   if (!rawPath) return target;
 
-  const tokens = rawPath.split(".");
+  const tokens = rawPath.split('.');
   let node: any = target;
 
   for (let i = 0; i < tokens.length; i += 1) {
     const raw = tokens[i];
-    const prepend = raw.startsWith("[]");
-    const append = raw.endsWith("[]");
+    const prepend = raw.startsWith('[]');
+    const append = raw.endsWith('[]');
     const idxMatch = raw.match(/\[(\d+)]$/);
     const hasIndex = Boolean(idxMatch);
     const index = hasIndex ? Number(idxMatch![1]) : -1;
@@ -66,15 +66,11 @@ export function set<T extends Record<string, unknown>, V = unknown>(
     if (prepend || append) {
       if (!Array.isArray(node[key])) node[key] = [];
       if (last) {
-        prepend
-          ? (node[key] as any[]).unshift(value)
-          : (node[key] as any[]).push(value);
+        prepend ? (node[key] as any[]).unshift(value) : (node[key] as any[]).push(value);
         return target;
       }
       const next: Record<string, unknown> = {};
-      prepend
-        ? (node[key] as any[]).unshift(next)
-        : (node[key] as any[]).push(next);
+      prepend ? (node[key] as any[]).unshift(next) : (node[key] as any[]).push(next);
       node = next;
       continue;
     }

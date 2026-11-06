@@ -1,10 +1,10 @@
-import type { Session, User } from "better-auth";
-import type { CollectionConfig } from "payload";
-import { getFieldsToSign } from "payload";
+import type { Session, User } from 'better-auth';
+import type { CollectionConfig } from 'payload';
+import { getFieldsToSign } from 'payload';
 
 export async function prepareUser({
   user,
-  userCollection
+  userCollection,
 }: {
   user: User & Record<string, any>;
   userCollection: CollectionConfig;
@@ -14,8 +14,8 @@ export async function prepareUser({
     email: user.email,
     user: {
       ...user,
-      collection: userCollection.slug
-    }
+      collection: userCollection.slug,
+    },
   });
 
   return newUser as User & Record<string, any>;
@@ -23,24 +23,24 @@ export async function prepareUser({
 
 export async function prepareSession({
   session,
-  sessionCollection
+  sessionCollection,
 }: {
   session: Session & Record<string, any>;
   sessionCollection: CollectionConfig;
 }) {
   const filteredSession = getFieldsToSign({
     collectionConfig: sessionCollection,
-    email: "",
+    email: '',
     user: {
       ...session,
-      collection: sessionCollection.slug
-    }
+      collection: sessionCollection.slug,
+    },
   });
 
   delete filteredSession.email;
   delete filteredSession.collection;
   Object.assign(filteredSession, {
-    userId: session.userId
+    userId: session.userId,
   });
 
   return filteredSession as Session & Record<string, any>;
@@ -53,7 +53,7 @@ export async function prepareSession({
 export async function prepareSessionData({
   sessionData,
   usersCollection,
-  sessionsCollection
+  sessionsCollection,
 }: {
   sessionData: {
     session: Session & Record<string, any>;
@@ -66,16 +66,16 @@ export async function prepareSessionData({
 
   const newUser = await prepareUser({
     user: sessionData.user,
-    userCollection: usersCollection
+    userCollection: usersCollection,
   });
   const newSession = await prepareSession({
     session: sessionData.session,
-    sessionCollection: sessionsCollection
+    sessionCollection: sessionsCollection,
   });
 
   const newSessionData = {
     session: newSession,
-    user: newUser
+    user: newUser,
   };
 
   return newSessionData;

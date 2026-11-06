@@ -1,55 +1,49 @@
-import type { CollectionConfig } from "payload";
-import type { TeamMember } from "@/better-auth/generated-types";
-import type {
-  BuildCollectionProps,
-  FieldOverrides
-} from "@/better-auth/plugin/types";
-import { baModelKey } from "../../constants";
-import { getAdminAccess } from "../../helpers/get-admin-access";
+import type { CollectionConfig } from 'payload';
+import type { TeamMember } from '@/better-auth/generated-types';
+import type { BuildCollectionProps, FieldOverrides } from '@/better-auth/plugin/types';
+import { baModelKey } from '../../constants';
+import { getAdminAccess } from '../../helpers/get-admin-access';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName
-} from "./utils/collection-schema";
-import { getCollectionFields } from "./utils/transform-schema-fields-to-payload";
+  getSchemaFieldName,
+} from './utils/collection-schema';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
 
 export function buildTeamMembersCollection({
   incomingCollections,
   pluginOptions,
-  resolvedSchemas
+  resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const teamMemberSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.teamMember
-  );
+  const teamMemberSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.teamMember);
   const teamMemberSchema = resolvedSchemas[baModelKey.teamMember];
 
   const existingTeamMemberCollection = incomingCollections.find(
-    (collection) => collection.slug === teamMemberSlug
+    (collection) => collection.slug === teamMemberSlug,
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof TeamMember> = {
     teamId: () => ({
-      name: "team",
+      name: 'team',
       index: true,
       admin: {
         readOnly: true,
-        description: "The team that the membership belongs to."
-      }
+        description: 'The team that the membership belongs to.',
+      },
     }),
     userId: () => ({
-      name: "user",
+      name: 'user',
       index: true,
       admin: {
         readOnly: true,
-        description: "The user that is a member of the team."
-      }
-    })
+        description: 'The user that is a member of the team.',
+      },
+    }),
   };
 
   const collectionFields = getCollectionFields({
     schema: teamMemberSchema,
-    additionalProperties: fieldOverrides
+    additionalProperties: fieldOverrides,
   });
 
   let teamMemberCollection: CollectionConfig = {
@@ -57,34 +51,25 @@ export function buildTeamMembersCollection({
     slug: teamMemberSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(
-        resolvedSchemas,
-        baModelKey.teamMember,
-        "teamId"
-      ),
-      description: "Team members of an organization team.",
-      group: pluginOptions?.collectionAdminGroup ?? "Auth",
-      ...existingTeamMemberCollection?.admin
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.teamMember, 'teamId'),
+      description: 'Team members of an organization team.',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      ...existingTeamMemberCollection?.admin,
     },
     access: {
       ...getAdminAccess(pluginOptions),
-      ...(existingTeamMemberCollection?.access ?? {})
+      ...(existingTeamMemberCollection?.access ?? {}),
     },
     custom: {
       ...(existingTeamMemberCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.teamMember
+      betterAuthModelKey: baModelKey.teamMember,
     },
-    fields: [
-      ...(existingTeamMemberCollection?.fields ?? []),
-      ...(collectionFields ?? [])
-    ]
+    fields: [...(existingTeamMemberCollection?.fields ?? []), ...(collectionFields ?? [])],
   };
 
-  if (
-    typeof pluginOptions.pluginCollectionOverrides?.teamMembers === "function"
-  ) {
+  if (typeof pluginOptions.pluginCollectionOverrides?.teamMembers === 'function') {
     teamMemberCollection = pluginOptions.pluginCollectionOverrides.teamMembers({
-      collection: teamMemberCollection
+      collection: teamMemberCollection,
     });
   }
 
