@@ -4,8 +4,8 @@ import { toast, useConfig, useTranslation } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
 import { useMemo, useState } from 'react';
 import { z } from 'zod';
-import { adminRoutes } from '../../plugin/constants.js';
-import { emailRegex } from '../../utils/regex.js';
+import { adminRoutes } from '@/plugin/constants.js';
+import { emailRegex } from '@/utils/regex.js';
 import { useAppForm } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
@@ -20,7 +20,7 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
   const { config } = useConfig();
   const adminRoute = config.routes.admin;
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const authClient = useMemo(() => createAuthClient({ baseURL, basePath }), []);
+  const authClient = useMemo(() => createAuthClient({ baseURL, basePath }), [basePath, baseURL]);
 
   const forgotSchema = z.object({
     email: z.string().superRefine((val, ctx) => {

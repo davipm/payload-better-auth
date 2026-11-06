@@ -1,6 +1,5 @@
-import type { Payload } from 'payload';
-
 import config from '@payload-config';
+import type { Payload } from 'payload';
 import { createPayloadRequest, getPayload } from 'payload';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
