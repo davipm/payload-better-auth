@@ -1069,8 +1069,9 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
    * It also handles field name mapping between better-auth schema and Payload collections
    * by using the getFieldName helper to resolve the correct field names.
    *
-   * @param model - The model/collection name to get field mappings from
+   * @param rawModel
    * @param select - Optional array of field names to select
+   * @param payload
    * @returns A Payload-compatible select object or undefined if no fields to select
    * @example
    * // Input: ['email', 'name']
@@ -1104,8 +1105,9 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
    * It also handles field name mapping between better-auth schema and Payload collections
    * by using the getFieldName helper to resolve the correct field names.
    *
-   * @param model - The model/collection name to get field mappings from
+   * @param rawModel
    * @param sortBy - Optional object containing field name and sort direction
+   * @param payload
    * @returns A Payload-compatible sort string or undefined if no sort specified
    * @example
    * // Input: { field: 'email', direction: 'desc' }

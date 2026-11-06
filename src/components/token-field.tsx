@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, TextInput, useField, useFormFields } from '@payloadcms/ui';
-import { TextFieldClientProps } from 'payload';
+import type { TextFieldClientProps } from 'payload';
 
 function AdminInviteTokenField({ ...props }: TextFieldClientProps) {
   const { path } = props;

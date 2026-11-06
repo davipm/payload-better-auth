@@ -3,16 +3,12 @@ import { cookies } from 'next/headers.js';
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps } from 'payload';
 import React from 'react';
-import { valueOrDefaultString } from '../../utils/value-or-default.js';
 import { adminRoutes, supportedBAPluginIds } from '../../plugin/constants.js';
 import { getPayloadAuth } from '../../plugin/lib/get-payload-auth.js';
 import type { PayloadAuthOptions } from '../../plugin/types.js';
-// import { adminRoutes, supportedBAPluginIds } from '@/better-auth/plugin/constants';
-// import { getPayloadAuth } from '@/better-auth/plugin/lib/get-payload-auth';
-// import type { PayloadAuthOptions } from '@/better-auth/plugin/types';
-// import { valueOrDefaultString } from '@/shared/utils/value-or-default';
 import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
+import { valueOrDefaultString } from '../../utils/value-or-default.js';
 import { TwoFactorVerifyForm } from './client.js';
 
 interface TwoFactorVerifyProps extends AdminViewServerProps {
