@@ -2,8 +2,8 @@ import { TwoFactorAuth as TwoFactorAuth_4bd30199dc2f6ea9b837964c640b84ab } from 
 import { Passkeys as Passkeys_0814f4521f2b1f0fcc391051cb30e62b } from 'payload-better-auth/rsc'
 import { AdminInviteButton as AdminInviteButton_4bd30199dc2f6ea9b837964c640b84ab } from 'payload-better-auth/client'
 import { AdminButtons as AdminButtons_4bd30199dc2f6ea9b837964c640b84ab } from 'payload-better-auth/client'
-import { GenerateUuidButton as GenerateUuidButton_7580a3a69a638c48fcd70a25a07c1f7e } from 'payload-better-auth/shared/payload/fields'
-import { FieldCopyButton as FieldCopyButton_7580a3a69a638c48fcd70a25a07c1f7e } from 'payload-better-auth/shared/payload/fields'
+import { GenerateUuidButton as GenerateUuidButton_4bd30199dc2f6ea9b837964c640b84ab } from 'payload-better-auth/client'
+import { FieldCopyButton as FieldCopyButton_4bd30199dc2f6ea9b837964c640b84ab } from 'payload-better-auth/client'
 import { LogoutButton as LogoutButton_4bd30199dc2f6ea9b837964c640b84ab } from 'payload-better-auth/client'
 import { RSCRedirect as RSCRedirect_0814f4521f2b1f0fcc391051cb30e62b } from 'payload-better-auth/rsc'
 import { AdminLogin as AdminLogin_0814f4521f2b1f0fcc391051cb30e62b } from 'payload-better-auth/rsc'
@@ -19,8 +19,8 @@ export const importMap = {
   "payload-better-auth/rsc#Passkeys": Passkeys_0814f4521f2b1f0fcc391051cb30e62b,
   "payload-better-auth/client#AdminInviteButton": AdminInviteButton_4bd30199dc2f6ea9b837964c640b84ab,
   "payload-better-auth/client#AdminButtons": AdminButtons_4bd30199dc2f6ea9b837964c640b84ab,
-  "payload-better-auth/shared/payload/fields#GenerateUuidButton": GenerateUuidButton_7580a3a69a638c48fcd70a25a07c1f7e,
-  "payload-better-auth/shared/payload/fields#FieldCopyButton": FieldCopyButton_7580a3a69a638c48fcd70a25a07c1f7e,
+  "payload-better-auth/client#GenerateUuidButton": GenerateUuidButton_4bd30199dc2f6ea9b837964c640b84ab,
+  "payload-better-auth/client#FieldCopyButton": FieldCopyButton_4bd30199dc2f6ea9b837964c640b84ab,
   "payload-better-auth/client#LogoutButton": LogoutButton_4bd30199dc2f6ea9b837964c640b84ab,
   "payload-better-auth/rsc#RSCRedirect": RSCRedirect_0814f4521f2b1f0fcc391051cb30e62b,
   "payload-better-auth/rsc#AdminLogin": AdminLogin_0814f4521f2b1f0fcc391051cb30e62b,

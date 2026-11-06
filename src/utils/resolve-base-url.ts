@@ -1,9 +1,9 @@
-import { BaseURLConfig } from 'better-auth';
+import type { BaseURLConfig } from 'better-auth';
 
 /**
  * Resolves the better auth base URL from BaseURLConfig type
  * @param baseURL - The base URL configuration which can be a string, dynamic config object, or undefined
- * @param request - Optional request object for dynamic URL resolution
+ * @param headers
  * @returns The resolved base URL as a string
  */
 export function resolveBaseURL(baseURL?: BaseURLConfig, headers?: Headers): string {

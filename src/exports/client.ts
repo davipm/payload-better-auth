@@ -1,5 +1,6 @@
 import { AdminButtons } from '../components/admin-buttons/index.js';
 import { AdminInviteButton } from '../components/admin-invite-button/index.js';
+import { FieldCopyButton, GenerateUuidButton } from '../components/fields/index.js';
 import {
   AlternativeMethods,
   CredentialsForm,
@@ -16,6 +17,8 @@ export {
   AdminInviteButton,
   AlternativeMethods,
   CredentialsForm,
+  FieldCopyButton,
+  GenerateUuidButton,
   LoginFormProvider,
   LogoutButton,
   TwoFactorAuth,
