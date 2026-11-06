@@ -6,7 +6,7 @@ import type {
   PayloadAuthOptions,
   SanitizedBetterAuthOptions,
 } from '../../types.js';
-import { set } from '../../utils/set.js';
+import { set } from '../../../utils/set.js';
 import {
   getSchemaCollectionSlug,
   getSchemaFieldName,

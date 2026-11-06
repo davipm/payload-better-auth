@@ -1,3 +1,14 @@
+import { AdminButtons } from '../components/admin-buttons/index.js';
+import { AdminInviteButton } from '../components/admin-invite-button/index.js';
+import {
+  AlternativeMethods,
+  CredentialsForm,
+  LoginFormProvider,
+  useLoginForm,
+} from '../components/login-form/index.js';
+import { LogoutButton } from '../components/logout-button.js';
+import { TwoFactorAuth } from '../components/two-factor-auth/index.js';
+
 export { BeforeDashboardClient } from '../components/BeforeDashboardClient.js';
 
 export {
@@ -9,4 +20,4 @@ export {
   LogoutButton,
   TwoFactorAuth,
   useLoginForm,
-} from '../plugin/payload/exports/client.js';
+};

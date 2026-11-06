@@ -8,7 +8,7 @@ import {
 } from '../../../constants.js';
 import { checkPluginExists } from '../../../helpers/check-plugin-exists.js';
 import { getAllRoleOptions } from '../../../helpers/get-all-roles.js';
-import { resolveBaseURL } from '../../../payload/utils/resolve-base-url.js';
+import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types.js';
 import {
   assertAllSchemaFields,

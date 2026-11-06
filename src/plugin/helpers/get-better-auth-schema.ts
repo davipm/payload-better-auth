@@ -3,7 +3,7 @@ import { getAuthTables } from 'better-auth/db';
 import type { ModelKey } from '../../generated-types.js';
 import { baModelFieldKeysToFieldNames, baModelKey, defaults } from '../constants.js';
 import type { BetterAuthSchemas, PayloadAuthOptions } from '../types.js';
-import { set } from '../utils/set.js';
+import { set } from '../../utils/set.js';
 import { getDefaultCollectionSlug } from './get-collection-slug.js';
 
 /**
