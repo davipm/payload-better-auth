@@ -1,6 +1,6 @@
+import { set } from '@/utils/set.js';
 import { baModelKey } from '../../constants.js';
 import type { BetterAuthSchemas } from '../../types.js';
-import { set } from '../../../utils/set.js';
 import {
   getSchemaCollectionSlug,
   getSchemaFieldName,

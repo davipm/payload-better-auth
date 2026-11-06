@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import type { ModelKey } from '../../../generated-types.js';
+import type { ModelKey } from '@/generated-types.js';
 import { baModelKey, baseSlugs } from '../../constants.js';
 import type { BetterAuthSchemas, BuildCollectionProps, PayloadAuthOptions } from '../../types.js';
 import { buildAccountsCollection } from './accounts/index.js';

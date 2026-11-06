@@ -1,11 +1,11 @@
 import type { CollectionConfig } from 'payload';
-import type { Session } from '@/better-auth/generated-types';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '@/better-auth/plugin/types';
-import { baModelKey, baseSlugs } from '../../constants';
-import { getAdminAccess } from '../../helpers/get-admin-access';
-import { getDefaultCollectionSlug } from '../../helpers/get-collection-slug';
-import { assertAllSchemaFields, getSchemaCollectionSlug } from './utils/collection-schema';
-import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
+import type { Session } from '@/generated-types.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '@/plugin/types.js';
+import { baModelKey, baseSlugs } from '../../constants.js';
+import { getAdminAccess } from '../../helpers/get-admin-access.js';
+import { getDefaultCollectionSlug } from '../../helpers/get-collection-slug.js';
+import { assertAllSchemaFields, getSchemaCollectionSlug } from './utils/collection-schema.js';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload.js';
 
 export function buildSessionsCollection({
   incomingCollections,
