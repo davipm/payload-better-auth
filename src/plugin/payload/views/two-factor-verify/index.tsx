@@ -1,18 +1,19 @@
-import { MinimalTemplate } from "@payloadcms/next/templates";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import type { AdminViewServerProps } from "payload";
-import React from "react";
-import {
-  adminRoutes,
-  supportedBAPluginIds
-} from "@/better-auth/plugin/constants";
-import { getPayloadAuth } from "@/better-auth/plugin/lib/get-payload-auth";
-import { PayloadAuthOptions } from "@/better-auth/plugin/types";
-import { valueOrDefaultString } from "@/shared/utils/value-or-default";
-import { getSafeRedirect } from "../../utils/get-safe-redirect";
-import { TwoFactorVerifyForm } from "./client";
-import { resolveBaseURL } from "../../utils/resolve-base-url";
+import { MinimalTemplate } from '@payloadcms/next/templates';
+import { cookies } from 'next/headers.js';
+import { redirect } from 'next/navigation.js';
+import type { AdminViewServerProps } from 'payload';
+import React from 'react';
+import { valueOrDefaultString } from '../../../../shared/utils/value-or-default.js';
+import { adminRoutes, supportedBAPluginIds } from '../../../constants.js';
+import { getPayloadAuth } from '../../../lib/get-payload-auth.js';
+import type { PayloadAuthOptions } from '../../../types.js';
+// import { adminRoutes, supportedBAPluginIds } from '@/better-auth/plugin/constants';
+// import { getPayloadAuth } from '@/better-auth/plugin/lib/get-payload-auth';
+// import type { PayloadAuthOptions } from '@/better-auth/plugin/types';
+// import { valueOrDefaultString } from '@/shared/utils/value-or-default';
+import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
+import { resolveBaseURL } from '../../utils/resolve-base-url.js';
+import { TwoFactorVerifyForm } from './client.js';
 
 interface TwoFactorVerifyProps extends AdminViewServerProps {
   pluginOptions: PayloadAuthOptions;
@@ -23,30 +24,27 @@ async function TwoFactorVerify({
   searchParams,
   initPageResult,
   pluginOptions,
-  verificationsSlug
+  verificationsSlug,
 }: TwoFactorVerifyProps) {
   const { req } = initPageResult;
   const {
     payload: { config },
-    payload
+    payload,
   } = req;
 
   const {
     admin: {
-      routes: { login }
+      routes: { login },
     },
-    routes: { admin: adminRoute }
+    routes: { admin: adminRoute },
   } = config;
   const cookieStore = await cookies();
   const loginRoute = valueOrDefaultString(login, adminRoutes.adminLogin);
-  const redirectUrl = getSafeRedirect(
-    searchParams?.redirect as string,
-    adminRoute
-  );
+  const redirectUrl = getSafeRedirect(searchParams?.redirect as string, adminRoute);
 
   const twoFactorOptions =
     pluginOptions.betterAuthOptions?.plugins?.find(
-      (plugin) => plugin.id === supportedBAPluginIds.twoFactor
+      (plugin) => plugin.id === supportedBAPluginIds.twoFactor,
     )?.options ?? {};
 
   // Better Auth's two-factor plugin does not register its verification
@@ -61,16 +59,14 @@ async function TwoFactorVerify({
   // instead of re-deriving the naming rule ourselves.
   const payloadAuth = await getPayloadAuth(config);
   const authContext = await payloadAuth.betterAuth?.$context;
-  const twoFactorCookieName = authContext?.createAuthCookie(
-    "two_factor"
-  ).name;
+  const twoFactorCookieName = authContext?.createAuthCookie('two_factor').name;
   const twoFactorCookie = twoFactorCookieName
     ? cookieStore.get(twoFactorCookieName)?.value
     : undefined;
   if (!twoFactorCookie) {
     redirect(`${adminRoute}${loginRoute}`);
   }
-  const twoFactorVerifyToken = twoFactorCookie.split(".").at(0);
+  const twoFactorVerifyToken = twoFactorCookie.split('.').at(0);
   if (!twoFactorVerifyToken) {
     redirect(`${adminRoute}${loginRoute}`);
   }
@@ -78,9 +74,9 @@ async function TwoFactorVerify({
     collection: verificationsSlug,
     where: {
       identifier: {
-        equals: twoFactorVerifyToken
-      }
-    }
+        equals: twoFactorVerifyToken,
+      },
+    },
   });
   if (!isValidTwoFactorToken) {
     redirect(`${adminRoute}${loginRoute}`);
@@ -91,10 +87,7 @@ async function TwoFactorVerify({
       <TwoFactorVerifyForm
         redirect={redirectUrl}
         twoFactorDigits={twoFactorOptions?.totpOptions?.digits}
-        baseURL={resolveBaseURL(
-          pluginOptions.betterAuthOptions?.baseURL,
-          req.headers
-        )}
+        baseURL={resolveBaseURL(pluginOptions.betterAuthOptions?.baseURL, req.headers)}
         basePath={pluginOptions.betterAuthOptions?.basePath}
       />
     </MinimalTemplate>

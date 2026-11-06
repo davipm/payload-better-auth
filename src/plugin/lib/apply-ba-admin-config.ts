@@ -31,7 +31,7 @@ export function applyBetterAuthAdminConfig({
       ...config.admin?.components,
       afterLogin: [
         {
-          path: 'payload-auth/better-auth/plugin/rsc#RSCRedirect',
+          path: 'payload-better-auth/rsc#RSCRedirect',
           serverProps: {
             pluginOptions: safePluginOptions,
             redirectTo: `${config.routes?.admin === undefined ? '/admin' : config.routes.admin.replace(/\/+$/, '')}${adminRoutes.adminLogin}`,
@@ -41,7 +41,7 @@ export function applyBetterAuthAdminConfig({
       ],
       logout: {
         Button: {
-          path: 'payload-auth/better-auth/plugin/client#LogoutButton',
+          path: 'payload-better-auth/client#LogoutButton',
         },
       },
       views: {
@@ -49,7 +49,7 @@ export function applyBetterAuthAdminConfig({
         adminLogin: {
           path: adminRoutes.adminLogin,
           Component: {
-            path: 'payload-auth/better-auth/plugin/rsc#AdminLogin',
+            path: 'payload-better-auth/rsc#AdminLogin',
             serverProps: {
               pluginOptions: safePluginOptions,
               adminInvitationsSlug: collectionMap[baseSlugs.adminInvitations].slug,
@@ -59,7 +59,7 @@ export function applyBetterAuthAdminConfig({
         adminSignup: {
           path: adminRoutes.adminSignup,
           Component: {
-            path: 'payload-auth/better-auth/plugin/rsc#AdminSignup',
+            path: 'payload-better-auth/rsc#AdminSignup',
             serverProps: {
               pluginOptions: safePluginOptions,
               adminInvitationsSlug: collectionMap[baseSlugs.adminInvitations].slug,
@@ -69,7 +69,7 @@ export function applyBetterAuthAdminConfig({
         forgotPassword: {
           path: adminRoutes.forgotPassword,
           Component: {
-            path: 'payload-auth/better-auth/plugin/rsc#ForgotPassword',
+            path: 'payload-better-auth/rsc#ForgotPassword',
             serverProps: {
               pluginOptions: safePluginOptions,
             },
@@ -78,7 +78,7 @@ export function applyBetterAuthAdminConfig({
         resetPassword: {
           path: adminRoutes.resetPassword,
           Component: {
-            path: 'payload-auth/better-auth/plugin/rsc#ResetPassword',
+            path: 'payload-better-auth/rsc#ResetPassword',
             serverProps: {
               pluginOptions: safePluginOptions,
             },
@@ -91,7 +91,7 @@ export function applyBetterAuthAdminConfig({
           twoFactorVerify: {
             path: adminRoutes.twoFactorVerify,
             Component: {
-              path: 'payload-auth/better-auth/plugin/rsc#TwoFactorVerify',
+              path: 'payload-better-auth/rsc#TwoFactorVerify',
               serverProps: {
                 pluginOptions: safePluginOptions,
                 verificationsSlug: resolvedBetterAuthSchemas[baModelKey.verification].modelName,

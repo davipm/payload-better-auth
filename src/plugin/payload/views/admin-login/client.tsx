@@ -9,15 +9,6 @@ import {
 } from '../../components/login-form/index.js';
 import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 
-// import { BaseURLConfig } from "better-auth";
-// import {
-//   AlternativeMethods,
-//   CredentialsForm,
-//   LoginFormProvider,
-// } from '@/better-auth/plugin/payload/components/login-form';
-// import { getSafeRedirect } from '@/better-auth/plugin/payload/utils/get-safe-redirect';
-// import type { LoginMethod } from '@/better-auth/plugin/types';
-
 interface AdminLoginClientProps {
   loginMethods: LoginMethod[];
   plugins?: {

@@ -60,7 +60,7 @@ export const getGenerateInviteUrlEndpoint = ({
         payload: req.payload,
         token,
       });
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + defaults.adminInviteExpiresInMs).toISOString();
 
       try {
         await req.payload.create({

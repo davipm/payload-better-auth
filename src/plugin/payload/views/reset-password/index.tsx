@@ -1,30 +1,29 @@
-import { MinimalTemplate } from "@payloadcms/next/templates";
-import { Button, Link, Translation } from "@payloadcms/ui";
-import type { AdminViewServerProps } from "payload";
-import { formatAdminURL } from "payload/shared";
-import React from "react";
-import { z } from "zod";
-import { adminRoutes } from "@/better-auth/plugin/constants";
-import type { PayloadAuthOptions } from "@/better-auth/plugin/types";
-import { FormHeader } from "@/shared/form/ui/header";
-import { PasswordResetForm } from "./client";
-import { resolveBaseURL } from "../../utils/resolve-base-url";
+import { MinimalTemplate } from '@payloadcms/next/templates';
+import { Button, Link, Translation } from '@payloadcms/ui';
+import type { AdminViewServerProps } from 'payload';
+import { formatAdminURL } from 'payload/shared';
+import React from 'react';
+import { z } from 'zod';
+import { FormHeader } from '../../../../shared/form/ui/header/index.js';
+import { adminRoutes } from '../../../constants.js';
+import type { PayloadAuthOptions } from '../../../types.js';
+// import { adminRoutes } from '@/better-auth/plugin/constants';
+// import type { PayloadAuthOptions } from '@/better-auth/plugin/types';
+// import { FormHeader } from '@/shared/form/ui/header';
+import { resolveBaseURL } from '../../utils/resolve-base-url.js';
+import { PasswordResetForm } from './client.js';
 
 const resetPasswordParamsSchema = z.object({
-  token: z.string()
+  token: z.string(),
 });
 
-const resetPasswordBaseClass = "reset-password";
+const resetPasswordBaseClass = 'reset-password';
 
 interface ResetPasswordProps extends AdminViewServerProps {
   pluginOptions: PayloadAuthOptions;
 }
 
-function ResetPassword({
-  pluginOptions,
-  initPageResult,
-  searchParams
-}: ResetPasswordProps) {
+function ResetPassword({ pluginOptions, initPageResult, searchParams }: ResetPasswordProps) {
   const {
     req: {
       headers,
@@ -34,11 +33,11 @@ function ResetPassword({
         config: {
           routes: { admin: adminRoute },
           admin: {
-            routes: { account: accountRoute }
-          }
-        }
-      }
-    }
+            routes: { account: accountRoute },
+          },
+        },
+      },
+    },
   } = initPageResult;
 
   if (user) {
@@ -48,26 +47,26 @@ function ResetPassword({
           description={
             <Translation
               elements={{
-                "0": ({ children }) => (
+                '0': ({ children }) => (
                   <Link
                     href={formatAdminURL({
                       adminRoute,
-                      path: accountRoute
+                      path: accountRoute,
                     })}
                     prefetch={false}
                   >
                     {children}
                   </Link>
-                )
+                ),
               }}
               i18nKey="authentication:loggedInChangePassword"
               t={t}
             />
           }
-          heading={t("authentication:alreadyLoggedIn")}
+          heading={t('authentication:alreadyLoggedIn')}
         />
         <Button buttonStyle="secondary" el="link" size="large" to={adminRoute}>
-          {t("general:backToDashboard")}
+          {t('general:backToDashboard')}
         </Button>
       </MinimalTemplate>
     );
@@ -81,23 +80,20 @@ function ResetPassword({
 
   return (
     <MinimalTemplate className={`${resetPasswordBaseClass}`}>
-      <FormHeader heading={t("authentication:resetPassword")} />
+      <FormHeader heading={t('authentication:resetPassword')} />
       <PasswordResetForm
         token={token}
-        baseURL={resolveBaseURL(
-          pluginOptions.betterAuthOptions?.baseURL,
-          headers
-        )}
+        baseURL={resolveBaseURL(pluginOptions.betterAuthOptions?.baseURL, headers)}
         basePath={pluginOptions.betterAuthOptions?.basePath}
       />
       <Link
         href={formatAdminURL({
           adminRoute,
-          path: adminRoutes.adminLogin as `/${string}`
+          path: adminRoutes.adminLogin as `/${string}`,
         })}
         prefetch={false}
       >
-        {t("authentication:backToLogin")}
+        {t('authentication:backToLogin')}
       </Link>
     </MinimalTemplate>
   );

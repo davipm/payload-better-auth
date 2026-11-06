@@ -9,9 +9,6 @@ import { z } from 'zod';
 import { useAppForm } from '../../../../shared/form/index.js';
 import { Form, FormInputWrap } from '../../../../shared/form/ui/index.js';
 
-// import { useAppForm } from "@/shared/form";
-// import { Form, FormInputWrap } from "@/shared/form/ui";
-
 interface PasswordResetFormProps {
   readonly token: string;
   readonly minPasswordLength?: number;
