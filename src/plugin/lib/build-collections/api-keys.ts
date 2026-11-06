@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import type { Apikey } from '../../../generated-types.js';
+import type { Apikey } from '@/generated-types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';

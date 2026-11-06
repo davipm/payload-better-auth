@@ -16,9 +16,9 @@
  * Users can copy these generated collection configs to their PayloadCMS project
  * and add authentication strategies as needed.
  */
-import type {BetterAuthOptions} from 'better-auth';
-import {getAuthTables} from 'better-auth/db';
-import type {CollectionConfig, Field} from 'payload';
+import type { BetterAuthOptions } from 'better-auth';
+import { getAuthTables } from 'better-auth/db';
+import type { CollectionConfig, Field } from 'payload';
 
 export const generateSchemaBuilderStage = async ({
   BAOptions,

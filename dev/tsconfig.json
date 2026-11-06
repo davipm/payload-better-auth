@@ -16,6 +16,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
+      "@/*": ["../src/*"],
       "@payload-config": ["./payload.config.ts"],
       "payload-better-auth": ["../src/index.ts"],
       "payload-better-auth/client": ["../src/exports/client.ts"],

@@ -1,5 +1,5 @@
 import type { UIFieldServerProps } from 'payload';
-import type { BuiltBetterAuthSchema, PayloadAuthOptions } from 'src/plugin/types.js';
+import type { BuiltBetterAuthSchema, PayloadAuthOptions } from '@/plugin/types.js';
 import type { Passkey } from '../../generated-types.js';
 
 export type PasskeyWithId = Passkey & { id: string; createdAt: Date };

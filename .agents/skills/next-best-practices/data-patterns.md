@@ -33,11 +33,13 @@ async function UsersPage() {
   const users = await db.user.findMany();
 
   // Or fetch from external API
-  const posts = await fetch('https://api.example.com/posts').then(r => r.json());
+  const posts = await fetch('https://api.example.com/posts').then((r) => r.json());
 
   return (
     <ul>
-      {users.map(user => <li key={user.id}>{user.name}</li>)}
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
     </ul>
   );
 }
@@ -138,8 +140,8 @@ export async function POST(request: NextRequest) {
 ```tsx
 // Bad: Sequential waterfalls
 async function Dashboard() {
-  const user = await getUser();        // Wait...
-  const posts = await getPosts();      // Then wait...
+  const user = await getUser(); // Wait...
+  const posts = await getPosts(); // Then wait...
   const comments = await getComments(); // Then wait...
 
   return <div>...</div>;
@@ -151,11 +153,7 @@ async function Dashboard() {
 ```tsx
 // Good: Parallel fetching
 async function Dashboard() {
-  const [user, posts, comments] = await Promise.all([
-    getUser(),
-    getPosts(),
-    getComments(),
-  ]);
+  const [user, posts, comments] = await Promise.all([getUser(), getPosts(), getComments()]);
 
   return <div>...</div>;
 }
@@ -238,7 +236,7 @@ async function Page() {
 }
 
 // Client Component
-'use client';
+('use client');
 function ClientComponent({ initialData }) {
   const [data, setData] = useState(initialData);
   // ...
@@ -256,7 +254,7 @@ function ClientComponent() {
 
   useEffect(() => {
     fetch('/api/data')
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setData);
   }, []);
 
@@ -289,9 +287,9 @@ function ClientComponent() {
 
 ## Quick Reference
 
-| Pattern | Use Case | HTTP Method | Caching |
-|---------|----------|-------------|---------|
-| Server Component fetch | Internal reads | Any | Full Next.js caching |
-| Server Action | Mutations, form submissions | POST only | No |
-| Route Handler | External APIs, webhooks | Any | GET can be cached |
-| Client fetch to API | Client-side reads | Any | HTTP cache headers |
+| Pattern                | Use Case                    | HTTP Method | Caching              |
+| ---------------------- | --------------------------- | ----------- | -------------------- |
+| Server Component fetch | Internal reads              | Any         | Full Next.js caching |
+| Server Action          | Mutations, form submissions | POST only   | No                   |
+| Route Handler          | External APIs, webhooks     | Any         | GET can be cached    |
+| Client fetch to API    | Client-side reads           | Any         | HTTP cache headers   |
