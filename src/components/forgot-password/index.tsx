@@ -39,6 +39,7 @@ function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) 
             <Translation
               elements={{
                 '0': ({ children }) => (
+                  // @ts-expect-error
                   <Link
                     href={formatAdminURL({
                       adminRoute,
@@ -69,6 +70,7 @@ function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) 
         baseURL={resolveBaseURL(pluginOptions.betterAuthOptions?.baseURL, headers)}
         basePath={pluginOptions.betterAuthOptions?.basePath}
       />
+      {/* @ts-expect-error */}
       <Link
         href={formatAdminURL({
           adminRoute,

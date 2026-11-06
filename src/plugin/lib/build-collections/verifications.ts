@@ -1,14 +1,14 @@
 import type { CollectionConfig } from 'payload';
-import type { Verification } from '@/better-auth/generated-types';
-import { baModelKey } from '../../constants';
-import { getAdminAccess } from '../../helpers/get-admin-access';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types';
+import type { Verification } from '../../../generated-types.js';
+import { baModelKey } from '../../constants.js';
+import { getAdminAccess } from '../../helpers/get-admin-access.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
   getSchemaFieldName,
-} from './utils/collection-schema';
-import { getCollectionFields } from './utils/transform-schema-fields-to-payload';
+} from './utils/collection-schema.js';
+import { getCollectionFields } from './utils/transform-schema-fields-to-payload.js';
 
 export function buildVerificationsCollection({
   incomingCollections,

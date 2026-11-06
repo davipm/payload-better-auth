@@ -81,7 +81,7 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
           toast.error(error.message);
           return;
         }
-        setTotpURI(data.totpURI);
+        // setTotpURI(data.totpURI);
         if (data && 'backupCodes' in data && data.backupCodes) {
           setBackupCodes(
             Array.isArray(data.backupCodes)

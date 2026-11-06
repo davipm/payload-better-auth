@@ -1,8 +1,6 @@
 import type { AuthStrategy } from 'payload';
 import { baseSlugs } from '../../../constants.js';
 import { getPayloadAuth } from '../../get-payload-auth.js';
-// import { baseSlugs } from '@/better-auth/plugin/constants';
-// import { getPayloadAuth } from '@/better-auth/plugin/lib/get-payload-auth';
 
 /**
  * Auth strategy for BetterAuth

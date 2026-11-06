@@ -5,7 +5,6 @@ import {
   killTransaction,
 } from 'payload';
 import { baModelKey } from '../../../../constants.js';
-// import { baModelKey } from "@/better-auth/plugin/constants";
 
 export function getBeforeDeleteHook(): CollectionBeforeDeleteHook {
   const hook: CollectionBeforeDeleteHook = async ({ req, id }) => {

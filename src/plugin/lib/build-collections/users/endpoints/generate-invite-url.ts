@@ -1,7 +1,7 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
-import { adminEndpoints, baseSlugs, defaults } from '../../../../constants.js';
 import { generateAdminInviteUrl } from '../../../../../utils/generate-admin-invite-url.js';
+import { adminEndpoints, baseSlugs, defaults } from '../../../../constants.js';
 import type { PayloadAuthOptions } from '../../../../types.js';
 import { getPayloadAuth } from '../../../get-payload-auth.js';
 import { hasAdminRoles } from '../../utils/payload-access.js';

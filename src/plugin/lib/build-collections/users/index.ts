@@ -1,5 +1,6 @@
 import type { CollectionConfig, JoinField, UIField } from 'payload';
 import type { User } from '../../../../generated-types.js';
+import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import {
   baModelFieldKeys,
   baModelKey,
@@ -8,7 +9,6 @@ import {
 } from '../../../constants.js';
 import { checkPluginExists } from '../../../helpers/check-plugin-exists.js';
 import { getAllRoleOptions } from '../../../helpers/get-all-roles.js';
-import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types.js';
 import {
   assertAllSchemaFields,
