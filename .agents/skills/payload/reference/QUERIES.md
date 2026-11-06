@@ -5,38 +5,38 @@ Complete reference for querying data across Local API, REST, and GraphQL.
 ## Query Operators
 
 ```ts
-import type { Where } from 'payload'
+import type { Where } from 'payload';
 
 // Equals
-const equalsQuery: Where = { color: { equals: 'blue' } }
+const equalsQuery: Where = { color: { equals: 'blue' } };
 
 // Not equals
-const notEqualsQuery: Where = { status: { not_equals: 'draft' } }
+const notEqualsQuery: Where = { status: { not_equals: 'draft' } };
 
 // Greater/less than
-const greaterThanQuery: Where = { price: { greater_than: 100 } }
-const lessThanEqualQuery: Where = { age: { less_than_equal: 65 } }
+const greaterThanQuery: Where = { price: { greater_than: 100 } };
+const lessThanEqualQuery: Where = { age: { less_than_equal: 65 } };
 
 // Contains (case-insensitive)
-const containsQuery: Where = { title: { contains: 'payload' } }
+const containsQuery: Where = { title: { contains: 'payload' } };
 
 // Like (all words present)
-const likeQuery: Where = { description: { like: 'cms headless' } }
+const likeQuery: Where = { description: { like: 'cms headless' } };
 
 // In/not in
-const inQuery: Where = { category: { in: ['tech', 'news'] } }
+const inQuery: Where = { category: { in: ['tech', 'news'] } };
 
 // Exists
-const existsQuery: Where = { image: { exists: true } }
+const existsQuery: Where = { image: { exists: true } };
 
 // Near (point fields)
-const nearQuery: Where = { location: { near: '-122.4194,37.7749,10000' } }
+const nearQuery: Where = { location: { near: '-122.4194,37.7749,10000' } };
 ```
 
 ## AND/OR Logic
 
 ```ts
-import type { Where } from 'payload'
+import type { Where } from 'payload';
 
 const complexQuery: Where = {
   or: [
@@ -45,18 +45,18 @@ const complexQuery: Where = {
       and: [{ color: { equals: 'white' } }, { featured: { equals: false } }],
     },
   ],
-}
+};
 ```
 
 ## Nested Properties
 
 ```ts
-import type { Where } from 'payload'
+import type { Where } from 'payload';
 
 const nestedQuery: Where = {
   'author.role': { equals: 'editor' },
   'meta.featured': { exists: true },
-}
+};
 ```
 
 ## Local API
@@ -79,7 +79,7 @@ const posts = await payload.find({
     title: true,
     author: true,
   },
-})
+});
 
 // Find by ID
 const post = await payload.findByID({
@@ -87,7 +87,7 @@ const post = await payload.findByID({
   overrideAccess: true,
   id: '123',
   depth: 2,
-})
+});
 
 // Create
 const post = await payload.create({
@@ -97,7 +97,7 @@ const post = await payload.create({
     title: 'New Post',
     status: 'draft',
   },
-})
+});
 
 // Update
 await payload.update({
@@ -107,14 +107,14 @@ await payload.update({
   data: {
     status: 'published',
   },
-})
+});
 
 // Delete
 await payload.delete({
   collection: 'posts',
   overrideAccess: true,
   id: '123',
-})
+});
 
 // Count
 const count = await payload.count({
@@ -123,7 +123,7 @@ const count = await payload.count({
   where: {
     status: { equals: 'published' },
   },
-})
+});
 ```
 
 ### Threading req Parameter
@@ -138,8 +138,8 @@ const afterChange: CollectionAfterChangeHook = async ({ doc, req }) => {
     overrideAccess: true,
     data: { action: 'created', docId: doc.id },
     req, // Maintains transaction atomicity
-  })
-}
+  });
+};
 
 // ❌ WRONG: Missing req breaks transaction
 const afterChange: CollectionAfterChangeHook = async ({ doc, req }) => {
@@ -148,8 +148,8 @@ const afterChange: CollectionAfterChangeHook = async ({ doc, req }) => {
     overrideAccess: true,
     data: { action: 'created', docId: doc.id },
     // Missing req - runs in separate transaction
-  })
-}
+  });
+};
 ```
 
 This is critical for MongoDB replica sets and Postgres. See [ADAPTERS.md#threading-req-through-operations](ADAPTERS.md#threading-req-through-operations) for details.
@@ -165,7 +165,7 @@ const posts = await payload.find({
   user: currentUser,
   overrideAccess: true,
   // Result: Operation runs with ADMIN privileges, ignoring user's permissions
-})
+});
 
 // ✅ CORRECT: Respects user's access control permissions
 const posts = await payload.find({
@@ -173,7 +173,7 @@ const posts = await payload.find({
   user: currentUser,
   overrideAccess: false, // enforce access control
   // Result: User only sees posts they have permission to read
-})
+});
 
 // Administrative operation (intentionally bypass access control)
 const allPosts = await payload.find({
@@ -181,7 +181,7 @@ const allPosts = await payload.find({
   // No user parameter
   overrideAccess: true,
   // Result: Returns all posts regardless of access control
-})
+});
 ```
 
 **When to use `overrideAccess: false`:**
@@ -202,11 +202,11 @@ See [ACCESS-CONTROL.md#important-notes](ACCESS-CONTROL.md#important-notes) for m
 ## REST API
 
 ```ts
-import { stringify } from 'qs-esm'
+import { stringify } from 'qs-esm';
 
 const query = {
   status: { equals: 'published' },
-}
+};
 
 const queryString = stringify(
   {
@@ -215,10 +215,10 @@ const queryString = stringify(
     limit: 10,
   },
   { addQueryPrefix: true },
-)
+);
 
-const response = await fetch(`https://api.example.com/api/posts${queryString}`)
-const data = await response.json()
+const response = await fetch(`https://api.example.com/api/posts${queryString}`);
+const data = await response.json();
 ```
 
 ### REST Endpoints

@@ -1,0 +1,15 @@
+import { supportedBAPluginIds } from '../constants.js';
+import { checkPluginExists } from '../helpers/check-plugin-exists.js';
+import type { LoginMethod, PayloadAuthOptions } from '../types.js';
+
+export function setLoginMethods({ pluginOptions }: { pluginOptions: PayloadAuthOptions }) {
+  const betterAuthOptions = pluginOptions.betterAuthOptions ?? {};
+  if (pluginOptions?.admin?.loginMethods) return pluginOptions; // If user defined, exit early
+  const loginMethods = Object.keys(betterAuthOptions?.socialProviders ?? {});
+  if (betterAuthOptions?.emailAndPassword?.enabled) loginMethods.push('emailPassword');
+  if (checkPluginExists(betterAuthOptions, supportedBAPluginIds.passkey))
+    loginMethods.push('passkey');
+  pluginOptions.admin = pluginOptions.admin ?? {};
+  pluginOptions.admin.loginMethods = loginMethods as LoginMethod[];
+  return pluginOptions;
+}

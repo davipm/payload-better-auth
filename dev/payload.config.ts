@@ -4,10 +4,10 @@ import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { buildConfig } from 'payload';
-import { payloadBetterAuth } from 'payload-better-auth';
 import sharp from 'sharp';
+import collections from './collections/index.js';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
-import { seed } from './seed.js';
+import { plugins } from './payload/plugins/index.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -30,47 +30,27 @@ const buildConfigWithMemoryDB = async () => {
 
   return buildConfig({
     admin: {
+      user: 'users',
       importMap: {
         baseDir: path.resolve(dirname),
       },
     },
-    collections: [
-      {
-        slug: 'posts',
-        fields: [],
-      },
-      {
-        slug: 'media',
-        fields: [],
-        upload: {
-          staticDir: path.resolve(dirname, 'media'),
-        },
-      },
-    ],
+    collections,
     db: postgresAdapter({
       disableCreateDatabase: false,
-      pool: {
-        connectionString: process.env.DATABASE_URL,
-      },
-      // Sync the demo schema in dev; production and migration commands use migrations.
-      push:
-        process.env.NODE_ENV === 'development' &&
-        process.env.PAYLOAD_MIGRATING !== 'true',
+      pool: { connectionString: process.env.DATABASE_URL },
+      // Keep the demo database schema in sync during development. Production uses migrations.
+      push: true,
       migrationDir: path.resolve(dirname, 'migrations'),
     }),
-    editor: lexicalEditor(),
     email: testEmailAdapter,
-    onInit: async (payload) => {
-      await seed(payload);
-    },
-    plugins: [
-      payloadBetterAuth({
-        collections: {
-          posts: true,
-        },
-      }),
-    ],
+    editor: lexicalEditor(),
+    // onInit: async (payload) => {
+    //   await seed(payload);
+    // },
+    plugins: [...plugins],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
+    serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
     sharp,
     typescript: {
       outputFile: path.resolve(dirname, 'payload-types.ts'),
