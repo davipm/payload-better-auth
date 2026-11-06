@@ -4,9 +4,9 @@ import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { buildConfig } from 'payload';
-import { payloadBetterAuth } from 'payload-better-auth';
 import sharp from 'sharp';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
+import { plugins } from './payload/plugins/index.js';
 import { seed } from './seed.js';
 
 const filename = fileURLToPath(import.meta.url);
@@ -53,9 +53,7 @@ const buildConfigWithMemoryDB = async () => {
         connectionString: process.env.DATABASE_URL,
       },
       // Sync the demo schema in dev; production and migration commands use migrations.
-      push:
-        process.env.NODE_ENV === 'development' &&
-        process.env.PAYLOAD_MIGRATING !== 'true',
+      push: process.env.NODE_ENV === 'development' && process.env.PAYLOAD_MIGRATING !== 'true',
       migrationDir: path.resolve(dirname, 'migrations'),
     }),
     editor: lexicalEditor(),
@@ -63,13 +61,7 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload);
     },
-    plugins: [
-      payloadBetterAuth({
-        collections: {
-          posts: true,
-        },
-      }),
-    ],
+    plugins: [...plugins],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
     typescript: {

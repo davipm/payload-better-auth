@@ -1,27 +1,24 @@
-/**
- * Type generation script for Better Auth schema.
- *
- * Generates TypeScript types by introspecting Better Auth's schema
- * and diffing plugin additions against the base schema.
- *
- * Run with: pnpm generate:types
- */
-
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { apiKey } from '@better-auth/api-key';
-import { oauthProvider } from '@better-auth/oauth-provider';
 import { passkey } from '@better-auth/passkey';
+// import { scim } from '@better-auth/scim';
+import { sso } from '@better-auth/sso';
+import { stripe } from '@better-auth/stripe';
 import type { DBFieldAttribute } from 'better-auth/db';
 import { getSchema } from 'better-auth/db';
+import { nextCookies } from 'better-auth/next-js';
 import {
   admin,
   anonymous,
   bearer,
+  customSession,
+  deviceAuthorization,
   emailOTP,
   genericOAuth,
   jwt,
+  lastLoginMethod,
   magicLink,
   multiSession,
   oneTap,
@@ -32,16 +29,26 @@ import {
   twoFactor,
   username,
 } from 'better-auth/plugins';
+import { createAccessControl } from 'better-auth/plugins/access';
+import { defaultStatements as defaultAdminStatements } from 'better-auth/plugins/admin/access';
+import { defaultStatements as defaultOrganizationStatements } from 'better-auth/plugins/organization/access';
+import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
+import Stripe from 'stripe';
+import type { SanitizedBetterAuthOptions } from '../plugin/index.js';
 
-type Schema = Record<string, { fields: Record<string, DBFieldAttribute> }>;
+const ac = createAccessControl({
+  // fooKing: ["create", "update", "delete"]
+  ...defaultOrganizationStatements,
+  ...defaultAdminStatements,
+});
 
-// Plugins to include in type generation
-// Add new plugins here as they become supported
 const plugins = [
   username(),
   admin(),
   apiKey(),
   passkey(),
+  emailHarmony(),
+  phoneHarmony(),
   bearer(),
   emailOTP({ sendVerificationOTP: async () => {} }),
   magicLink({ sendMagicLink: async () => {} }),
@@ -50,100 +57,118 @@ const plugins = [
   anonymous(),
   multiSession(),
   oneTimeToken(),
-  oauthProvider({ loginPage: '', consentPage: '' }),
+  sso(),
   genericOAuth({
     config: [
       {
-        providerId: 'generic',
-        clientId: 'generic',
-        clientSecret: 'generic',
+        providerId: 'typescript',
+        clientId: 'typescript',
+        clientSecret: 'typescript',
       },
     ],
   }),
   openAPI(),
   organization({
     teams: { enabled: true },
+    ac,
+    dynamicAccessControl: {
+      enabled: true,
+    },
   }),
   jwt(),
   twoFactor(),
+  phoneNumber(),
+  nextCookies(),
+  customSession(async () => ({})),
+  // scim({
+  //   connections: [
+  //     {
+  //       id: 'workforce-acme',
+  //       provisioningDomainId: 'workspace-acme',
+  //       credentials: [
+  //         {
+  //           type: 'bearer',
+  //           id: 'workforce-primary',
+  //           token: workforceToken,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // }),
+  deviceAuthorization(),
+  lastLoginMethod({ storeInDatabase: true }),
+  stripe({
+    stripeClient: new Stripe('typescript'),
+    stripeWebhookSecret: 'typescript',
+    subscription: {
+      enabled: true,
+      plans: [
+        {
+          name: 'Basic',
+          priceId: 'basic',
+        },
+        {
+          name: 'Pro',
+          priceId: 'pro',
+        },
+        {
+          name: 'Enterprise',
+          priceId: 'enterprise',
+        },
+      ],
+    },
+  }),
+  // As of writing this, Polar don't create schema fields, but just in case in the future we leave this here.
 ];
 
 const betterAuthConfig = {
   emailAndPassword: { enabled: true },
+  rateLimit: { enabled: true, storage: 'database', max: 5, window: 10 },
   user: {
     additionalFields: {
-      role: { type: 'string' as const, defaultValue: 'user', input: false },
+      role: { type: 'string', defaultValue: 'user', input: false },
     },
   },
   plugins,
-};
+} satisfies SanitizedBetterAuthOptions;
 
 const baseSchema = getSchema({ ...betterAuthConfig, plugins: [] });
 
-/**
- * Map Better Auth field types to TypeScript types
- */
-function mapType(t: string): string {
-  switch (t) {
-    case 'boolean':
-      return 'boolean';
-    case 'date':
-      return 'Date';
-    case 'number':
-      return 'number';
-    case 'string':
-      return 'string';
-    case 'number[]':
-      return 'number[]';
-    case 'string[]':
-      return 'string[]';
-    default:
-      return 'unknown';
-  }
-}
+type Schema = Record<string, { fields: Record<string, DBFieldAttribute> }>;
 
-/**
- * Convert string to PascalCase
- */
-function pascal(s: string): string {
-  return s
+const map = (t: string): string => {
+  if (t === 'boolean') return 'boolean';
+  if (t === 'date') return 'Date';
+  if (t === 'number') return 'number';
+  if (t === 'string') return 'string';
+  if (t === 'number[]') return 'number[]';
+  if (t === 'string[]') return 'string[]';
+  return 'unknown';
+};
+
+const pascal = (s: string): string =>
+  s
     .split(/[-_]/g)
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
     .join('');
-}
 
-/**
- * Find fields added by a plugin compared to base schema
- */
-function diff(base: Schema, target: Schema): Record<string, Record<string, DBFieldAttribute>> {
+const diff = (base: Schema, target: Schema): Record<string, Record<string, DBFieldAttribute>> => {
   const d: Record<string, Record<string, DBFieldAttribute>> = {};
   for (const [m, { fields }] of Object.entries(target)) {
     const added = Object.entries(fields).filter(([k]) => !(k in (base[m]?.fields ?? {})));
     if (added.length) d[m] = Object.fromEntries(added);
   }
   return d;
-}
+};
 
-/**
- * Generate TypeScript type definitions
- */
-function generate(): string {
-  let out = `/**
- * Auto-generated Better Auth types.
- * DO NOT EDIT - Run \`pnpm generate:types\` to regenerate.
- *
- * Generated from Better Auth schema introspection.
- * Contains types for all supported plugins and their field additions.
- */
-
-`;
+const gen = (): string => {
+  let out = '// Auto-generated types. Do not edit.\n\n';
 
   const pluginAdds: Record<string, Record<string, Record<string, DBFieldAttribute>>> = {};
   const seen = new Set<string>();
 
-  // Diff each plugin's schema against base to find additions
   for (const pl of plugins) {
-    const id = (pl as { id?: string }).id;
+    const id = (pl as any).id as string | undefined;
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const adds = diff(baseSchema, getSchema({ ...betterAuthConfig, plugins: [pl] }));
@@ -153,101 +178,79 @@ function generate(): string {
     }
   }
 
-  // Collect all models from base and plugins
   const models = new Set<string>([...Object.keys(baseSchema), ...Object.keys(pluginAdds)]);
 
-  // Generate types for each model
   for (const model of models) {
     const P = pascal(model);
     const base = baseSchema[model]?.fields ?? {};
     const pluginsForModel = pluginAdds[model] ?? {};
     const pluginIds = Object.keys(pluginsForModel);
 
-    // Base fields type
     if (Object.keys(base).length) {
       out += `export type Base${P}Fields = {\n`;
-      for (const [k, f] of Object.entries(base)) {
-        const fieldName = f.fieldName ?? k;
-        const optional = f.required ? '' : '?';
-        out += `  ${fieldName}${optional}: ${mapType(f.type as string)}\n`;
-      }
+      for (const [k, f] of Object.entries(base))
+        out += `  ${f.fieldName ?? k}${f.required ? '' : '?'}: ${map(f.type as string)}\n`;
       out += '}\n\n';
     }
 
-    // Plugin fields mapping
     const needPluginMap = pluginIds.length > 1 || Object.keys(base).length;
     if (needPluginMap && pluginIds.length) {
       out += `export type ${P}PluginFields = {\n`;
       for (const [pid, flds] of Object.entries(pluginsForModel)) {
         out += `  ${JSON.stringify(pid)}: {\n`;
-        for (const [k, f] of Object.entries(flds)) {
-          const fieldName = f.fieldName ?? k;
-          const optional = f.required ? '' : '?';
-          out += `    ${fieldName}${optional}: ${mapType(f.type as string)}\n`;
-        }
+        for (const [k, f] of Object.entries(flds))
+          out += `    ${f.fieldName ?? k}${f.required ? '' : '?'}: ${map(f.type as string)}\n`;
         out += '  }\n';
       }
       out += '}\n\n';
     }
 
-    // Handle single-plugin-only models
     if (!Object.keys(base).length && pluginIds.length === 1) {
       const only = pluginIds[0];
       out += `export type ${P}Fields = {\n`;
-      for (const [k, f] of Object.entries(pluginsForModel[only])) {
-        const fieldName = f.fieldName ?? k;
-        const optional = f.required ? '' : '?';
-        out += `  ${fieldName}${optional}: ${mapType(f.type as string)}\n`;
-      }
+      for (const [k, f] of Object.entries(pluginsForModel[only]))
+        out += `  ${f.fieldName ?? k}${f.required ? '' : '?'}: ${map(f.type as string)}\n`;
       out += '}\n\n';
       out += `export type ${P} = ${P}Fields\n\n`;
       continue;
     }
 
-    // Combined type as intersection
     const parts: string[] = [];
     if (Object.keys(base).length) parts.push(`Base${P}Fields`);
     if (pluginIds.length) {
       const mapName = needPluginMap ? `${P}PluginFields` : undefined;
       parts.push(
-        ...pluginIds.map((id) => (mapName ? `${mapName}[${JSON.stringify(id)}]` : 'never')),
+        ...pluginIds.map(
+          (id) => (mapName ? `${mapName}[${JSON.stringify(id)}]` : 'never') /* not reachable */,
+        ),
       );
     }
     out += `export type ${P} = ${parts.join(' & ')}\n\n`;
   }
 
-  // Plugin ID union type
+  // Generate union type of plugin identifiers
   const pluginIdUnion = [...seen].map((id) => JSON.stringify(id)).join(' | ');
-  out += `/**
- * Union of all supported plugin identifiers.
- */
-export type PluginId = ${pluginIdUnion}\n\n`;
+  out += `export type PluginId = ${pluginIdUnion}\n\n`;
 
-  // Full schema mapping
-  out += `/**
- * Complete schema mapping of all models to their types.
- */
-export type BetterAuthFullSchema = {\n`;
+  // Generate full schema mapping
+  out += `export type BetterAuthFullSchema = {\n`;
   for (const model of models) {
     const P = pascal(model);
     out += `  ${JSON.stringify(model)}: ${P}\n`;
   }
-  out += '}\n\n';
+  out += `}\n\n`;
 
-  // Model key union
-  out += `/**
- * Union of all model names in the schema.
- */
-export type ModelKey = keyof BetterAuthFullSchema\n`;
+  // Generate union type of all model names
+  out += `export type ModelKey = keyof BetterAuthFullSchema`;
 
   return out;
-}
+};
 
-// Generate and write types
-const generated = generate();
+const generated = gen();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const outputFile = path.resolve(__dirname, '../generated-types.ts');
-
-await fs.writeFile(outputFile, generated, 'utf8');
-console.log(`Generated types written to ${outputFile}`);
+(async () => {
+  const file = path.resolve(__dirname, '../generated-types.ts');
+  await fs.writeFile(file, generated, 'utf8');
+  console.log(`Generated types written to ${file}`);
+})();

@@ -1,0 +1,17 @@
+import type { BasePayload, SanitizedConfig } from 'payload';
+import { getPayload } from 'payload';
+import type { BetterAuthReturn, PayloadAuthOptions } from '../types.js';
+
+export async function getPayloadAuth<O extends PayloadAuthOptions>(
+  config: Promise<SanitizedConfig> | SanitizedConfig,
+): Promise<BasePayload & { betterAuth: BetterAuthReturn<O> }> {
+  const payload = (await getPayload({ config })) as BasePayload & {
+    betterAuth: BetterAuthReturn<O>;
+  };
+  if (!payload.betterAuth) {
+    throw new Error(
+      'BetterAuth plugin not initialized. Ensure betterAuthPlugin() is included in your Payload config.',
+    );
+  }
+  return payload;
+}

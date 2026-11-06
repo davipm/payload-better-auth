@@ -1,0 +1,120 @@
+import type { CollectionConfig } from 'payload';
+import { baseSlugs, defaults } from '../../../constants.js';
+import { generateAdminInviteUrl } from '../../../payload/utils/generate-admin-invite-url.js';
+import type { PayloadAuthOptions } from '../../../types.js';
+import { isAdminWithRoles } from '../utils/payload-access.js';
+import { getAdminInviteUrlAfterReadHook } from './hooks/get-url-after-read.js';
+import { getUrlBeforeChangeHook } from './hooks/get-url-before-change.js';
+
+export function buildAdminInvitationsCollection({
+  incomingCollections,
+  pluginOptions,
+}: {
+  incomingCollections: CollectionConfig[];
+  pluginOptions: PayloadAuthOptions;
+}): CollectionConfig {
+  const generateAdminInviteUrlFn =
+    pluginOptions.adminInvitations?.generateInviteUrl ?? generateAdminInviteUrl;
+  const adminInvitationSlug = pluginOptions.adminInvitations?.slug ?? baseSlugs.adminInvitations;
+  const adminRoles = pluginOptions.users?.adminRoles ?? [defaults.adminRole];
+  const roles = pluginOptions.users?.roles ?? [defaults.userRole];
+  const allRoleOptions = [...new Set([...adminRoles, ...roles])].map((role) => ({
+    label: role
+      .split(/[-_\s]/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '),
+    value: role,
+  }));
+  const existingAdminInvitationCollection = incomingCollections.find(
+    (collection) => collection.slug === adminInvitationSlug,
+  ) as CollectionConfig | undefined;
+
+  let adminInvitationsCollection: CollectionConfig = {
+    ...existingAdminInvitationCollection,
+    slug: adminInvitationSlug,
+    admin: {
+      defaultColumns: ['role', 'token', 'url'],
+      useAsTitle: 'token',
+      group: pluginOptions?.collectionAdminGroup ?? 'Auth',
+      hidden: pluginOptions.adminInvitations?.hidden,
+      ...existingAdminInvitationCollection?.admin,
+    },
+    access: {
+      create: isAdminWithRoles({ adminRoles }),
+      read: isAdminWithRoles({ adminRoles }),
+      delete: isAdminWithRoles({ adminRoles }),
+      update: isAdminWithRoles({ adminRoles }),
+      ...(existingAdminInvitationCollection?.access ?? {}),
+    },
+    timestamps: true,
+    fields: [
+      {
+        label: 'Role',
+        name: 'role',
+        type: 'select',
+        options: allRoleOptions,
+        required: true,
+        defaultValue: pluginOptions.users?.defaultAdminRole ?? defaults.adminRole,
+      },
+      {
+        name: 'token',
+        label: 'Token',
+        index: true,
+        type: 'text',
+        admin: {
+          readOnly: true,
+          components: {
+            afterInput: [
+              {
+                path: 'payload-auth/shared/payload/fields#GenerateUuidButton',
+              },
+            ],
+          },
+        },
+        required: true,
+      },
+      {
+        name: 'expiresAt',
+        label: 'Expires At',
+        type: 'date',
+        required: true,
+        admin: {
+          readOnly: true,
+          description: 'The invitation is invalid after this time.',
+        },
+      },
+      {
+        name: 'url',
+        label: 'URL',
+        type: 'text',
+        hooks: {
+          beforeChange: [getUrlBeforeChangeHook()],
+          afterRead: [
+            getAdminInviteUrlAfterReadHook({
+              generateAdminInviteUrlFn,
+            }),
+          ],
+        },
+        admin: {
+          readOnly: true,
+          components: {
+            afterInput: [
+              {
+                path: 'payload-auth/shared/payload/fields#FieldCopyButton',
+              },
+            ],
+          },
+        },
+        virtual: true,
+      },
+    ],
+  };
+
+  if (pluginOptions.adminInvitations?.collectionOverrides) {
+    adminInvitationsCollection = pluginOptions.adminInvitations.collectionOverrides({
+      collection: adminInvitationsCollection,
+    });
+  }
+
+  return adminInvitationsCollection;
+}

@@ -124,7 +124,12 @@
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
     "@better-auth/oauth-provider": "^1.7.16",
+    "@better-auth/scim": "^1.7.18",
+    "@better-auth/sso": "^1.7.18",
+    "@better-auth/stripe": "^1.7.18",
+    "@tanstack/react-form": "^1.33.5",
     "better-auth": "^1.7.16",
+    "better-auth-harmony": "^1.3.2",
     "react-hook-form": "^7.91.0",
     "zod": "^4.6.7"
   }

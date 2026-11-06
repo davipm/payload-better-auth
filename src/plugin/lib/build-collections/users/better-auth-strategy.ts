@@ -1,0 +1,60 @@
+import type { AuthStrategy } from 'payload';
+import { baseSlugs } from '../../../constants.js';
+import { getPayloadAuth } from '../../get-payload-auth.js';
+// import { baseSlugs } from '@/better-auth/plugin/constants';
+// import { getPayloadAuth } from '@/better-auth/plugin/lib/get-payload-auth';
+
+/**
+ * Auth strategy for BetterAuth
+ * @param userSlug - User collection slug
+ * @returns Auth strategy
+ */
+export function betterAuthStrategy(userSlug?: string): AuthStrategy {
+  return {
+    name: 'better-auth',
+    authenticate: async ({ payload, headers }) => {
+      try {
+        const payloadAuth = await getPayloadAuth(payload.config);
+
+        // Read-only lookup: Server-Action cookie writes (e.g. from nextCookies()) trigger
+        // router-cache invalidation and can cause an infinite buildFormState loop in the
+        // Payload admin panel (see issue #139). Refresh still happens on real BA endpoints
+        // and the plugin's refresh-token endpoint.
+        const res = await payloadAuth.betterAuth.api.getSession({
+          headers,
+          query: { disableRefresh: true },
+        });
+
+        if (!res) {
+          return { user: null };
+        }
+        const userId = res.session.userId ?? res.user.id;
+        if (!userId) {
+          return { user: null };
+        }
+        const user = await payloadAuth.findByID({
+          collection: userSlug ?? baseSlugs.users,
+          id: userId,
+          depth: 0,
+        });
+        if (!user) {
+          return { user: null };
+        }
+        // Reject banned or locked users even if their session is still valid
+        if (user.banned || user.locked) {
+          return { user: null };
+        }
+        return {
+          user: {
+            ...user,
+            collection: userSlug ?? baseSlugs.users,
+            _strategy: 'better-auth',
+          },
+        };
+      } catch (error) {
+        console.error('[BetterAuth Strategy] Authentication error:', error);
+        return { user: null };
+      }
+    },
+  };
+}
