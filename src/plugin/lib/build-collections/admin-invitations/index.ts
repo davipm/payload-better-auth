@@ -66,7 +66,7 @@ export function buildAdminInvitationsCollection({
           components: {
             afterInput: [
               {
-                path: 'payload-better-auth/client#GenerateUuidButton',
+                path: '@davipm/payload-better-auth/client#GenerateUuidButton',
               },
             ],
           },
@@ -104,7 +104,7 @@ export function buildAdminInvitationsCollection({
           components: {
             afterInput: [
               {
-                path: 'payload-better-auth/client#FieldCopyButton',
+                path: '@davipm/payload-better-auth/client#FieldCopyButton',
               },
             ],
           },

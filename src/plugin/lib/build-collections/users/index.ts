@@ -112,7 +112,7 @@ export function buildUsersCollection({
         description: 'Whether the user has two factor authentication enabled',
         components: {
           Field: {
-            path: 'payload-better-auth/client#TwoFactorAuth',
+            path: '@davipm/payload-better-auth/client#TwoFactorAuth',
             clientProps: {
               baseURL: resolvedBaseURL,
               basePath: pluginOptions.betterAuthOptions?.basePath,
@@ -210,7 +210,7 @@ export function buildUsersCollection({
       hidden: pluginOptions.users?.hidden ?? false,
       components: {
         Description: {
-          path: 'payload-better-auth/client#AdminInviteButton',
+          path: '@davipm/payload-better-auth/client#AdminInviteButton',
           clientProps: {
             roles: allRoleOptions,
           },
@@ -220,7 +220,7 @@ export function buildUsersCollection({
             adminButtons: {
               tab: {
                 Component: {
-                  path: 'payload-better-auth/client#AdminButtons',
+                  path: '@davipm/payload-better-auth/client#AdminButtons',
                   clientProps: {
                     userSlug,
                     baseURL: resolvedBaseURL,
@@ -299,7 +299,7 @@ export function buildUsersCollection({
                 disableBulkEdit: true,
                 components: {
                   Field: {
-                    path: 'payload-better-auth/rsc#Passkeys',
+                    path: '@davipm/payload-better-auth/rsc#Passkeys',
                     serverProps: {
                       passkeyUserIdFieldName,
                       passkeySlug,
