@@ -65,7 +65,6 @@ export const supportedBAPluginIds = {
   dubAnalytics: 'dub-analytics',
   deviceAuthorization: 'device-authorization',
   lastLoginMethod: 'last-login-method',
-  scim: 'scim',
 } as const;
 
 export const baseSlugs = {
@@ -92,7 +91,6 @@ export const baPluginSlugs = {
   members: 'members',
   teams: 'teams',
   teamMembers: 'teamMembers',
-  scim: 'scimProvider',
   rateLimit: 'rateLimit',
   deviceCode: 'deviceCode',
 } as const;
@@ -119,7 +117,6 @@ export const baModelKey = {
   jwks: 'jwks',
   deviceCode: 'deviceCode',
   rateLimit: 'rateLimit',
-  scimProvider: 'scimProvider',
 } as const;
 
 export const baModelFieldKeysToFieldNames = {

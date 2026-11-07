@@ -16,7 +16,6 @@ import { buildOrganizationRolesCollection } from './organization-roles.js';
 import { buildOrganizationsCollection } from './organizations.js';
 import { buildPasskeysCollection } from './passkeys.js';
 import { buildRateLimitCollection } from './rate-limit.js';
-import { buildScimProviderCollection } from './scim-provider.js';
 import { buildSessionsCollection } from './sessions.js';
 import { buildSsoProvidersCollection } from './sso-providers.js';
 import { buildSubscriptionsCollection } from './subscriptions.js';
@@ -62,7 +61,6 @@ export function buildCollections({
     [baModelKey.subscription]: (props: BuildCollectionProps) => buildSubscriptionsCollection(props),
     [baModelKey.deviceCode]: (props: BuildCollectionProps) => buildDeviceCodeCollection(props),
     [baModelKey.rateLimit]: (props: BuildCollectionProps) => buildRateLimitCollection(props),
-    [baModelKey.scimProvider]: (props: BuildCollectionProps) => buildScimProviderCollection(props),
     [baModelKey.organizationRole]: (props: BuildCollectionProps) =>
       buildOrganizationRolesCollection(props),
   };

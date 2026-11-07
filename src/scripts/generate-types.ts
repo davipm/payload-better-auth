@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import { apiKey } from '@better-auth/api-key';
 import { oauthProvider } from '@better-auth/oauth-provider';
 import { passkey } from '@better-auth/passkey';
-import { scim } from '@better-auth/scim';
 import { stripe } from '@better-auth/stripe';
 import type { DBFieldAttribute } from 'better-auth/db';
 import { getSchema } from 'better-auth/db';
@@ -61,9 +60,9 @@ const plugins = [
   genericOAuth({
     config: [
       {
-        providerId: 'typescript',
-        clientId: 'typescript',
-        clientSecret: 'typescript',
+        providerId: 'generic',
+        clientId: 'generic',
+        clientSecret: 'generic',
       },
     ],
   }),
@@ -80,7 +79,6 @@ const plugins = [
   phoneNumber(),
   nextCookies(),
   customSession(async () => ({})),
-  scim({ connections: [] }),
   deviceAuthorization(),
   lastLoginMethod({ storeInDatabase: true }),
   stripe({

@@ -136,7 +136,6 @@
     "@better-auth/api-key": "^1.7.18",
     "@better-auth/oauth-provider": "^1.7.16",
     "@better-auth/passkey": "^1.7.18",
-    "@better-auth/scim": "^1.7.18",
     "@better-auth/sso": "^1.7.18",
     "@better-auth/stripe": "^1.7.18",
     "@tanstack/react-form": "^1.33.5",
