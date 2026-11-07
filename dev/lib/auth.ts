@@ -79,24 +79,24 @@ export const betterAuthOptions = {
   appName: 'payload-better-auth',
   baseURL: 'http://localhost:3000',
   trustedOrigins: ['http://localhost:3000'],
-  emailAndPassword: {
-    enabled: true,
-    // requireEmailVerification: false,
-    autoSignIn: true,
-    async sendResetPassword({ user, url }) {
-      console.log('Send reset password for user: ', user.id, 'at url', url);
-    },
-  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+  emailAndPassword: {
+    enabled: true,
+    // requireEmailVerification: false,
+    autoSignIn: true,
+    sendResetPassword: async ({ user, url }) => {
+      console.log('Send reset password for user: ', user.id, 'at url', url);
+    },
+  },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    async sendVerificationEmail({ user, url }) {
+    sendVerificationEmail: async ({ url, user }) => {
       console.log('Send verification email for user: ', url, user);
     },
   },
@@ -111,12 +111,15 @@ export const betterAuthOptions = {
     deleteUser: {
       enabled: true,
       sendDeleteAccountVerification: async ({ user, url, token }) => {
+        console.log({ user, url, token });
         // Send delete account verification
       },
       beforeDelete: async (user) => {
+        console.log({ user });
         // Perform actions before user deletion
       },
       afterDelete: async (user) => {
+        console.log({ user });
         // Perform cleanup after user deletion
       },
     },
@@ -138,6 +141,7 @@ export const betterAuthOptions = {
 export type ConstructedBetterAuthOptions = typeof betterAuthOptions;
 
 export const payloadAuthOptions = {
+  betterAuthOptions: betterAuthOptions,
   disabled: false,
   debug: {
     logTables: false,
@@ -171,7 +175,6 @@ export const payloadAuthOptions = {
       return { success: true };
     },
   },
-  betterAuthOptions: betterAuthOptions,
 } satisfies PayloadAuthOptions;
 
 export type PayloadAuthConfig = typeof payloadAuthOptions;
