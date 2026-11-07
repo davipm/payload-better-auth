@@ -1,34 +1,29 @@
 {
   "name": "@davipm/payload-better-auth",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Better Auth adapter and plugins for Payload CMS",
   "license": "MIT",
   "type": "module",
-  "author": "Davi Mendonca",
+  "author": "Davi Mendonca @davipm",
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client": {
-      "import": "./src/exports/client.ts",
-      "types": "./src/exports/client.ts",
-      "default": "./src/exports/client.ts"
+      "import": "./dist/exports/client.js",
+      "types": "./dist/exports/client.d.ts",
+      "default": "./dist/exports/client.js"
     },
     "./rsc": {
-      "import": "./src/exports/rsc.ts",
-      "types": "./src/exports/rsc.ts",
-      "default": "./src/exports/rsc.ts"
-    },
-    "./shared/payload/fields": {
-      "import": "./src/shared/payload/fields/index.ts",
-      "types": "./src/shared/payload/fields/index.ts",
-      "default": "./src/shared/payload/fields/index.ts"
+      "import": "./dist/exports/rsc.js",
+      "types": "./dist/exports/rsc.d.ts",
+      "default": "./dist/exports/rsc.js"
     }
   },
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -105,32 +100,6 @@
     "esbuild",
     "unrs-resolver"
   ],
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "./client": {
-        "import": "./dist/exports/client.js",
-        "types": "./dist/exports/client.d.ts",
-        "default": "./dist/exports/client.js"
-      },
-      "./rsc": {
-        "import": "./dist/exports/rsc.js",
-        "types": "./dist/exports/rsc.d.ts",
-        "default": "./dist/exports/rsc.js"
-      },
-      "./shared/payload/fields": {
-        "import": "./dist/shared/payload/fields/index.js",
-        "types": "./dist/shared/payload/fields/index.d.ts",
-        "default": "./dist/shared/payload/fields/index.js"
-      }
-    },
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts"
-  },
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
     "@better-auth/api-key": "^1.7.18",
