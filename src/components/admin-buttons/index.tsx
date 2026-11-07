@@ -4,105 +4,91 @@ import { Button, toast, useDocumentInfo, useFormFields } from '@payloadcms/ui';
 import { adminClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { useRouter } from 'next/navigation.js';
-import React, { Fragment, useMemo } from 'react';
+import { useState } from 'react';
 
 import './index.scss';
 
 interface AdminButtonsProps {
-  userSlug: string;
   baseURL?: string;
   basePath?: string;
 }
 
+type ActionResult = { error: { message?: string } | null };
+
 export function AdminButtons({ baseURL, basePath }: AdminButtonsProps) {
   const router = useRouter();
   const { id } = useDocumentInfo();
-  const isBanned = useFormFields(([fields]) => fields.banned);
+  const isBanned = useFormFields(([fields]) => Boolean(fields.banned?.value));
+  const [pending, setPending] = useState(false);
+  const authClient = createAuthClient({
+    baseURL,
+    basePath,
+    plugins: [adminClient()],
+  });
 
-  if (!id) {
-    return null;
-  }
+  if (!id) return null;
 
-  const authClient = useMemo(
-    () =>
-      createAuthClient({
-        baseURL,
-        basePath,
-        plugins: [adminClient()],
-      }),
-    [],
-  );
+  const userId = String(id);
 
-  const handleImpersonate = async () => {
-    await authClient.admin.impersonateUser({
-      userId: String(id),
-      fetchOptions: {
-        onSuccess() {
-          router.push('/');
-        },
-        onError(error: any) {
-          console.error('Error impersonating user:', error);
-          toast.error('Failed to impersonate user');
-        },
-      },
-    });
+  const run = async (
+    action: () => Promise<ActionResult>,
+    { success, failure, onDone }: { success?: string; failure: string; onDone: () => void },
+  ) => {
+    setPending(true);
+    try {
+      const { error } = await action();
+      if (error) {
+        console.error(failure, error);
+        toast.error(error.message || failure);
+        return;
+      }
+      if (success) toast.success(success);
+      onDone();
+    } catch (err) {
+      console.error(failure, err);
+      toast.error(failure);
+    } finally {
+      setPending(false);
+    }
   };
 
-  const handleBan = async () => {
-    await authClient.admin.banUser({
-      userId: String(id),
-      fetchOptions: {
-        onSuccess() {
-          toast.success('User banned successfully');
-          router.refresh();
-        },
-        onError(error: any) {
-          console.error('Error banning user:', error);
-          toast.error('Failed to ban user');
-        },
-      },
-    });
-  };
+  const refresh = () => router.refresh();
 
-  const handleUnban = async () => {
-    await authClient.admin.unbanUser({
-      userId: String(id),
-      fetchOptions: {
-        onSuccess() {
-          toast.success('User unbanned successfully');
-          router.refresh();
-        },
-        onError(error: any) {
-          console.error('Error unbanning user:', error);
-          toast.error('Failed to unban user');
-        },
-      },
+  const handleImpersonate = () =>
+    run(() => authClient.admin.impersonateUser({ userId }), {
+      failure: 'Failed to impersonate user',
+      onDone: () => router.push('/'),
     });
-  };
 
-  const handleRevokeAllSessions = async () => {
-    await authClient.admin.revokeUserSessions({
-      userId: String(id),
-      fetchOptions: {
-        onSuccess() {
-          toast.success('All sessions revoked successfully');
-          router.refresh();
-        },
-        onError(error: any) {
-          console.error('Error revoking all sessions:', error);
-          toast.error('Failed to revoke all sessions');
-        },
-      },
+  const handleBan = () =>
+    run(() => authClient.admin.banUser({ userId }), {
+      success: 'User banned successfully',
+      failure: 'Failed to ban user',
+      onDone: refresh,
     });
-  };
+
+  const handleUnban = () =>
+    run(() => authClient.admin.unbanUser({ userId }), {
+      success: 'User unbanned successfully',
+      failure: 'Failed to unban user',
+      onDone: refresh,
+    });
+
+  const handleRevokeAllSessions = () =>
+    run(() => authClient.admin.revokeUserSessions({ userId }), {
+      success: 'All sessions revoked successfully',
+      failure: 'Failed to revoke all sessions',
+      onDone: refresh,
+    });
 
   return (
-    <Fragment>
+    <>
       <Button
         onClick={handleImpersonate}
         buttonStyle="pill"
         className="impersonate-button"
         size="medium"
+        disabled={pending}
       >
         Impersonate
       </Button>
@@ -111,19 +97,31 @@ export function AdminButtons({ baseURL, basePath }: AdminButtonsProps) {
         buttonStyle="secondary"
         className="revoke-sessions-button"
         size="medium"
+        disabled={pending}
       >
         Revoke All Sessions
       </Button>
-      {!isBanned ? (
-        <Button onClick={handleBan} buttonStyle="error" className="ban-button" size="medium">
-          Ban
-        </Button>
-      ) : null}
       {isBanned ? (
-        <Button onClick={handleUnban} buttonStyle="primary" className="unban-button" size="medium">
+        <Button
+          onClick={handleUnban}
+          buttonStyle="primary"
+          className="unban-button"
+          size="medium"
+          disabled={pending}
+        >
           Unban
         </Button>
-      ) : null}
-    </Fragment>
+      ) : (
+        <Button
+          onClick={handleBan}
+          buttonStyle="error"
+          className="ban-button"
+          size="medium"
+          disabled={pending}
+        >
+          Ban
+        </Button>
+      )}
+    </>
   );
 }
