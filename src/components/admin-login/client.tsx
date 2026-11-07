@@ -1,9 +1,9 @@
 'use client';
 
 import { useConfig } from '@payloadcms/ui';
-import type { LoginMethod } from '../../plugin/types.js';
+import type { LoginMethod } from '@/plugin/index.js';
+import { getSafeRedirect } from '@/utils/get-safe-redirect.js';
 import { AlternativeMethods, CredentialsForm, LoginFormProvider } from '../login-form/index.js';
-import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 
 interface AdminLoginClientProps {
   loginMethods: LoginMethod[];

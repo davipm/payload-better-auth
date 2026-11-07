@@ -74,7 +74,6 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
 
   const [role, setRole] = useState<Option>();
   const [email, setEmail] = useState('');
-  // Keyed by role so changing the role never reuses a link minted for another one
   const [invite, setInvite] = useState<{ role: string; link: string }>();
   const [pending, setPending] = useState<Pending>(null);
 
