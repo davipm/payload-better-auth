@@ -168,9 +168,7 @@ export const payloadAuthOptions = {
   adminInvitations: {
     sendInviteEmail: async ({ payload, email, url }) => {
       console.log('Send admin invite: ', email, url);
-      return {
-        success: true,
-      };
+      return { success: true };
     },
   },
   betterAuthOptions: betterAuthOptions,
