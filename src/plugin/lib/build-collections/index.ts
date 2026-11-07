@@ -38,7 +38,9 @@ export function buildCollections({
   pluginOptions: PayloadAuthOptions;
   resolvedSchemas: BetterAuthSchemas;
 }): Record<string, CollectionConfig> {
-  const collectionBuilders: Record<ModelKey, (props: BuildCollectionProps) => CollectionConfig> = {
+  const collectionBuilders: Partial<
+    Record<ModelKey, (props: BuildCollectionProps) => CollectionConfig>
+  > = {
     [baModelKey.user]: (props: BuildCollectionProps) => buildUsersCollection(props),
     [baModelKey.account]: (props: BuildCollectionProps) => buildAccountsCollection(props),
     [baModelKey.session]: (props: BuildCollectionProps) => buildSessionsCollection(props),
@@ -53,7 +55,7 @@ export function buildCollections({
     [baModelKey.twoFactor]: (props: BuildCollectionProps) => buildTwoFactorsCollection(props),
     [baModelKey.oauthAccessToken]: (props: BuildCollectionProps) =>
       buildOauthAccessTokensCollection(props),
-    [baModelKey.oauthApplication]: (props: BuildCollectionProps) =>
+    [baModelKey.oauthClient]: (props: BuildCollectionProps) =>
       buildOauthApplicationsCollection(props),
     [baModelKey.oauthConsent]: (props: BuildCollectionProps) => buildOauthConsentsCollection(props),
     [baModelKey.passkey]: (props: BuildCollectionProps) => buildPasskeysCollection(props),

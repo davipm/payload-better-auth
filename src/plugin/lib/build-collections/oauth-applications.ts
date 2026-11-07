@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import type { OauthApplication } from '@/generated-types.js';
+import type { OauthClient } from '@/generated-types.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '@/plugin/types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
@@ -13,16 +13,16 @@ export function buildOauthApplicationsCollection({
 }: BuildCollectionProps): CollectionConfig {
   const oauthApplicationSlug = getSchemaCollectionSlug(
     resolvedSchemas,
-    baModelKey.oauthApplication,
+    baModelKey.oauthClient,
   );
 
-  const oauthApplicationSchema = resolvedSchemas[baModelKey.oauthApplication];
+  const oauthApplicationSchema = resolvedSchemas[baModelKey.oauthClient];
 
   const existingOauthApplicationCollection = incomingCollections.find(
     (collection) => collection.slug === oauthApplicationSlug,
   ) as CollectionConfig | undefined;
 
-  const fieldOverrides: FieldOverrides<keyof OauthApplication> = {
+  const fieldOverrides: FieldOverrides<keyof OauthClient> = {
     clientId: () => ({
       unique: true,
       index: true,
@@ -38,8 +38,8 @@ export function buildOauthApplicationsCollection({
       index: true,
       admin: { description: 'Name of the OAuth application' },
     }),
-    redirectUrls: () => ({
-      admin: { description: 'Comma-separated list of redirect URLs' },
+    redirectUris: () => ({
+      admin: { description: 'Redirect URIs allowed for this OAuth client' },
     }),
     metadata: () => ({
       admin: {
@@ -47,7 +47,7 @@ export function buildOauthApplicationsCollection({
         description: 'Additional metadata for the OAuth application',
       },
     }),
-    type: () => ({
+    applicationType: () => ({
       admin: {
         readOnly: true,
         description: 'Type of OAuth client (e.g., web, mobile)',
@@ -107,7 +107,7 @@ export function buildOauthApplicationsCollection({
     },
     custom: {
       ...(existingOauthApplicationCollection?.custom ?? {}),
-      betterAuthModelKey: baModelKey.oauthApplication,
+      betterAuthModelKey: baModelKey.oauthClient,
     },
     fields: [...(existingOauthApplicationCollection?.fields ?? []), ...(collectionFields ?? [])],
   };

@@ -26,29 +26,11 @@ export function buildOauthAccessTokensCollection({
   ) as CollectionConfig | undefined;
 
   const fieldOverrides: FieldOverrides<keyof OauthAccessToken> = {
-    accessToken: () => ({
+    token: () => ({
       index: true,
       admin: {
         readOnly: true,
         description: 'Access token issued to the client',
-      },
-    }),
-    refreshToken: () => ({
-      admin: {
-        readOnly: true,
-        description: 'Refresh token issued to the client',
-      },
-    }),
-    accessTokenExpiresAt: () => ({
-      admin: {
-        readOnly: true,
-        description: 'Expiration date of the access token',
-      },
-    }),
-    refreshTokenExpiresAt: () => ({
-      admin: {
-        readOnly: true,
-        description: 'Expiration date of the refresh token',
       },
     }),
     clientId: () => ({
@@ -96,7 +78,7 @@ export function buildOauthAccessTokensCollection({
     slug: oauthAccessTokenSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.oauthAccessToken, 'accessToken'),
+      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.oauthAccessToken, 'token'),
       description: 'OAuth access tokens for custom OAuth clients',
       group: pluginOptions?.collectionAdminGroup ?? 'Auth',
       ...existingOauthAccessTokenCollection?.admin,

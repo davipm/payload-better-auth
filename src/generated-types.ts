@@ -141,6 +141,18 @@ export type PasskeyFields = {
 
 export type Passkey = PasskeyFields
 
+export type SsoProviderFields = {
+  issuer: string
+  oidcConfig?: string
+  samlConfig?: string
+  userId?: string
+  providerId: string
+  organizationId?: string
+  domain: string
+}
+
+export type SsoProvider = SsoProviderFields
+
 export type OauthClientFields = {
   clientId: string
   clientSecret?: string
@@ -387,7 +399,7 @@ export type SubscriptionFields = {
 
 export type Subscription = SubscriptionFields
 
-export type PluginId = "username" | "admin" | "api-key" | "passkey" | "harmony-email" | "harmony-phone-number" | "bearer" | "email-otp" | "magic-link" | "phone-number" | "one-tap" | "anonymous" | "multi-session" | "one-time-token" | "oauth-provider" | "generic-oauth" | "open-api" | "organization" | "jwt" | "two-factor" | "next-cookies" | "custom-session" | "device-authorization" | "last-login-method" | "stripe"
+export type PluginId = "username" | "admin" | "api-key" | "passkey" | "sso" | "harmony-email" | "harmony-phone-number" | "bearer" | "email-otp" | "magic-link" | "phone-number" | "one-tap" | "anonymous" | "multi-session" | "one-time-token" | "oauth-provider" | "generic-oauth" | "open-api" | "organization" | "jwt" | "two-factor" | "next-cookies" | "custom-session" | "device-authorization" | "last-login-method" | "stripe"
 
 export type BetterAuthFullSchema = {
   "user": User
@@ -397,6 +409,7 @@ export type BetterAuthFullSchema = {
   "rateLimit": RateLimit
   "apikey": Apikey
   "passkey": Passkey
+  "ssoProvider": SsoProvider
   "oauthClient": OauthClient
   "oauthResource": OauthResource
   "oauthClientResource": OauthClientResource

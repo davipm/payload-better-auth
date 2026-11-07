@@ -102,7 +102,7 @@ export const baModelKey = {
   verification: 'verification',
   twoFactor: 'twoFactor',
   passkey: 'passkey',
-  oauthApplication: 'oauthApplication',
+  oauthClient: 'oauthClient',
   oauthAccessToken: 'oauthAccessToken',
   oauthConsent: 'oauthConsent',
   ssoProvider: 'ssoProvider',
@@ -152,7 +152,7 @@ export const baModelFieldKeysToFieldNames = {
   ssoProvider: {
     userId: 'user',
   },
-  oauthApplication: {
+  oauthClient: {
     userId: 'user',
   },
   oauthAccessToken: {
@@ -205,7 +205,7 @@ export const baModelFieldKeys = {
   ssoProvider: {
     userId: 'userId',
   },
-  oauthApplication: {
+  oauthClient: {
     userId: 'userId',
   },
   oauthAccessToken: {
@@ -225,7 +225,7 @@ export const baModelKeyToSlug = {
   verification: baseSlugs.verifications,
   twoFactor: baPluginSlugs.twoFactors,
   passkey: baPluginSlugs.passkeys,
-  oauthApplication: baPluginSlugs.oauthApplications,
+  oauthClient: baPluginSlugs.oauthApplications,
   oauthAccessToken: baPluginSlugs.oauthAccessTokens,
   oauthConsent: baPluginSlugs.oauthConsents,
   ssoProvider: baPluginSlugs.ssoProviders,

@@ -6,13 +6,13 @@ import { createAuthClient } from 'better-auth/react';
 import type { LoginWithUsernameOptions } from 'payload';
 import type React from 'react';
 import { useState } from 'react';
+import type { LoginMethod } from '@/plugin/index.js';
+import { getSafeRedirect } from '@/utils/get-safe-redirect.js';
 import { useAppForm } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 import { createSignupSchema } from '../form/validation.js';
-import type { LoginMethod } from '../../plugin/types.js';
 import { AlternativeMethods, LoginFormProvider } from '../login-form/index.js';
-import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 
 interface AdminSignupClientProps {
   adminInviteToken: string;

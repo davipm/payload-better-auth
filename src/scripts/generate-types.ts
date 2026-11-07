@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { apiKey } from '@better-auth/api-key';
 import { oauthProvider } from '@better-auth/oauth-provider';
 import { passkey } from '@better-auth/passkey';
+import { sso } from '@better-auth/sso';
 import { stripe } from '@better-auth/stripe';
 import type { DBFieldAttribute } from 'better-auth/db';
 import { getSchema } from 'better-auth/db';
@@ -46,6 +47,7 @@ const plugins = [
   admin(),
   apiKey(),
   passkey(),
+  sso(),
   emailHarmony(),
   phoneHarmony(),
   bearer(),

@@ -57,7 +57,7 @@ export function getBeforeDeleteHook(): CollectionBeforeDeleteHook {
         baModelKey.passkey,
         baModelKey.twoFactor,
         baModelKey.ssoProvider,
-        baModelKey.oauthApplication,
+        baModelKey.oauthClient,
         baModelKey.oauthAccessToken,
         baModelKey.oauthConsent,
       ] as const;

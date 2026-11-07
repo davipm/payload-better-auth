@@ -34,10 +34,6 @@ export function buildOauthConsentsCollection({
         description: 'Comma-separated list of scopes consented to',
       },
     }),
-    consentGiven: () => ({
-      defaultValue: false,
-      admin: { readOnly: true, description: 'Indicates if consent was given' },
-    }),
   };
 
   const oauthConsentFieldRules: FieldRule[] = [

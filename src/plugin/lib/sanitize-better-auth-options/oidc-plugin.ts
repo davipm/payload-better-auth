@@ -8,7 +8,7 @@ import {
 
 export function configureOidcPlugin(plugin: any, resolvedSchemas: BetterAuthSchemas): void {
   const models = [
-    baModelKey.oauthApplication,
+    baModelKey.oauthClient,
     baModelKey.oauthAccessToken,
     baModelKey.oauthConsent,
   ] as const;
@@ -20,16 +20,16 @@ export function configureOidcPlugin(plugin: any, resolvedSchemas: BetterAuthSche
 
   set(
     plugin,
-    `schema.${baModelKey.oauthApplication}.fields.userId.fieldName`,
+    `schema.${baModelKey.oauthClient}.fields.userId.fieldName`,
     getSchemaFieldName(
       resolvedSchemas,
-      baModelKey.oauthApplication,
-      baModelFieldKeys.oauthApplication.userId,
+      baModelKey.oauthClient,
+      baModelFieldKeys.oauthClient.userId,
     ),
   );
   set(
     plugin,
-    `schema.${baModelKey.oauthApplication}.fields.userId.references.model`,
+    `schema.${baModelKey.oauthClient}.fields.userId.references.model`,
     getSchemaCollectionSlug(resolvedSchemas, baModelKey.user),
   );
 
@@ -59,7 +59,7 @@ export function configureOidcPlugin(plugin: any, resolvedSchemas: BetterAuthSche
   set(
     plugin,
     `schema.${baModelKey.oauthAccessToken}.fields.clientId.references.model`,
-    getSchemaCollectionSlug(resolvedSchemas, baModelKey.oauthApplication),
+    getSchemaCollectionSlug(resolvedSchemas, baModelKey.oauthClient),
   );
 
   set(
@@ -88,6 +88,6 @@ export function configureOidcPlugin(plugin: any, resolvedSchemas: BetterAuthSche
   set(
     plugin,
     `schema.${baModelKey.oauthConsent}.fields.clientId.references.model`,
-    getSchemaCollectionSlug(resolvedSchemas, baModelKey.oauthApplication),
+    getSchemaCollectionSlug(resolvedSchemas, baModelKey.oauthClient),
   );
 }

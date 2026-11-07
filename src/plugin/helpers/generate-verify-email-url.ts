@@ -59,7 +59,6 @@ export const generateVerifyEmailUrl = async ({
 
   // Build the verification URL
   const safeCallbackURL = callbackURL ? getSafeRedirect(callbackURL, '') : '';
-  const verifyUrl = `${verifyRouteUrl}?token=${jwt}${safeCallbackURL ? `&callbackURL=${encodeURIComponent(safeCallbackURL)}` : ''}`;
 
-  return verifyUrl;
+  return `${verifyRouteUrl}?token=${jwt}${safeCallbackURL ? `&callbackURL=${encodeURIComponent(safeCallbackURL)}` : ''}`;
 };
