@@ -1,5 +1,4 @@
-import type { DBAdapter } from '@better-auth/core/db/adapter';
-import type { BetterAuthOptions, Where } from 'better-auth';
+import type { BetterAuthOptions, DBAdapter, Where } from 'better-auth';
 import { BetterAuthError } from 'better-auth';
 import {
   type BasePayload,

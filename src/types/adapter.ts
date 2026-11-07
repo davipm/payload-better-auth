@@ -1,4 +1,4 @@
-import type { DBAdapterInstance } from '@better-auth/core/db/adapter';
+import type { DBAdapterInstance } from 'better-auth';
 import type { BasePayload } from 'payload';
 
 export type PayloadAdapterParams = {
