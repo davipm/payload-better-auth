@@ -52,7 +52,7 @@ async function getOrCreateAdminInviteToken(
   }
 }
 
-async function AdminLogin({
+export default async function AdminLogin({
   initPageResult,
   params,
   searchParams,
@@ -154,5 +154,3 @@ async function AdminLogin({
     </MinimalTemplate>
   );
 }
-
-export default AdminLogin;
