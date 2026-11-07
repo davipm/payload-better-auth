@@ -5,9 +5,12 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { buildConfig } from 'payload';
 import sharp from 'sharp';
-import collections from './collections/index.js';
+import { Projects } from './collections/projects.js';
+import { Users } from './collections/users.js';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
 import { plugins } from './payload/plugins/index.js';
+import { seed } from './seed.js';
+import { getServerSideURL } from './utils/get-url.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -35,7 +38,8 @@ const buildConfigWithMemoryDB = async () => {
         baseDir: path.resolve(dirname),
       },
     },
-    collections,
+    collections: [Projects, Users],
+    cors: [getServerSideURL()].filter(Boolean),
     db: postgresAdapter({
       disableCreateDatabase: false,
       pool: { connectionString: process.env.DATABASE_URL },
@@ -45,9 +49,9 @@ const buildConfigWithMemoryDB = async () => {
     }),
     email: testEmailAdapter,
     editor: lexicalEditor(),
-    // onInit: async (payload) => {
-    //   await seed(payload);
-    // },
+    onInit: async (payload) => {
+      await seed(payload);
+    },
     plugins: [...plugins],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
