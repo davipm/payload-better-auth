@@ -1,5 +1,5 @@
 import type { AuthStrategy, AuthStrategyResult } from 'payload';
-import { getPayloadAuth } from '@/plugin/index.js';
+import { getPayloadAuth } from '../../../index.js';
 import { baseSlugs } from '../../../constants.js';
 
 const STRATEGY_NAME = 'better-auth';

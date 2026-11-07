@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
-import type { OauthClient } from '@/generated-types.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '@/plugin/types.js';
+import type { OauthClient } from '../../../generated-types.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
 import { assertAllSchemaFields, getSchemaCollectionSlug } from './utils/collection-schema.js';

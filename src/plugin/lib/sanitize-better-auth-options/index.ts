@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { set } from '@/utils/set.js';
+import { set } from '../../../utils/set.js';
 import { baModelFieldKeys, baModelKey, baseSlugs, supportedBAPluginIds } from '../../constants.js';
 import { checkPluginExists } from '../../helpers/check-plugin-exists.js';
 import type {

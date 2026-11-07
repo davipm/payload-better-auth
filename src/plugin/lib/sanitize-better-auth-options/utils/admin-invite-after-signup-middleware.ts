@@ -1,6 +1,6 @@
 import { createAuthMiddleware, getOAuthState } from 'better-auth/api';
 import type { SanitizedBetterAuthOptions } from '../../../types.js';
-// import type { SanitizedBetterAuthOptions } from "@/better-auth/plugin/types";
+// import type { SanitizedBetterAuthOptions } from "../../../../better-auth/plugin/types";
 
 /**
  * Modifies options object and adds an after-hook middleware that assigns the

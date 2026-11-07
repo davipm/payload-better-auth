@@ -1,4 +1,4 @@
-import { set } from '@/utils/set.js';
+import { set } from '../../../utils/set.js';
 import { baModelKey, defaults } from '../../constants.js';
 import type { BetterAuthSchemas, PayloadAuthOptions } from '../../types.js';
 import { getSchemaCollectionSlug } from '../build-collections/utils/collection-schema.js';

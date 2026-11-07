@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { generateAdminInviteUrl } from '@/utils/generate-admin-invite-url.js';
+import { generateAdminInviteUrl } from '../../../../utils/generate-admin-invite-url.js';
 import { baseSlugs, defaults } from '../../../constants.js';
 import type { PayloadAuthOptions } from '../../../types.js';
 import { isAdminWithRoles } from '../utils/payload-access.js';

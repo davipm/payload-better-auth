@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
-import type { Session } from '@/generated-types.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '@/plugin/types.js';
+import type { Session } from '../../../generated-types.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
 import { baModelKey, baseSlugs } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
 import { getDefaultCollectionSlug } from '../../helpers/get-collection-slug.js';

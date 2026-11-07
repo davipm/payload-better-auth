@@ -1,5 +1,5 @@
 import { SignJWT } from 'jose';
-import { getSafeRedirect } from '@/utils/get-safe-redirect.js';
+import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 
 /**
  * Generates a verification URL for email verification

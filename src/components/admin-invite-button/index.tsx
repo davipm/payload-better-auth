@@ -5,7 +5,7 @@ import type { Option } from '@payloadcms/ui/elements/ReactSelect';
 import { Copy, Loader2, XIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation.js';
 import { type ChangeEvent, useState } from 'react';
-import { adminEndpoints } from '@/plugin/constants.js';
+import { adminEndpoints } from '../../plugin/constants.js';
 import './index.scss';
 
 const MODAL_SLUG = 'admin-invite-modal';

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import type { ModelKey } from '@/generated-types.js';
+import type { ModelKey } from '../../generated-types.js';
 import type { BetterAuthSchemas, FieldWithIds } from '../types.js';
 
 /**

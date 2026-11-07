@@ -1,7 +1,7 @@
 import type { DBFieldAttribute } from 'better-auth/db';
 import { getAuthTables } from 'better-auth/db';
-import type { ModelKey } from '@/generated-types.js';
-import { set } from '@/utils/set.js';
+import type { ModelKey } from '../../generated-types.js';
+import { set } from '../../utils/set.js';
 import { baModelFieldKeysToFieldNames, baModelKey, defaults } from '../constants.js';
 import type { BetterAuthSchemas, PayloadAuthOptions } from '../types.js';
 import { getDefaultCollectionSlug } from './get-collection-slug.js';

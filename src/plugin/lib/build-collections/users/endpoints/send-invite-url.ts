@@ -1,7 +1,7 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint, headersWithCors, killTransaction } from 'payload';
 import { z } from 'zod';
-import { getPayloadAuth } from '@/plugin/index.js';
+import { getPayloadAuth } from '../../../../index.js';
 import { adminEndpoints, defaults } from '../../../../constants.js';
 import type { PayloadAuthOptions } from '../../../../types.js';
 import { hasAdminRoles } from '../../utils/payload-access.js';

@@ -1,6 +1,6 @@
 import type { CollectionConfig, JoinField } from 'payload';
-import type { Organization } from '@/generated-types.js';
-import type { BuildCollectionProps, FieldOverrides } from '@/plugin/types.js';
+import type { Organization } from '../../../generated-types.js';
+import type { BuildCollectionProps, FieldOverrides } from '../../types.js';
 import { baModelFieldKeys, baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
 import {

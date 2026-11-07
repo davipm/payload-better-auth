@@ -1,4 +1,4 @@
-import { set } from '@/utils/set.js';
+import { set } from '../../../utils/set.js';
 import { baModelFieldKeys, baModelKey } from '../../constants.js';
 import type { BetterAuthSchemas } from '../../types.js';
 import {

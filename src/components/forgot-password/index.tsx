@@ -4,9 +4,9 @@ import Link from 'next/link.js';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
 import React, { Fragment } from 'react';
-import { adminRoutes } from '@/plugin/constants.js';
-import type { PayloadAuthOptions } from '@/plugin/index.js';
-import { resolveBaseURL } from '@/utils/resolve-base-url.js';
+import { adminRoutes } from '../../plugin/constants.js';
+import type { PayloadAuthOptions } from '../../plugin/index.js';
+import { resolveBaseURL } from '../../utils/resolve-base-url.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { ForgotPasswordForm } from './client.js';
 

@@ -3,11 +3,11 @@ import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerCompo
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps, ServerProps } from 'payload';
 import React from 'react';
-import { adminRoutes, defaults, supportedBAPluginIds } from '@/plugin/constants.js';
-import { checkPluginExists } from '@/plugin/helpers/check-plugin-exists.js';
-import type { PayloadAuthOptions } from '@/plugin/index.js';
-import { getSafeRedirect } from '@/utils/get-safe-redirect.js';
-import { resolveBaseURL } from '@/utils/resolve-base-url.js';
+import { adminRoutes, defaults, supportedBAPluginIds } from '../../plugin/constants.js';
+import { checkPluginExists } from '../../plugin/helpers/check-plugin-exists.js';
+import type { PayloadAuthOptions } from '../../plugin/index.js';
+import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
+import { resolveBaseURL } from '../../utils/resolve-base-url.js';
 import { Logo } from '../logo.js';
 import { AdminLoginClient } from './client.js';
 

@@ -1,5 +1,5 @@
 import { type Collection, type CollectionConfig, flattenAllFields } from 'payload';
-import type { BetterAuthFullSchema, ModelKey } from '@/generated-types.js';
+import type { BetterAuthFullSchema, ModelKey } from '../../generated-types.js';
 
 export function getCollectionByModelKey(
   collections: Record<string, Collection>,

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import type { Account } from '@/generated-types.js';
+import type { Account } from '../../../../generated-types.js';
 import { baModelKey, defaults } from '../../../constants.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types.js';
 
