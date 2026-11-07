@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload';
 import type { OauthClient } from '../../../generated-types.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
 import { assertAllSchemaFields, getSchemaCollectionSlug } from './utils/collection-schema.js';
 import { getCollectionFields } from './utils/transform-schema-fields-to-payload.js';
 
@@ -11,10 +11,7 @@ export function buildOauthApplicationsCollection({
   pluginOptions,
   resolvedSchemas,
 }: BuildCollectionProps): CollectionConfig {
-  const oauthApplicationSlug = getSchemaCollectionSlug(
-    resolvedSchemas,
-    baModelKey.oauthClient,
-  );
+  const oauthApplicationSlug = getSchemaCollectionSlug(resolvedSchemas, baModelKey.oauthClient);
 
   const oauthApplicationSchema = resolvedSchemas[baModelKey.oauthClient];
 

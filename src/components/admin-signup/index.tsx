@@ -1,6 +1,5 @@
 import { MinimalTemplate } from '@payloadcms/next/templates';
 import type { AdminViewServerProps } from 'payload';
-import React from 'react';
 import { z } from 'zod';
 import { supportedBAPluginIds } from '../../plugin/constants.js';
 import { checkPluginExists } from '../../plugin/helpers/check-plugin-exists.js';
