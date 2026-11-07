@@ -6,7 +6,6 @@
       "name": "payload-better-auth",
       "dependencies": {
         "@tanstack/react-form": "^1.33.5",
-        "better-auth": "^1.7.18",
         "lucide-react": "^1.70.0",
         "qrcode.react": "^4.2.0",
       },
@@ -50,8 +49,19 @@
         "zod": "^4.6.7",
       },
       "peerDependencies": {
+        "@better-auth/api-key": "^1.7.18",
+        "@better-auth/passkey": "^1.7.18",
+        "@payloadcms/next": "^3.92.1",
+        "@payloadcms/ui": "^3.92.1",
+        "better-auth": "^1.7.18",
+        "next": "16.4.5",
         "payload": "^3.92.1",
+        "react": "19.2.6",
       },
+      "optionalPeers": [
+        "@better-auth/api-key",
+        "@better-auth/passkey",
+      ],
     },
   },
   "packages": {

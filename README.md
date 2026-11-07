@@ -1,3 +1,32 @@
+# Payload Better Auth
+
+```bash
+bun add @davipm/payload-better-auth better-auth
+```
+
+```ts
+import { betterAuthPlugin } from '@davipm/payload-better-auth';
+
+export default buildConfig({
+  admin: {
+    user: 'users',
+  },
+  plugins: [
+    betterAuthPlugin({
+      users: {
+        roles: ['user', 'admin'],
+        adminRoles: ['admin'],
+      },
+      betterAuthOptions: {
+        emailAndPassword: {
+          enabled: true,
+        },
+      },
+    }),
+  ],
+});
+```
+
 # Payload Plugin Template
 
 A template repo to create a [Payload CMS](https://payloadcms.com) plugin.

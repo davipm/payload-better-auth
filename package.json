@@ -92,7 +92,22 @@
     "react-hook-form": "^7.91.0"
   },
   "peerDependencies": {
-    "payload": "^3.92.1"
+    "@payloadcms/ui": "^3.92.1",
+    "@payloadcms/next": "^3.92.1",
+    "@better-auth/api-key": "^1.7.18",
+    "@better-auth/passkey": "^1.7.18",
+    "better-auth": "^1.7.18",
+    "payload": "^3.92.1",
+    "next": "16.4.5",
+    "react": "19.2.6"
+  },
+  "peerDependenciesMeta": {
+    "@better-auth/api-key": {
+      "optional": true
+    },
+    "@better-auth/passkey": {
+      "optional": true
+    }
   },
   "keywords": [
     "payload",
@@ -111,7 +126,6 @@
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
     "@tanstack/react-form": "^1.33.5",
-    "better-auth": "^1.7.18",
     "lucide-react": "^1.70.0",
     "qrcode.react": "^4.2.0"
   }
