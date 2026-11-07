@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { cleanupAll, getTestPayload } from '../helpers';
-import { payloadAdapter } from '../../adapter/index';
+import { payloadAdapter } from '../../src/adapter/index.js';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
 
 describe('Social Login Flow', () => {

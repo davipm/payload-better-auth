@@ -1,7 +1,7 @@
 import type { BetterAuthOptions } from 'better-auth';
 import type { BasePayload } from 'payload';
 import { describe, expect, it } from 'vitest';
-import { createTransform } from '../../adapter/transform/index';
+import { createTransform } from '../../src/utils/adapter/transform.js';
 
 // Minimal BetterAuth options to initialize the transform layer.
 // getAuthTables() needs at least the base schema for user, session, account, verification.

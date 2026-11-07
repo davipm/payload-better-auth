@@ -1,9 +1,9 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
-import { generateAdminInviteUrl } from '../../../../../utils/generate-admin-invite-url.js';
+import { getPayloadAuth } from '@/plugin/index.js';
+import { generateAdminInviteUrl } from '@/utils/generate-admin-invite-url.js';
 import { adminEndpoints, baseSlugs, defaults } from '../../../../constants.js';
 import type { PayloadAuthOptions } from '../../../../types.js';
-import { getPayloadAuth } from '../../../get-payload-auth.js';
 import { hasAdminRoles } from '../../utils/payload-access.js';
 
 interface InviteEndpointProps {
@@ -17,7 +17,7 @@ export const getGenerateInviteUrlEndpoint = ({
 }: InviteEndpointProps): Endpoint => {
   const adminRoles = pluginOptions.users?.adminRoles ?? [defaults.adminRole];
 
-  const endpoint: Endpoint = {
+  return {
     path: adminEndpoints.generateInviteUrl,
     method: 'post',
     handler: async (req) => {
@@ -72,7 +72,8 @@ export const getGenerateInviteUrlEndpoint = ({
             expiresAt,
           },
         });
-        const response = new Response(
+
+        return new Response(
           JSON.stringify({
             message: 'Invite link generated successfully',
             inviteLink,
@@ -81,7 +82,6 @@ export const getGenerateInviteUrlEndpoint = ({
             status: 200,
           },
         );
-        return response;
       } catch (error) {
         console.error(error);
         return Response.json(
@@ -91,6 +91,4 @@ export const getGenerateInviteUrlEndpoint = ({
       }
     },
   };
-
-  return endpoint;
 };

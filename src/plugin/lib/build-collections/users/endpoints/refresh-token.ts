@@ -1,12 +1,12 @@
 import type { GenericEndpointContext } from 'better-auth';
 import { setCookieCache } from 'better-auth/cookies';
 import { type Endpoint, getFieldsToSign, refreshOperation, type TypedUser } from 'payload';
+import { getPayloadAuth } from '@/plugin/index.js';
 import { adminEndpoints } from '../../../../constants.js';
 import { getSignedCookie } from '../../../../helpers/get-signed-cookie.js';
-import { getPayloadAuth } from '../../../get-payload-auth.js';
 
 export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
-  const endpoint: Endpoint = {
+  return {
     path: adminEndpoints.refreshToken,
     method: 'post',
     handler: async (req) => {
@@ -119,6 +119,4 @@ export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
       return response;
     },
   };
-
-  return endpoint;
 };

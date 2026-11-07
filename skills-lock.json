@@ -37,6 +37,12 @@
       "skillPath": "packages/payload/skills/payload/SKILL.md",
       "computedHash": "6fa5e80544fe9580e26d3f4d5930833e5d74a230c122dcc05a9779e01d13e15e"
     },
+    "security-audit": {
+      "source": "cloudflare/security-audit-skill",
+      "sourceType": "github",
+      "skillPath": "skills/security-audit/SKILL.md",
+      "computedHash": "98b97aad2873b3b9a8e064007c25e7827b493ba27fda8bfbdb41dab586767973"
+    },
     "two-factor-authentication-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",

@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { BetterAuthOptions } from 'better-auth';
-import { generateSchemaBuilderStage } from './generate-schema-builder.js';
-import { getPayloadSchema, SCHEMA_FILE } from './get-payload-schema.js'; // export SCHEMA_FILE there
+import { generateSchemaBuilderStage } from './schema/generate-schema-builder.js';
+import { getPayloadSchema, SCHEMA_FILE } from './schema/get-payload-schema.js';
 
 export type GenerateSchemaOptions = { outputDir?: string };
 

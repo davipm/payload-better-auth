@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { payloadAdapter } from '../../adapter/index';
+import { payloadAdapter } from '../../src/adapter/index.js';
 import { getPayload } from '../dev';
 
 /**
