@@ -6,9 +6,7 @@ import type React from 'react';
 
 const baseClass = 'nav';
 
-export const LogoutButton: React.FC<{
-  tabIndex?: number;
-}> = ({ tabIndex = 0 }) => {
+export const LogoutButton: React.FC<{ tabIndex?: number }> = ({ tabIndex = 0 }) => {
   const { t } = useTranslation();
   const { config } = useConfig();
 

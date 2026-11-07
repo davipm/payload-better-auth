@@ -475,6 +475,7 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
       };
     };
 
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     if (where.length === 1) return toCondition(where[0]!) as PayloadWhere;
 
     // Connector defaults to AND

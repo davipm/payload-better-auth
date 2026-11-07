@@ -4,9 +4,9 @@ import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
 import React from 'react';
 import { z } from 'zod';
-import { adminRoutes } from '../../plugin/constants.js';
-import type { PayloadAuthOptions } from '../../plugin/types.js';
-import { resolveBaseURL } from '../../utils/resolve-base-url.js';
+import { adminRoutes } from '@/plugin/constants.js';
+import type { PayloadAuthOptions } from '@/plugin/index.js';
+import { resolveBaseURL } from '@/utils/resolve-base-url.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { PasswordResetForm } from './client.js';
 

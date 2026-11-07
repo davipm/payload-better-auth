@@ -4,7 +4,7 @@ import { toast, useAuth, useConfig, useTranslation } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
 import { useRouter } from 'next/navigation.js';
 import { formatAdminURL } from 'payload/shared';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { z } from 'zod';
 import { useAppForm } from '../form/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';

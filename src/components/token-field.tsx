@@ -3,7 +3,7 @@
 import { Button, TextInput, useField, useFormFields } from '@payloadcms/ui';
 import type { TextFieldClientProps } from 'payload';
 
-function AdminInviteTokenField({ ...props }: TextFieldClientProps) {
+export default function AdminInviteTokenField({ ...props }: TextFieldClientProps) {
   const { path } = props;
   const { setValue } = useField({ path });
   const token = useFormFields(([fields]) => fields.token);
@@ -22,5 +22,3 @@ function AdminInviteTokenField({ ...props }: TextFieldClientProps) {
     </div>
   );
 }
-
-export default AdminInviteTokenField;

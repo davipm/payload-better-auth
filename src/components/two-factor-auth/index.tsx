@@ -15,7 +15,7 @@ import { twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { Copy, XIcon } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import { useAppForm } from '../form/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
