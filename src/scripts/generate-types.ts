@@ -2,9 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { apiKey } from '@better-auth/api-key';
+import { oauthProvider } from '@better-auth/oauth-provider';
 import { passkey } from '@better-auth/passkey';
-// import { scim } from '@better-auth/scim';
-import { sso } from '@better-auth/sso';
+import { scim } from '@better-auth/scim';
 import { stripe } from '@better-auth/stripe';
 import type { DBFieldAttribute } from 'better-auth/db';
 import { getSchema } from 'better-auth/db';
@@ -57,7 +57,7 @@ const plugins = [
   anonymous(),
   multiSession(),
   oneTimeToken(),
-  sso(),
+  oauthProvider({ loginPage: '', consentPage: '' }),
   genericOAuth({
     config: [
       {
@@ -80,21 +80,7 @@ const plugins = [
   phoneNumber(),
   nextCookies(),
   customSession(async () => ({})),
-  // scim({
-  //   connections: [
-  //     {
-  //       id: 'workforce-acme',
-  //       provisioningDomainId: 'workspace-acme',
-  //       credentials: [
-  //         {
-  //           type: 'bearer',
-  //           id: 'workforce-primary',
-  //           token: workforceToken,
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // }),
+  scim({ connections: [] }),
   deviceAuthorization(),
   lastLoginMethod({ storeInDatabase: true }),
   stripe({

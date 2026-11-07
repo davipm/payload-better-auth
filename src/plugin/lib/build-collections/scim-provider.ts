@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-// import type { ScimProvider } from '@/generated-types.js';
+import type { ScimProvider } from '@/generated-types.js';
 import type { BuildCollectionProps, FieldOverrides } from '@/plugin/types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../helpers/get-admin-access.js';
