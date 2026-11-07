@@ -491,7 +491,9 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
   function convertSelect(rawModel: ModelKey, select?: string[], payload?: BasePayload) {
     if (!select?.length) return undefined;
     const model = resolveModelKey(rawModel);
-    return Object.fromEntries(select.map((f) => [toPayloadFieldName(model, f, payload), true]));
+    return Object.fromEntries(
+      select.map((f) => [toPayloadFieldName(model, f, payload), true as const]),
+    ) as Record<string, true>;
   }
 
   function convertSort(

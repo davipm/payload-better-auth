@@ -6,12 +6,6 @@ export const authClient = createAuthClient({
   plugins: [
     adminClient(),
     twoFactorClient(),
-    inferAdditionalFields({
-      user: {
-        role: {
-          type: 'string',
-        },
-      },
-    }),
+    inferAdditionalFields({ user: { role: { type: 'string' } } }),
   ],
 });

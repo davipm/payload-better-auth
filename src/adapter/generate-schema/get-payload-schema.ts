@@ -1,24 +1,46 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
+export const SCHEMA_FILE = 'schema.ts';
+
+const isErrno = (e: unknown): e is NodeJS.ErrnoException => e instanceof Error && 'code' in e;
+
+/**
+ * Reads `<payloadDirPath>/schema.ts`.
+ * @returns the file contents, or '' if the directory exists but has no schema file yet.
+ * @throws if the directory is missing or unreadable.
+ */
 export const getPayloadSchema = async (payloadDirPath: string): Promise<string> => {
-  let files: string[];
+  const dir = path.resolve(payloadDirPath);
+  const file = path.join(dir, SCHEMA_FILE);
+
+  // Directory check is kept separate so a missing *directory* (config error)
+  // is distinguishable from a missing *file* (first run, not an error).
   try {
-    files = await fs.readdir(payloadDirPath);
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
+    const stat = await fs.stat(dir);
+    if (!stat.isDirectory()) {
+      throw new Error(`PayloadAdapter: "${dir}" exists but is not a directory.`);
+    }
+  } catch (error) {
+    if (isErrno(error) && error.code === 'ENOENT') {
       throw new Error(
-        `Payload directory not found at "${payloadDirPath}". Please run this CLI from the project root directory where the payload directory is located, otherwise specify a payload directory path in your payloadAdapter options, under schema_generation.payload_dir_path.`,
+        `Payload directory not found at "${dir}". Run this CLI from the project root, or set ` +
+          `schema_generation.payload_dir_path in your payloadAdapter options.`,
+        { cause: error },
       );
     }
-    console.error(error);
-    throw new Error(`Failed to access payload directory at "${payloadDirPath}".`);
+    if (error instanceof Error && error.message.startsWith('PayloadAdapter:')) throw error;
+    throw new Error(`PayloadAdapter: Failed to access payload directory at "${dir}".`, {
+      cause: error,
+    });
   }
 
-  if (!files.includes(`schema.ts`)) return '';
   try {
-    return await fs.readFile(`${payloadDirPath}/schema.ts`, 'utf8');
+    return await fs.readFile(file, 'utf8');
   } catch (error) {
-    console.error(error);
-    throw new Error(`PayloadAdapter: Failed to read schema.ts file from "${payloadDirPath}".`);
+    if (isErrno(error) && error.code === 'ENOENT') return '';
+    throw new Error(`PayloadAdapter: Failed to read ${SCHEMA_FILE} from "${dir}".`, {
+      cause: error,
+    });
   }
 };

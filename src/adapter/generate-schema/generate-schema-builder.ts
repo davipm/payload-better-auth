@@ -1,24 +1,30 @@
-/**
- * This module generates PayloadCMS collection configurations based on the Better Auth schema.
- *
- * The generated collection configs include:
- * - Users: For user management with proper auth configuration
- * - Sessions: For maintaining user sessions
- * - Accounts: For OAuth provider accounts
- * - VerificationTokens: For email verification or social sign in
- *
- * Each collection is properly formatted with:
- * - Appropriate field types (text, relationship, checkbox, etc.)
- * - Admin configuration for better UI experience
- * - Auth configuration for the Users collection
- * - Proper field relationships between collections
- *
- * Users can copy these generated collection configs to their PayloadCMS project
- * and add authentication strategies as needed.
- */
 import type { BetterAuthOptions } from 'better-auth';
+import type { DBFieldAttribute } from 'better-auth/db';
 import { getAuthTables } from 'better-auth/db';
-import type { CollectionConfig, Field } from 'payload';
+
+/**
+ * Generates PayloadCMS collection configs from the Better Auth schema.
+ * Existing collection declarations in `code` are preserved verbatim; missing ones are generated.
+ */
+
+type Obj = Record<string, unknown>;
+type Tables = ReturnType<typeof getAuthTables>;
+type ExistingCollection = { name: string; slug: string; source: string };
+
+const HEADER = `/**
+ * EXAMPLE COLLECTIONS FOR BETTER AUTH
+ *
+ * Copy these into your Payload collection configs.
+ * The users collection needs the BetterAuth strategy:
+ *
+ * auth: {
+ *   disableLocalStrategy: true,
+ *   strategies: [betterAuthStrategy()],
+ * },
+ */
+import type { CollectionConfig } from 'payload';
+
+`;
 
 export const generateSchemaBuilderStage = async ({
   BAOptions,
@@ -27,368 +33,220 @@ export const generateSchemaBuilderStage = async ({
   code: string;
   BAOptions: BetterAuthOptions;
 }) => {
-  const { post, collections } = parseExistingSchema(code);
-
-  return generatePayloadCollectionConfigs({
-    options: BAOptions,
-    collections,
-    exports: post,
-  });
+  const { collections, exported } = parseExistingSchema(code);
+  return generatePayloadCollectionConfigs({ options: BAOptions, collections, exported });
 };
 
-function parseExistingSchema(code: string): {
-  collections: CollectionConfig[];
-  post: string;
-} {
-  const collections: CollectionConfig[] = [];
-  let post = '';
+/* ------------------------------- parsing existing code ------------------------------- */
 
-  // Extract collection definitions
-  const collectionRegex =
-    /const\s+([A-Z][a-zA-Z0-9]*)\s*:\s*CollectionConfig\s*=\s*{[\s\S]*?}\s*as\s*const;/g;
-  // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
-  let match;
-  // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-  while ((match = collectionRegex.exec(code)) !== null) {
-    const collectionName = match[1];
-    const collectionDef = match[0];
+const DECL = /(?:export\s+)?const\s+([A-Za-z_$][\w$]*)\s*:\s*CollectionConfig\s*=\s*\{/g;
 
-    // Extract slug
-    const slugMatch = collectionDef.match(/slug:\s*"([^"]+)"/);
-    const slug = slugMatch ? slugMatch[1] : collectionName.toLowerCase();
-
-    // Extract useAsTitle
-    const titleMatch = collectionDef.match(/useAsTitle:\s*"([^"]+)"/);
-    const useAsTitle = titleMatch ? titleMatch[1] : 'id';
-
-    // Extract fields
-    const fieldsRegex = /fields:\s*\[([\s\S]*?)\],/;
-    const fieldsMatch = collectionDef.match(fieldsRegex);
-    const fields: Field[] = [];
-
-    if (fieldsMatch) {
-      const fieldBlockRegex = /{[\s\S]*?},/g;
-      const fieldBlocks = fieldsMatch[1].match(fieldBlockRegex) || [];
-
-      for (const fieldBlock of fieldBlocks) {
-        const nameMatch = fieldBlock.match(/name:\s*"([^"]+)"/);
-        const typeMatch = fieldBlock.match(/type:\s*"([^"]+)"/);
-        const requiredMatch = fieldBlock.match(/required:\s*(true|false)/);
-        const uniqueMatch = fieldBlock.match(/unique:\s*(true|false)/);
-        const relationToMatch = fieldBlock.match(/relationTo:\s*"([^"]+)"/);
-
-        if (nameMatch && typeMatch) {
-          const field = {
-            name: nameMatch[1],
-            type: typeMatch[1] as Field['type'],
-          };
-
-          if (requiredMatch) {
-            (field as any).required = requiredMatch[1] === 'true';
-          }
-
-          if (uniqueMatch) {
-            (field as any).unique = uniqueMatch[1] === 'true';
-          }
-
-          if (relationToMatch) {
-            (field as any).relationTo = relationToMatch[1];
-          }
-
-          fields.push(field as Field);
-        }
-      }
+/** Index of the `}` matching the `{` at `open`; skips strings, templates and comments. */
+function findClosingBrace(code: string, open: number): number {
+  let depth = 0;
+  for (let i = open; i < code.length; i++) {
+    const c = code[i];
+    const n = code[i + 1];
+    if (c === '/' && n === '/') {
+      i = code.indexOf('\n', i);
+      if (i < 0) break;
+      continue;
     }
+    if (c === '/' && n === '*') {
+      i = code.indexOf('*/', i + 2);
+      if (i < 0) break;
+      i++;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`') {
+      for (i++; i < code.length && code[i] !== c; i++) if (code[i] === '\\') i++;
+      continue;
+    }
+    if (c === '{') depth++;
+    else if (c === '}' && --depth === 0) return i;
+  }
+  return -1;
+}
 
-    // Check for timestamps
-    const timestampsMatch = collectionDef.match(/timestamps:\s*(true|false)/);
-    const hasTimestamps = timestampsMatch ? timestampsMatch[1] === 'true' : false;
+function parseExistingSchema(code: string): {
+  collections: ExistingCollection[];
+  exported: string[];
+} {
+  const collections: ExistingCollection[] = [];
 
-    collections.push({
-      slug,
-      admin: {
-        useAsTitle,
-      },
-      fields,
-      ...(hasTimestamps && { timestamps: true }),
-    });
+  for (const m of code.matchAll(DECL)) {
+    const start = m.index!;
+    const close = findClosingBrace(code, start + m[0].length - 1);
+    if (close < 0) continue;
+
+    const tail = code.slice(close + 1).match(/^\s*(?:as\s+const\s*)?;?/)![0];
+    let source = code
+      .slice(start, close + 1 + tail.length)
+      .trim()
+      .replace(/^export\s+/, '');
+    if (!source.endsWith(';')) source += ';';
+
+    const slug = source.match(/\bslug:\s*(['"`])([^'"`]+)\1/)?.[2] ?? m[1].toLowerCase();
+    collections.push({ name: m[1], slug, source });
   }
 
-  // Extract export statement
-  const exportRegex = /export\s*{[\s\S]*?};/;
-  const exportMatch = code.match(exportRegex);
-  if (exportMatch) {
-    post = exportMatch[0];
+  const exported =
+    code
+      .match(/export\s*\{([^}]*)\}/)?.[1]
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean) ?? [];
+
+  return { collections, exported };
+}
+
+/* ------------------------------------ serialization ------------------------------------ */
+
+const IDENT = /^[A-Za-z_$][\w$]*$/;
+
+const pascal = (s: string) =>
+  s
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((p) => p[0].toUpperCase() + p.slice(1))
+    .join('');
+
+function toSource(v: unknown, depth = 0): string {
+  const pad = '  '.repeat(depth + 1);
+  const end = '  '.repeat(depth);
+
+  if (Array.isArray(v)) {
+    const items = v.map((x) => toSource(x, depth + 1));
+    const flat = `[${items.join(', ')}]`;
+    return flat.length <= 60 && !flat.includes('\n')
+      ? flat
+      : `[\n${items.map((i) => pad + i).join(',\n')},\n${end}]`;
+  }
+  if (v && typeof v === 'object') {
+    const entries = Object.entries(v).filter(([, x]) => x !== undefined);
+    if (!entries.length) return '{}';
+    const body = entries
+      .map(([k, x]) => `${pad}${IDENT.test(k) ? k : JSON.stringify(k)}: ${toSource(x, depth + 1)}`)
+      .join(',\n');
+    return `{\n${body},\n${end}}`;
+  }
+  if (typeof v === 'string') {
+    return `'${v.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
+  }
+  return String(v);
+}
+
+/* ---------------------------------- schema -> payload ---------------------------------- */
+
+const TYPE_MAP: Record<string, string> = {
+  string: 'text',
+  number: 'number',
+  boolean: 'checkbox',
+  date: 'date',
+  json: 'json',
+};
+
+const SKIPPED_FIELDS = new Set(['id', 'createdAt', 'updatedAt']); // Payload manages these
+
+/** Primitive defaults only; thunks are evaluated, Dates/objects are dropped. */
+function resolveDefault(d: unknown): string | number | boolean | undefined {
+  try {
+    const v = typeof d === 'function' ? d() : d;
+    return typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function buildField(key: string, f: DBFieldAttribute, tables: Tables): Obj | null {
+  const rawName = f.fieldName || key;
+  if (SKIPPED_FIELDS.has(rawName)) return null;
+
+  const out: Obj = { name: rawName };
+  const refModel = f.references?.model;
+  const legacyRel = /_id$/.test(rawName);
+
+  if (refModel || legacyRel) {
+    // BA hardcodes some refs to the model key ("user"); resolve to the configured slug ("users").
+    out.name = rawName.replace(/_id$/, '');
+    out.type = 'relationship';
+    out.relationTo = refModel ? (tables[refModel]?.modelName ?? refModel) : out.name;
+  } else if (Array.isArray(f.type)) {
+    out.type = 'select';
+    out.options = f.type;
+  } else if (f.type === 'string[]' || f.type === 'number[]') {
+    out.type = f.type === 'string[]' ? 'text' : 'number';
+    out.hasMany = true;
+  } else {
+    out.type = rawName === 'email' ? 'email' : (TYPE_MAP[f.type as string] ?? 'text');
   }
 
-  return { collections, post };
+  if (f.required) out.required = true;
+  if (f.unique) out.unique = true;
+
+  const def = resolveDefault(f.defaultValue);
+  if (def !== undefined) out.defaultValue = def;
+
+  if (f.input === false) out.admin = { readOnly: true };
+
+  return out;
+}
+
+const TITLE_CANDIDATES = ['name', 'title', 'label', 'email', 'username'];
+
+function buildCollection(tableKey: string, table: Tables[string], tables: Tables): Obj {
+  const fields = Object.entries(table.fields)
+    .map(([k, f]) => buildField(k, f, tables))
+    .filter((f): f is Obj => f !== null);
+
+  const titleNames = fields.filter((f) => f.type !== 'relationship').map((f) => f.name as string);
+  const useAsTitle = TITLE_CANDIDATES.find((n) => titleNames.includes(n)) ?? titleNames[0] ?? 'id';
+
+  return {
+    slug: table.modelName,
+    admin: { useAsTitle },
+    // Keyed on the BA model key, not the (configurable) Payload slug.
+    ...(tableKey === 'user' && { auth: { disableLocalStrategy: true, strategies: [] } }),
+    fields,
+    timestamps: true,
+  };
 }
 
 function generatePayloadCollectionConfigs({
   options,
   collections,
-  exports,
+  exported,
 }: {
   options: BetterAuthOptions;
-  collections: CollectionConfig[];
-  exports: string;
+  collections: ExistingCollection[];
+  exported: string[];
 }): string {
-  let result = '';
-
-  // add pre message and import statements
-  result += `/**
- * EXAMPLE COLLECTIONS FOR BETTER AUTH
- * 
- * Below is what your Payload collections should look like.
- * Please copy these to your actual collection configs.
- * Make sure to add an authStrategy for the users collection if there is one.
- * 
- * Example auth strategy:
- * auth: {
- *   disableLocalStrategy: true,
- *   strategies: [
- *     betterAuthStrategy(),
- *     // Add other strategies as needed
- *   ],
- * },
- */
-import type { CollectionConfig } from 'payload';
-
-`;
-
-  // add the collections
-  let collectionsStr = '';
   const tables = getAuthTables(options);
-
-  // Process existing collections first
-  const existingCollectionsBySlug = collections.reduce(
-    (acc, collection) => {
-      if (collection.slug) {
-        acc[collection.slug] = collection;
-      }
-      return acc;
-    },
-    {} as Record<string, CollectionConfig>,
-  );
+  const existing = new Map(collections.map((c) => [c.slug, c]));
+  const names = new Set(exported);
+  const seen = new Set<string>();
+  const blocks: string[] = [];
 
   for (const [tableKey, table] of Object.entries(tables)) {
-    const modelName = table.modelName;
-    const capitalized = modelName.charAt(0).toUpperCase() + modelName.slice(1);
+    const slug = table.modelName;
+    seen.add(slug);
 
-    // Check if this collection already exists in the provided collections
-    const existingCollection = existingCollectionsBySlug[modelName];
+    const prior = existing.get(slug);
+    const name = prior?.name ?? pascal(slug);
+    names.add(name);
 
-    if (existingCollection) {
-      // Convert existing collection to string representation
-      collectionsStr += `const ${capitalized}: CollectionConfig = ${JSON.stringify(existingCollection, null, 2).replace(/"([^"]+)":/g, '$1:')} as const;\n\n`;
-      continue;
-    }
-
-    // Create new collection if it doesn't exist
-    collectionsStr += `const ${capitalized}: CollectionConfig = {
-  slug: "${modelName}",
-`;
-
-    // Add admin section for better UX
-    collectionsStr += `  admin: {
-    useAsTitle: "${getNameField(table.fields)}",
-  },
-`;
-
-    // Add auth section ONLY for users collection
-    if (modelName === 'users') {
-      collectionsStr += `  auth: {
-    disableLocalStrategy: true,
-    strategies: [],
-    // Add your auth strategies here if needed
-  },
-`;
-    }
-
-    // Add fields
-    collectionsStr += `  fields: [
-`;
-
-    for (const [fieldKey, field] of Object.entries(table.fields)) {
-      const fieldName = field.fieldName || fieldKey;
-      // Skip id field as Payload handles it automatically
-      if (fieldName === 'id') continue;
-
-      if (fieldName === 'createdAt' || fieldName === 'updatedAt') continue;
-
-      // Handle field type mapping with safer type approach
-      const fieldType = mapFieldType(field.type as string, fieldName);
-      const isRelationship = fieldName.endsWith('_id') || !!field.references?.model;
-
-      collectionsStr += `    {
-      name: "${isRelationship ? fieldName.replace('_id', '') : fieldName}",
-`;
-
-      if (isRelationship) {
-        collectionsStr += `      type: "relationship",
-      relationTo: "${field.references?.model || fieldName.replace('_id', '')}",
-`;
-      } else if (fieldType === 'upload') {
-        collectionsStr += `      type: "upload",
-      relationTo: "media",
-`;
-      } else {
-        collectionsStr += `      type: "${fieldType}",
-`;
-      }
-
-      if (field.required) {
-        collectionsStr += `      required: true,
-`;
-      }
-
-      if (field.unique) {
-        collectionsStr += `      unique: true,
-`;
-      }
-
-      // Check if field has options and fieldType is select
-      if (fieldType === 'select' && 'options' in field && Array.isArray(field.options)) {
-        collectionsStr += `      options: ${JSON.stringify(field.options)},
-`;
-      }
-
-      if (field.defaultValue !== undefined) {
-        if (typeof field.defaultValue === 'string') {
-          collectionsStr += `      defaultValue: "${field.defaultValue}",
-`;
-        } else if (typeof field.defaultValue === 'boolean') {
-          collectionsStr += `      defaultValue: ${field.defaultValue ? 'true' : 'false'},
-`;
-        } else if (
-          field.defaultValue &&
-          typeof field.defaultValue === 'function' &&
-          field.defaultValue.toString().includes('() => !1')
-        ) {
-          // Handle function-like default values with are false
-          collectionsStr += `      defaultValue: false,
-`;
-        } else if (
-          field.defaultValue &&
-          typeof field.defaultValue === 'function' &&
-          field.defaultValue.toString().includes('() => !0')
-        ) {
-          // Handle function-like default values with are true
-          collectionsStr += `      defaultValue: true,
-`;
-        } else {
-          collectionsStr += `      defaultValue: ${field.defaultValue},
-`;
-        }
-      }
-
-      // Add admin section for fields if needed - safely check for admin property
-      if (
-        'admin' in field &&
-        field.admin &&
-        typeof field.admin === 'object' &&
-        'readOnly' in field.admin &&
-        field.admin.readOnly
-      ) {
-        collectionsStr += `      admin: {
-        readOnly: true,
-      },
-`;
-      }
-
-      collectionsStr += `    },
-`;
-    }
-
-    collectionsStr += `  ],
-  timestamps: true,
-} as const;
-
-`;
+    blocks.push(
+      prior?.source ??
+        `const ${name}: CollectionConfig = ${toSource(buildCollection(tableKey, table, tables))};`,
+    );
   }
 
-  // Add any collections from the input that aren't in the tables
-  for (const collection of collections) {
-    if (!collection.slug || tables[collection.slug]) {
-      continue; // Skip if no slug or already processed
-    }
-
-    const capitalized = collection.slug.charAt(0).toUpperCase() + collection.slug.slice(1);
-    collectionsStr += `const ${capitalized}: CollectionConfig = ${JSON.stringify(collection, null, 2).replace(/"([^"]+)":/g, '$1:')} as const;\n\n`;
+  // Collections the user already has that BA doesn't know about
+  for (const c of collections) {
+    if (seen.has(c.slug)) continue;
+    names.add(c.name);
+    blocks.push(c.source);
   }
 
-  result += collectionsStr;
-
-  // Add export statements for all collections
-  // Check if we have an existing export statement to adapt
-  if (exports?.trim()) {
-    // Parse the existing exports to get collection names
-    const existingExportMatch = exports.match(/export\s*{\s*(.*?)\s*}/);
-    const existingCollections = existingExportMatch
-      ? existingExportMatch[1].split(',').map((name) => name.trim())
-      : [];
-
-    // Get the collection names from our tables
-    const tableCollections = Object.keys(tables).map((model) => {
-      return model.charAt(0).toUpperCase() + model.slice(1);
-    });
-
-    // Combine existing and new collections, removing duplicates
-    const allCollections = [...new Set([...existingCollections, ...tableCollections])];
-
-    // Create the new export statement
-    result += `export { ${allCollections.join(', ')} };
-`;
-  } else if (Object.keys(tables).length > 0) {
-    const collectionNames = Object.keys(tables).map((model) => {
-      // Convert model name to PascalCase for export
-      return model.charAt(0).toUpperCase() + model.slice(1);
-    });
-
-    result += `export { ${collectionNames.join(', ')} };
-`;
-  } else {
-    result += `export {};
-`;
-  }
-
-  return result;
-}
-
-// Helper functions
-function mapFieldType(type: string, fieldName: string): string {
-  if (fieldName.endsWith('_id')) return 'relationship';
-
-  switch (type) {
-    case 'boolean':
-      return 'checkbox';
-    case 'number':
-      return 'number';
-    case 'string':
-      if (fieldName === 'email') return 'email';
-      if (fieldName.includes('password')) return 'text';
-      if (fieldName.includes('image') || fieldName.includes('avatar')) return 'upload';
-      return 'text';
-    case 'date':
-      return 'date';
-    case 'array':
-      return 'array';
-    default:
-      return 'text';
-  }
-}
-
-function getNameField(fields: Record<string, any>): string {
-  // Try to find an appropriate field to use as title
-  const nameOptions = ['name', 'title', 'label', 'email', 'username'];
-
-  for (const option of nameOptions) {
-    if (Object.keys(fields).includes(option)) {
-      return option;
-    }
-  }
-
-  // Default to first field that's not id
-  const firstNonIdField = Object.keys(fields).find((k) => k !== 'id');
-  return firstNonIdField || 'id';
+  return `${HEADER}${blocks.join('\n\n')}\n\nexport { ${[...names].join(', ')} };\n`;
 }
