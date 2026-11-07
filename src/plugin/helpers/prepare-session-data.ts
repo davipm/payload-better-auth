@@ -62,7 +62,7 @@ export async function prepareSessionData({
   usersCollection: CollectionConfig;
   sessionsCollection: CollectionConfig;
 }) {
-  if (!sessionData || !sessionData.user) return null;
+  if (!sessionData?.user) return null;
 
   const newUser = await prepareUser({
     user: sessionData.user,
@@ -73,10 +73,8 @@ export async function prepareSessionData({
     sessionCollection: sessionsCollection,
   });
 
-  const newSessionData = {
+  return {
     session: newSession,
     user: newUser,
   };
-
-  return newSessionData;
 }

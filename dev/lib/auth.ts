@@ -14,7 +14,7 @@ import {
 } from 'better-auth/plugins';
 import type { BetterAuthPlugin as BetterAuthPluginType } from 'better-auth/types';
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
-import type { BetterAuthOptions, PayloadAuthOptions } from '../../src/plugin/index.js';
+import type { BetterAuthOptions, PayloadAuthOptions } from '@/plugin/index.js';
 
 export const betterAuthPlugins = [
   username(),
@@ -97,7 +97,7 @@ export const betterAuthOptions = {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
-      console.log('Send verification email for user: ', url);
+      console.log('Send verification email for user: ', url, user);
     },
   },
   plugins: betterAuthPlugins,
