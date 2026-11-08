@@ -18,15 +18,15 @@ The plugin also supplies Payload admin login, signup, password reset, and two-fa
 Install the package and Better Auth in your Payload application:
 
 ```bash
-pnpm add @davipm/payload-better-auth better-auth
-# or: npm install @davipm/payload-better-auth better-auth
-# or: bun add @davipm/payload-better-auth better-auth
+pnpm add @davipm/payload-better-auth better-auth @better-auth/passkey
+# or: npm install @davipm/payload-better-auth better-auth @better-auth/passkey
+# or: bun add @davipm/payload-better-auth better-auth @better-auth/passkey
 ```
 
-Install any additional Better Auth plugin packages that you use. For example, passkeys and API keys are provided by separate packages:
+Install any additional Better Auth plugin packages that you use. For example, API keys are provided by separate packages:
 
 ```bash
-pnpm add @better-auth/passkey @better-auth/api-key
+pnpm add @better-auth/api-key
 ```
 
 ## 1. Set environment variables
