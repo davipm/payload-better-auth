@@ -4,7 +4,6 @@
 
 The plugin also supplies Payload admin login, signup, password reset, and two-factor views. You configure Better Auth as usual, except the plugin owns the `database` option and maps Better Auth models to Payload collections for you.
 
-- Documentation: <https://payload-auth.dev>
 - Full example configuration in this repository: [`dev/lib/auth.ts`](dev/lib/auth.ts)
 - Payload adapter details: [`src/adapter/README.md`](src/adapter/README.md)
 
@@ -161,7 +160,7 @@ betterAuthPlugin({
 });
 ```
 
-Use the Better Auth documentation for each option's behavior and required settings. Plugin-specific collections are generated from the schemas returned by the Better Auth plugins. The package handles the model and relationship mappings for the supported Better Auth schema models. Some Better Auth plugins add models that this package does not currently map to Payload collections; check the [plugin reference](https://payload-auth.dev/docs/reference/better-auth-plugins) before enabling a schema-producing plugin.
+Use the Better Auth documentation for each option's behavior and required settings. Plugin-specific collections are generated from the schemas returned by the Better Auth plugins. The package handles the model and relationship mappings for the supported Better Auth schema models. Some Better Auth plugins add models that this package does not currently map to Payload collections;
 
 ### Match admin login methods to enabled providers
 
@@ -431,9 +430,5 @@ The main entry exports `betterAuthPlugin`, `getPayloadAuth`, the plugin option t
 
 ## More information
 
-- [Plugin options](https://payload-auth.dev/docs/reference/plugin-options)
-- [Generated collections](https://payload-auth.dev/docs/concepts/collections)
-- [Payload admin integration](https://payload-auth.dev/docs/concepts/admin-panel)
-- [Supported Better Auth plugins](https://payload-auth.dev/docs/reference/better-auth-plugins)
 - [Better Auth documentation](https://www.better-auth.com/docs)
 - [Payload plugin documentation](https://payloadcms.com/docs/plugins/overview)
