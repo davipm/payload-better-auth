@@ -56,10 +56,12 @@ import { buildConfig } from 'payload';
 export default buildConfig({
   admin: {
     user: 'users',
+    importMap: { baseDir: path.resolve(dirname) },
   },
   collections: [
     // Your application collections go here.
   ],
+  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL } }),
   plugins: [
     betterAuthPlugin({
       users: {
@@ -73,6 +75,24 @@ export default buildConfig({
       },
     }),
   ],
+});
+```
+```ts
+import { betterAuthPlugin } from '@davipm/payload-better-auth';
+import { buildConfig } from 'payload';
+import { payloadAuthOptions } from '@/lib/auth';
+
+export default buildConfig({
+  admin: {
+    user: 'users',
+    importMap: { baseDir: path.resolve(dirname) },
+  },
+  collections: [
+    // your own collections — auth collections are added by the plugin
+  ],
+  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL } }),
+  secret: process.env.PAYLOAD_SECRET!,
+  plugins: [betterAuthPlugin(payloadAuthOptions)],
 });
 ```
 
@@ -180,6 +200,21 @@ import config from '@payload-config';
 import type { PayloadAuthConfig } from './auth';
 
 export const getPayload = () => getPayloadAuth<PayloadAuthConfig>(config);
+```
+
+The plugin registers React components (login views, logout button, admin buttons) into Payload's admin panel. Payload resolves them through its import map, so regenerate it after installing:
+
+```ts
+bun run generate:importmap
+```
+
+Create the database schema
+
+The plugin adds collections, which means new tables.
+
+```ts
+bun run db:create
+bun run db:migrate
 ```
 
 `getPayloadAuth` is a typed wrapper around Payload's `getPayload`. It throws a clear error if the plugin is missing or has not initialized. See [`dev/lib/payload.ts`](dev/lib/payload.ts) for the repository's example.
