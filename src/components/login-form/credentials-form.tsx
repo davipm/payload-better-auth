@@ -131,7 +131,7 @@ export function CredentialsForm() {
           </form.AppField>
 
           {showPasswordField && (
-            <form.AppField name="login">
+            <form.AppField name="password">
               {(field) => (
                 <field.TextField
                   type="password"
