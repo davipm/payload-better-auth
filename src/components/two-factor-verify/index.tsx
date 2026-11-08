@@ -2,7 +2,6 @@ import { MinimalTemplate } from '@payloadcms/next/templates';
 import { cookies } from 'next/headers.js';
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps } from 'payload';
-import React from 'react';
 import { adminRoutes, supportedBAPluginIds } from '../../plugin/constants.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';
 import { getPayloadAuth } from '../../plugin/index.js';

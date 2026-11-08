@@ -22,6 +22,108 @@ import { Form, FormInputWrap } from '../form/ui/index.js';
 import { otpField, passwordField } from '../form/validation.js';
 
 const baseClass = 'two-factor-auth-modal';
+const MODAL_SLUG = 'two-factor-auth-modal';
+
+type Step = 'enable' | 'verify' | 'backupCodes' | 'disable';
+
+const createTwoFactorClient = (baseURL?: string, basePath?: string) =>
+  createAuthClient({ baseURL, basePath, plugins: [twoFactorClient()] });
+type TwoFactorClient = ReturnType<typeof createTwoFactorClient>;
+
+const parseBackupCodes = (raw: unknown): string[] | null => {
+  if (!raw) return null;
+  if (Array.isArray(raw)) return raw.map(String);
+  return String(raw).split(/\s+/).filter(Boolean);
+};
+
+const handleSubmit = (submit: () => Promise<void>) => (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  e.stopPropagation(); // modal lives inside Payload's document <form>
+  void submit();
+};
+
+/* ---------- Sub-forms (module scope: stable identity, no remount on parent render) ---------- */
+
+function PasswordForm({
+  className,
+  label,
+  loadingLabel,
+  onSubmit,
+}: {
+  className: string;
+  label: string;
+  loadingLabel: string;
+  onSubmit: (password: string) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const schema = useMemo(() => z.object({ password: passwordField({ t }) }), [t]);
+
+  const form = useAppForm({
+    defaultValues: { password: '' },
+    validators: { onSubmit: schema },
+    onSubmit: ({ value }) => onSubmit(value.password),
+  });
+
+  return (
+    <Form onSubmit={handleSubmit(form.handleSubmit)} className={className}>
+      <FormInputWrap className={`${className}__inputWrap`}>
+        <form.AppField name="password">
+          {(field) => (
+            <field.TextField
+              type="password"
+              className="password"
+              autoComplete="current-password"
+              label="Password"
+              required
+            />
+          )}
+        </form.AppField>
+      </FormInputWrap>
+      <form.AppForm>
+        <form.Submit label={label} loadingLabel={loadingLabel} />
+      </form.AppForm>
+    </Form>
+  );
+}
+
+function VerifyForm({
+  digits,
+  onSubmit,
+}: {
+  digits: number;
+  onSubmit: (code: string) => Promise<void>;
+}) {
+  const schema = useMemo(() => z.object({ otp: otpField({ digits }) }), [digits]);
+
+  const form = useAppForm({
+    defaultValues: { otp: '' },
+    validators: { onSubmit: schema },
+    onSubmit: ({ value }) => onSubmit(value.otp),
+  });
+
+  return (
+    <Form onSubmit={handleSubmit(form.handleSubmit)} className="two-factor-verify-form">
+      <FormInputWrap className="tf__inputWrap">
+        <form.AppField name="otp">
+          {(field) => (
+            <field.TextField
+              type="text"
+              autoComplete="one-time-code"
+              className="text otp"
+              label={`${digits}-digit Code`}
+              required
+            />
+          )}
+        </form.AppField>
+      </FormInputWrap>
+      <form.AppForm>
+        <form.Submit label="Verify" loadingLabel="Verifying" />
+      </form.AppForm>
+    </Form>
+  );
+}
+
+/* ---------- Main ---------- */
 
 interface TwoFactorAuthProps {
   baseURL?: string;
@@ -30,26 +132,29 @@ interface TwoFactorAuthProps {
 }
 
 export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFactorAuthProps) {
+  const [step, setStep] = useState<Step>('enable');
   const [totpURI, setTotpURI] = useState('');
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
-  const [formState, setFormState] = useState<'enable' | 'verify' | 'backupCodes' | 'disable'>(
-    'enable',
-  );
-  const { openModal, closeModal } = useModal();
-  const { t } = useTranslation();
-  const twoFactorEnabledField = useFormFields(([fields]) => fields.twoFactorEnabled);
-  const twoFactorEnabled = Boolean(twoFactorEnabledField?.value);
-  const { setValue: setTwoFactorEnabled } = useField({
-    path: 'twoFactorEnabled',
-  });
 
-  const authClient = useMemo(
-    () => createAuthClient({ baseURL, basePath, plugins: [twoFactorClient()] }),
-    [],
+  const { openModal, closeModal } = useModal();
+  const twoFactorEnabled = useFormFields(([fields]) => Boolean(fields.twoFactorEnabled?.value));
+  const { setValue: setTwoFactorEnabled } = useField<boolean>({ path: 'twoFactorEnabled' });
+
+  const authClient: TwoFactorClient = useMemo(
+    () => createTwoFactorClient(baseURL, basePath),
+    [baseURL, basePath],
   );
+
+  // Reset on open (covers closeOnBlur / X) so secrets never linger in state
+  const open = (next: Step) => {
+    setTotpURI('');
+    setBackupCodes(null);
+    setStep(next);
+    openModal(MODAL_SLUG);
+  };
+  const close = () => closeModal(MODAL_SLUG);
 
   const copyURI = async () => {
-    if (!totpURI) return;
     try {
       await navigator.clipboard.writeText(totpURI);
       toast.success('Copied');
@@ -58,257 +163,137 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
     }
   };
 
-  // Form Schemas
-  const passwordSchema = z.object({
-    password: passwordField({ t }),
-  });
-
-  const otpSchema = z.object({
-    otp: otpField({ digits: twoFactorDigits }),
-  });
-
-  const EnableForm = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const form = useAppForm({
-      defaultValues: { password: '' },
-      onSubmit: async ({ value }: { value: { password: string } }) => {
-        setIsLoading(true);
-        const { data, error } = await authClient.twoFactor.enable({
-          password: value.password,
-        });
-        setIsLoading(false);
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-        // setTotpURI(data.totpURI);
-        if (data && 'backupCodes' in data && data.backupCodes) {
-          setBackupCodes(
-            Array.isArray(data.backupCodes)
-              ? data.backupCodes
-              : String(data.backupCodes).split(/\s+/).filter(Boolean),
-          );
-        } else {
-          setBackupCodes(null);
-        }
-        setFormState('verify');
-      },
-      validators: { onSubmit: passwordSchema },
-    });
-
-    return (
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void form.handleSubmit();
-        }}
-        className="two-factor-enable-form"
-      >
-        <FormInputWrap className="two-factor-enable-form__inputWrap">
-          <form.AppField
-            name="password"
-            children={(field: any) => (
-              <field.TextField type="password" className="password" label="Password" required />
-            )}
-          />
-        </FormInputWrap>
-        <form.AppForm children={<form.Submit label="Enable" loadingLabel="Enabling" />} />
-      </Form>
-    );
+  const enable = async (password: string) => {
+    const { data, error } = await authClient.twoFactor.enable({ password });
+    if (error || !data) {
+      toast.error(error?.message ?? 'Failed to enable two-factor');
+      return;
+    }
+    if (data.method !== 'totp') {
+      toast.error('Unsupported two-factor method');
+      return;
+    }
+    setTotpURI(data.totpURI);
+    setBackupCodes(parseBackupCodes(data.backupCodes));
+    setStep('verify');
   };
 
-  const VerifyForm = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const form = useAppForm({
-      defaultValues: { otp: '' },
-      onSubmit: async ({ value }: { value: { otp: string } }) => {
-        setIsLoading(true);
-        const { data, error } = await authClient.twoFactor.verifyTotp({
-          code: value.otp,
-        });
-        setIsLoading(false);
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-        if (data && 'backupCodes' in data && data.backupCodes) {
-          setBackupCodes(
-            Array.isArray(data.backupCodes)
-              ? data.backupCodes
-              : String(data.backupCodes).split(/\s+/).filter(Boolean),
-          );
-        }
-        toast.success('Two‑factor verified & enabled');
-        setTwoFactorEnabled(true);
-        setFormState('backupCodes');
-      },
-      validators: { onSubmit: otpSchema },
-    });
-
-    return (
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void form.handleSubmit();
-        }}
-        className="two-factor-verify-form"
-      >
-        <FormInputWrap className="tf__inputWrap">
-          <form.AppField
-            name="otp"
-            children={(field: any) => (
-              <field.TextField
-                type="text"
-                className="text otp"
-                label={`${twoFactorDigits}‑digit Code`}
-                required
-              />
-            )}
-          />
-        </FormInputWrap>
-        <form.AppForm children={<form.Submit label="Verify" loadingLabel="Verifying" />} />
-      </Form>
-    );
+  const verify = async (code: string) => {
+    const { error } = await authClient.twoFactor.verifyTotp({ code });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success('Two-factor verified & enabled');
+    setTwoFactorEnabled(true);
+    setTotpURI('');
+    if (backupCodes?.length) setStep('backupCodes');
+    else close();
   };
 
-  const DisableForm = () => {
-    const form = useAppForm({
-      defaultValues: { password: '' },
-      onSubmit: async ({ value }: { value: { password: string } }) => {
-        await authClient.twoFactor.disable(
-          { password: value.password },
-          {
-            onSuccess() {
-              toast.success('Two‑factor disabled');
-              setTwoFactorEnabled(false);
-              closeModal('two-factor-auth-modal');
-              return undefined;
-            },
-            onError(ctx: any) {
-              toast.error(ctx.error.message);
-            },
-          },
-        );
-      },
-      validators: { onSubmit: passwordSchema },
-    });
-
-    return (
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void form.handleSubmit();
-        }}
-        className="two-factor-disable-form mt-4"
-      >
-        <FormInputWrap className="two-factor-disable-form__inputWrap">
-          <form.AppField
-            name="password"
-            children={(field: any) => (
-              <field.TextField type="password" className="password" label="Password" required />
-            )}
-          />
-        </FormInputWrap>
-        <form.AppForm
-          children={<form.Submit label="Disable Two‑Factor" loadingLabel="Disabling" />}
-        />
-      </Form>
-    );
+  const disable = async (password: string) => {
+    const { error } = await authClient.twoFactor.disable({ password });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success('Two-factor disabled');
+    setTwoFactorEnabled(false);
+    close();
   };
 
   return (
     <div className="two-factor-auth-field">
-      {twoFactorEnabled ? (
-        <Button
-          onClick={() => {
-            setFormState('disable');
-            openModal('two-factor-auth-modal');
-          }}
-          size="medium"
-          buttonStyle="pill"
-        >
-          Disable Two-Factor
-        </Button>
-      ) : (
-        <Button
-          onClick={() => {
-            setFormState('enable');
-            openModal('two-factor-auth-modal');
-          }}
-          size="medium"
-          buttonStyle="pill"
-        >
-          Enable Two-Factor
-        </Button>
-      )}
-      <Modal slug="two-factor-auth-modal" className={baseClass} closeOnBlur>
+      <Button
+        onClick={() => open(twoFactorEnabled ? 'disable' : 'enable')}
+        size="medium"
+        buttonStyle="pill"
+      >
+        {twoFactorEnabled ? 'Disable' : 'Enable'} Two-Factor
+      </Button>
+
+      <Modal slug={MODAL_SLUG} className={baseClass} closeOnBlur>
         <div className={`${baseClass}__wrapper`}>
           <Button
-            onClick={() => closeModal('two-factor-auth-modal')}
+            onClick={close}
             buttonStyle="icon-label"
             size="small"
             className={`${baseClass}__close-button`}
+            aria-label="Close"
           >
             <XIcon size={24} />
           </Button>
 
           <div className={`${baseClass}__content`} style={{ maxWidth: '38rem' }}>
-            {formState === 'enable' && (
+            {step === 'enable' && (
               <>
-                <h2>Enable Two‑Factor</h2>
-                <EnableForm />
+                <h2>Enable Two-Factor</h2>
+                <PasswordForm
+                  className="two-factor-enable-form"
+                  label="Enable"
+                  loadingLabel="Enabling"
+                  onSubmit={enable}
+                />
               </>
             )}
-            {formState === 'verify' && (
+
+            {step === 'verify' && (
               <>
-                <h2>Verify Two‑Factor</h2>
-                <div className="two-factor-auth-modal__verify-block">
+                <h2>Verify Two-Factor</h2>
+                <div className={`${baseClass}__verify-block`}>
                   <p>Scan the QR code with your authenticator app or copy the URI.</p>
-                  <div className="two-factor-auth-modal__qrcode">
+                  <div className={`${baseClass}__qrcode`}>
                     <QRCodeSVG value={totpURI} size={200} />
                   </div>
                   <Button
                     size="small"
                     buttonStyle="transparent"
                     onClick={copyURI}
-                    className="two-factor-auth-modal__copy-btn"
+                    className={`${baseClass}__copy-btn`}
                   >
-                    <Copy size={18} className="two-factor-auth-modal__copy-icon" /> Copy URI
+                    <Copy size={18} className={`${baseClass}__copy-icon`} /> Copy URI
                   </Button>
-                  <VerifyForm />
+                  <VerifyForm digits={twoFactorDigits} onSubmit={verify} />
                 </div>
               </>
             )}
-            {formState === 'backupCodes' && backupCodes && (
+
+            {step === 'backupCodes' && backupCodes && (
               <>
                 <h2>Backup Codes</h2>
-                <div className="two-factor-auth-modal__backup-codes">
+                <div className={`${baseClass}__backup-codes`}>
                   <ul>
-                    {backupCodes.map((code, i) => (
-                      <li key={i} className="two-factor-auth-modal__backup-code">
+                    {backupCodes.map((code) => (
+                      <li key={code} className={`${baseClass}__backup-code`}>
                         {code}
                       </li>
                     ))}
                   </ul>
-                  <p className="two-factor-auth-modal__backup-desc">
+                  <p className={`${baseClass}__backup-desc`}>
                     Store these codes in a safe place. Each code can be used once if you lose access
                     to your authenticator.
                   </p>
                 </div>
                 <Button
-                  onClick={() => closeModal('two-factor-auth-modal')}
+                  onClick={close}
                   buttonStyle="primary"
                   size="large"
-                  className="two-factor-auth-modal__backup-codes-close-button"
+                  className={`${baseClass}__backup-codes-close-button`}
                 >
                   Saved them!
                 </Button>
               </>
             )}
-            {formState === 'disable' && (
+
+            {step === 'disable' && (
               <>
-                <h2>Two‑Factor Authentication</h2>
-                <DisableForm />
+                <h2>Two-Factor Authentication</h2>
+                <PasswordForm
+                  className="two-factor-disable-form"
+                  label="Disable Two-Factor"
+                  loadingLabel="Disabling"
+                  onSubmit={disable}
+                />
               </>
             )}
           </div>

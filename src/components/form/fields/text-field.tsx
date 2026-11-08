@@ -1,6 +1,16 @@
-import { useStore } from '@tanstack/react-form';
+import { useSelector } from '@tanstack/react-form';
+import type { ComponentPropsWithoutRef } from 'react';
 import { useFieldContext } from '../index.js';
 import { FieldErrors, FieldInputWrap, FormField, FormLabel } from '../ui/index.js';
+
+type TextFieldProps = Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'className' | 'id' | 'name' | 'label'
+> & {
+  className: string;
+  label: string;
+  onValueChange?: (value: string) => void;
+};
 
 export function TextField({
   className,
@@ -9,16 +19,11 @@ export function TextField({
   type = 'text',
   autoComplete = 'off',
   onValueChange,
-}: {
-  className: string;
-  label: string;
-  required?: boolean;
-  type?: string;
-  autoComplete?: string;
-  onValueChange?: (value: string) => void;
-}) {
+  ...inputProps // inputMode, placeholder, maxLength, disabled, etc.
+}: TextFieldProps) {
   const field = useFieldContext<string>();
-  const meta = useStore(field.store, (state) => state.meta);
+  const value = useSelector(field.store, (state) => state.value);
+  const meta = useSelector(field.store, (state) => state.meta);
 
   const hasError = meta.isTouched && meta.errors.length > 0;
 
@@ -27,17 +32,19 @@ export function TextField({
       <FormLabel label={label} htmlFor={field.name} required={required} />
       <FieldInputWrap>
         <input
-          autoComplete={autoComplete}
-          type={type}
+          {...inputProps}
           id={field.name}
           name={field.name}
-          value={field.state.value}
+          type={type}
+          autoComplete={autoComplete}
+          value={value ?? ''}
           onChange={(e) => {
             field.handleChange(e.target.value);
             onValueChange?.(e.target.value);
           }}
           onBlur={field.handleBlur}
           required={required}
+          aria-invalid={hasError || undefined}
           className="text-field"
         />
         <FieldErrors meta={meta} />

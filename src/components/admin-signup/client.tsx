@@ -16,7 +16,6 @@ import { AlternativeMethods, LoginFormProvider } from '../login-form/index.js';
 
 interface AdminSignupClientProps {
   adminInviteToken: string;
-  userSlug: string;
   loginMethods: LoginMethod[];
   searchParams: { [key: string]: string | string[] | undefined };
   loginWithUsername: false | LoginWithUsernameOptions;
@@ -53,7 +52,6 @@ function SignupForm({
 }: SignupFormProps) {
   const {
     config: {
-      admin: { user: userSlug },
       routes: { admin: adminRoute },
     },
   } = useConfig();
@@ -143,9 +141,8 @@ function SignupForm({
       }}
     >
       <FormInputWrap className="login__form">
-        <form.AppField
-          name="name"
-          children={(field) => (
+        <form.AppField name="name">
+          {(field) => (
             <field.TextField
               type="name"
               className="text"
@@ -154,10 +151,10 @@ function SignupForm({
               required
             />
           )}
-        />
-        <form.AppField
-          name="email"
-          children={(field) => (
+        </form.AppField>
+
+        <form.AppField name="email">
+          {(field) => (
             <field.TextField
               type="email"
               className="email"
@@ -166,11 +163,10 @@ function SignupForm({
               required
             />
           )}
-        />
+        </form.AppField>
         {loginWithUsername && (
-          <form.AppField
-            name="username"
-            children={(field) => (
+          <form.AppField name="username">
+            {(field) => (
               <field.TextField
                 type="name"
                 className="text"
@@ -179,11 +175,10 @@ function SignupForm({
                 required={requireUsername}
               />
             )}
-          />
+          </form.AppField>
         )}
-        <form.AppField
-          name="password"
-          children={(field) => (
+        <form.AppField name="password">
+          {(field) => (
             <field.TextField
               type="password"
               className="password"
@@ -191,10 +186,9 @@ function SignupForm({
               required
             />
           )}
-        />
-        <form.AppField
-          name="confirmPassword"
-          children={(field) => (
+        </form.AppField>
+        <form.AppField name="confirmPassword">
+          {(field) => (
             <field.TextField
               type="password"
               className="password"
@@ -202,18 +196,17 @@ function SignupForm({
               required
             />
           )}
-        />
+        </form.AppField>
       </FormInputWrap>
-      <form.AppForm
-        children={<form.Submit label={t('general:create')} loadingLabel={t('general:loading')} />}
-      />
+      <form.AppForm>
+        <form.Submit label={t('general:create')} loadingLabel={t('general:loading')} />
+      </form.AppForm>
     </Form>
   );
 }
 
 export function AdminSignupClient({
   adminInviteToken,
-  userSlug,
   searchParams,
   loginMethods,
   loginWithUsername,

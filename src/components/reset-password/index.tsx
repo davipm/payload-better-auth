@@ -2,7 +2,6 @@ import { MinimalTemplate } from '@payloadcms/next/templates';
 import { Button, Link, Translation } from '@payloadcms/ui';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
-import React from 'react';
 import { z } from 'zod';
 import { adminRoutes } from '../../plugin/constants.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';

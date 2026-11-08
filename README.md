@@ -50,8 +50,8 @@ Generate a Better Auth secret with `openssl rand -base64 32`. Use HTTPS URLs in 
 Add the plugin to `plugins` in `payload.config.ts`. Set `admin.user` to the slug of the users collection the plugin creates or extends.
 
 ```ts
-import { betterAuthPlugin } from '@davipm/payload-better-auth'
-import { buildConfig } from 'payload'
+import { betterAuthPlugin } from '@davipm/payload-better-auth';
+import { buildConfig } from 'payload';
 
 export default buildConfig({
   admin: {
@@ -73,7 +73,7 @@ export default buildConfig({
       },
     }),
   ],
-})
+});
 ```
 
 Email and password authentication is enabled by the plugin by default; including `emailAndPassword.enabled` makes that choice explicit. The plugin configures Better Auth's database adapter internally. Do not pass `betterAuthOptions.database`—it is intentionally excluded from the plugin's options type.
@@ -83,12 +83,12 @@ The plugin initializes Better Auth in Payload's `onInit` hook and attaches it to
 The plugin uses the Payload database adapter from your Payload config. For example, with PostgreSQL:
 
 ```ts
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { postgresAdapter } from '@payloadcms/db-postgres';
 
 // Add to buildConfig({...})
 db: postgresAdapter({
   pool: { connectionString: process.env.DATABASE_URL },
-})
+});
 ```
 
 Install and configure the Payload database adapter that matches your database. The auth collections use that same database.
@@ -98,9 +98,9 @@ Install and configure the Payload database adapter that matches your database. T
 Pass ordinary Better Auth settings through `betterAuthOptions`. This includes social providers, email callbacks, session settings, and Better Auth plugins. Configure callbacks to send email or OTP messages through your own delivery service.
 
 ```ts
-import { admin, organization, twoFactor } from 'better-auth/plugins'
-import { passkey } from '@better-auth/passkey'
-import { betterAuthPlugin } from '@davipm/payload-better-auth'
+import { admin, organization, twoFactor } from 'better-auth/plugins';
+import { passkey } from '@better-auth/passkey';
+import { betterAuthPlugin } from '@davipm/payload-better-auth';
 
 betterAuthPlugin({
   users: {
@@ -138,7 +138,7 @@ betterAuthPlugin({
       organization(),
     ],
   },
-})
+});
 ```
 
 Use the Better Auth documentation for each option's behavior and required settings. Plugin-specific collections are generated from the schemas returned by the Better Auth plugins. The package handles the model and relationship mappings for the supported Better Auth schema models. Some Better Auth plugins add models that this package does not currently map to Payload collections; check the [plugin reference](https://payload-auth.dev/docs/reference/better-auth-plugins) before enabling a schema-producing plugin.
@@ -153,7 +153,7 @@ betterAuthPlugin({
     loginMethods: ['emailPassword', 'google', 'passkey'],
   },
   // ...users and betterAuthOptions
-})
+});
 ```
 
 The current Payload views render `emailPassword`, `magicLink`, `passkey`, and the supported social provider names such as `google`, `github`, and `apple`. `LoginMethod` also contains `emailOTP`, `phonePassword`, `phoneOTP`, and `phoneMagicLink`, but those methods are not rendered by the current Payload views. A displayed method must also be configured in Better Auth.
@@ -163,23 +163,23 @@ The current Payload views render `emailPassword`, `magicLink`, `passkey`, and th
 Create a catch-all route at `app/api/auth/[...all]/route.ts` (or the equivalent location under your `src` directory). It forwards Better Auth requests to the instance initialized by Payload.
 
 ```ts
-import { toNextJsHandler } from 'better-auth/next-js'
-import { getPayload } from '@/lib/payload'
+import { toNextJsHandler } from 'better-auth/next-js';
+import { getPayload } from '@/lib/payload';
 
-const payload = await getPayload()
+const payload = await getPayload();
 
-export const { GET, POST } = toNextJsHandler(payload.betterAuth)
+export const { GET, POST } = toNextJsHandler(payload.betterAuth);
 ```
 
 For example, `getPayload` can provide a typed Payload instance:
 
 ```ts
 // lib/payload.ts
-import { getPayloadAuth } from '@davipm/payload-better-auth'
-import config from '@payload-config'
-import type { PayloadAuthConfig } from './auth'
+import { getPayloadAuth } from '@davipm/payload-better-auth';
+import config from '@payload-config';
+import type { PayloadAuthConfig } from './auth';
 
-export const getPayload = () => getPayloadAuth<PayloadAuthConfig>(config)
+export const getPayload = () => getPayloadAuth<PayloadAuthConfig>(config);
 ```
 
 `getPayloadAuth` is a typed wrapper around Payload's `getPayload`. It throws a clear error if the plugin is missing or has not initialized. See [`dev/lib/payload.ts`](dev/lib/payload.ts) for the repository's example.
@@ -190,38 +190,34 @@ Create a Better Auth client in your application and point it at the same origin 
 
 ```ts
 // lib/auth-client.ts
-'use client'
+'use client';
 
-import { createAuthClient } from 'better-auth/react'
+import { createAuthClient } from 'better-auth/react';
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
-})
+});
 ```
 
 Use Better Auth's client methods in your forms or components:
 
 ```ts
-await authClient.signIn.email({ email, password })
+await authClient.signIn.email({ email, password });
 
 await authClient.signUp.email({
   name,
   email,
   password,
-})
+});
 
-await authClient.signOut()
+await authClient.signOut();
 ```
 
 Add matching client plugins when the server uses Better Auth plugins that require them. For example, use `adminClient()` with the Better Auth admin plugin and `twoFactorClient()` with two-factor authentication. If you expose additional user fields such as `role` to the client, configure Better Auth's `inferAdditionalFields` client plugin using the server auth type. See [`dev/lib/auth-client.ts`](dev/lib/auth-client.ts) for a fuller client setup.
 
 ```ts
-import {
-  adminClient,
-  inferAdditionalFields,
-  twoFactorClient,
-} from 'better-auth/client/plugins'
-import { createAuthClient } from 'better-auth/react'
+import { adminClient, inferAdditionalFields, twoFactorClient } from 'better-auth/client/plugins';
+import { createAuthClient } from 'better-auth/react';
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -230,7 +226,7 @@ export const authClient = createAuthClient({
     twoFactorClient(),
     inferAdditionalFields({ user: { role: { type: 'string' } } }),
   ],
-})
+});
 ```
 
 ## Use the Better Auth session with Payload
@@ -238,19 +234,19 @@ export const authClient = createAuthClient({
 On the server, read the session with Better Auth's API:
 
 ```ts
-import { headers } from 'next/headers'
-import { getPayload } from '@/lib/payload'
+import { headers } from 'next/headers';
+import { getPayload } from '@/lib/payload';
 
-const payload = await getPayload()
+const payload = await getPayload();
 const session = await payload.betterAuth.api.getSession({
   headers: await headers(),
-})
+});
 ```
 
 The generated Payload users collection also has a Better Auth strategy, so Payload's own auth API resolves the same session from request headers:
 
 ```ts
-const { user } = await payload.auth({ headers: await headers() })
+const { user } = await payload.auth({ headers: await headers() });
 ```
 
 Pass the resolved user to Local API calls that should apply the user's Payload access rules. For example, omit `overrideAccess` or set it to `false` when querying content on behalf of the signed-in user.
@@ -295,12 +291,12 @@ betterAuthPlugin({
   requireAdminInviteForSignUp: true,
   adminInvitations: {
     async sendInviteEmail({ email, url }) {
-      await sendEmail({ to: email, url })
-      return { success: true }
+      await sendEmail({ to: email, url });
+      return { success: true };
     },
   },
   // ...users and betterAuthOptions
-})
+});
 ```
 
 With this option on, public email/password signups and social signups that request account creation must include a valid, unexpired invitation token. Existing users can still sign in. Admins can still create users through Payload or server-side code. Without it, public signup availability follows your Better Auth provider configuration; email/password is enabled by default, so disable it or add an appropriate signup policy if open registration is not intended.
@@ -315,7 +311,7 @@ await authClient.signUp.email({
   fetchOptions: {
     query: { adminInviteToken },
   },
-})
+});
 ```
 
 ## Generated collections and customization
@@ -343,7 +339,7 @@ betterAuthPlugin({
   },
   sessions: { slug: 'auth-sessions', hidden: true },
   // ...betterAuthOptions
-})
+});
 ```
 
 If you change `users.slug`, also set `admin.user` to the same slug. The plugin also provides collection overrides for `accounts`, `sessions`, `verifications`, `adminInvitations`, and supported Better Auth plugin collections through `pluginCollectionOverrides`. Keep the Better Auth schema and collection configuration in sync when overriding generated fields.
@@ -362,28 +358,28 @@ In local development, a database adapter configured to push schema changes can a
 
 ## Plugin options at a glance
 
-| Option | Purpose |
-| --- | --- |
-| `betterAuthOptions` | Better Auth options except `database`, which is configured by the plugin |
-| `users` | User collection slug, roles, allowed self-service fields, visibility, and overrides |
-| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and overrides |
-| `adminInvitations` | Invite collection, invite URL generation, email delivery, and overrides |
-| `admin.loginMethods` | Explicitly controls methods shown in Payload's auth views |
-| `requireAdminInviteForSignUp` | Requires an invitation for public email and social signups |
-| `hidePluginCollections` | Hides collections generated for Better Auth plugin schemas |
-| `collectionAdminGroup` | Admin navigation group for generated auth collections; defaults to `Auth` |
-| `pluginCollectionOverrides` | Overrides generated collection configs for supported Better Auth plugins |
-| `debug.enableDebugLogs` | Logs Payload adapter database operation inputs and results; use for development debugging because auth records may include sensitive values |
-| `disabled` | Skips all plugin config changes when `true` |
+| Option                                  | Purpose                                                                                                                                     |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `betterAuthOptions`                     | Better Auth options except `database`, which is configured by the plugin                                                                    |
+| `users`                                 | User collection slug, roles, allowed self-service fields, visibility, and overrides                                                         |
+| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and overrides                                                                                            |
+| `adminInvitations`                      | Invite collection, invite URL generation, email delivery, and overrides                                                                     |
+| `admin.loginMethods`                    | Explicitly controls methods shown in Payload's auth views                                                                                   |
+| `requireAdminInviteForSignUp`           | Requires an invitation for public email and social signups                                                                                  |
+| `hidePluginCollections`                 | Hides collections generated for Better Auth plugin schemas                                                                                  |
+| `collectionAdminGroup`                  | Admin navigation group for generated auth collections; defaults to `Auth`                                                                   |
+| `pluginCollectionOverrides`             | Overrides generated collection configs for supported Better Auth plugins                                                                    |
+| `debug.enableDebugLogs`                 | Logs Payload adapter database operation inputs and results; use for development debugging because auth records may include sensitive values |
+| `disabled`                              | Skips all plugin config changes when `true`                                                                                                 |
 
 See the [`PayloadAuthOptions` type](src/plugin/types.ts) and the [plugin options reference](https://payload-auth.dev/docs/reference/plugin-options) for the complete option list.
 
 ## Package exports
 
 ```ts
-import { betterAuthPlugin, getPayloadAuth } from '@davipm/payload-better-auth'
-import { /* client components */ } from '@davipm/payload-better-auth/client'
-import { /* server components */ } from '@davipm/payload-better-auth/rsc'
+import { betterAuthPlugin, getPayloadAuth } from '@davipm/payload-better-auth';
+import {/* client components */} from '@davipm/payload-better-auth/client';
+import {/* server components */} from '@davipm/payload-better-auth/rsc';
 ```
 
 The main entry exports `betterAuthPlugin`, `getPayloadAuth`, the plugin option types, and adapter utilities. `/client` and `/rsc` expose the components used by the Payload admin integration. Most applications only need the main entry and the Better Auth client package.

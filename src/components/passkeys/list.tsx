@@ -2,7 +2,6 @@
 
 import { Button } from '@payloadcms/ui';
 import { Fingerprint, Trash } from 'lucide-react';
-import React from 'react';
 import type { PasskeyWithId } from './types.js';
 
 interface PasskeyListProps {

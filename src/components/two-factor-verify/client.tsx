@@ -26,6 +26,7 @@ export function TwoFactorVerifyForm({
 }: TwoFactorVerifyFormProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const authClient = useMemo(
     () => createAuthClient({ baseURL, basePath, plugins: [twoFactorClient()] }),
     [],
@@ -59,9 +60,8 @@ export function TwoFactorVerifyForm({
     >
       <FormHeader style={{ textAlign: 'center' }} heading={'Verify Two-Factor'} />
       <FormInputWrap>
-        <form.AppField
-          name="code"
-          children={(field) => (
+        <form.AppField name="code">
+          {(field) => (
             <field.TextField
               type="text"
               className="text otp"
@@ -70,16 +70,14 @@ export function TwoFactorVerifyForm({
               autoComplete="one-time-password"
             />
           )}
-        />
+        </form.AppField>
       </FormInputWrap>
-      <form.AppForm
-        children={
-          <form.Submit
-            label={t('authentication:verify') || 'Verify'}
-            loadingLabel={t('general:loading') || 'Loading'}
-          />
-        }
-      />
+      <form.AppForm>
+        <form.Submit
+          label={t('authentication:verify') || 'Verify'}
+          loadingLabel={t('general:loading') || 'Loading'}
+        />
+      </form.AppForm>
     </Form>
   );
 }

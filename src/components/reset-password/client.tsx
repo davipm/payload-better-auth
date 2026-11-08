@@ -21,6 +21,7 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
   const { t } = useTranslation();
   const history = useRouter();
   const { fetchFullUser } = useAuth();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const authClient = useMemo(() => createAuthClient({ baseURL, basePath }), []);
   const {
     config: {
@@ -100,9 +101,8 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
       }}
     >
       <FormInputWrap className="login__form">
-        <form.AppField
-          name="password"
-          children={(field) => (
+        <form.AppField name="password">
+          {(field) => (
             <field.TextField
               type="password"
               className="password"
@@ -110,10 +110,10 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
               required
             />
           )}
-        />
-        <form.AppField
-          name="confirmPassword"
-          children={(field) => (
+        </form.AppField>
+
+        <form.AppField name="confirmPassword">
+          {(field) => (
             <field.TextField
               type="password"
               className="password"
@@ -121,16 +121,14 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
               required
             />
           )}
-        />
+        </form.AppField>
       </FormInputWrap>
-      <form.AppForm
-        children={
-          <form.Submit
-            label={t('authentication:resetPassword')}
-            loadingLabel={t('general:loading')}
-          />
-        }
-      />
+      <form.AppForm>
+        <form.Submit
+          label={t('authentication:resetPassword')}
+          loadingLabel={t('general:loading')}
+        />
+      </form.AppForm>
     </Form>
   );
 }

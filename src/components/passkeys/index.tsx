@@ -1,4 +1,3 @@
-import React from 'react';
 import { PasskeysClient } from './client.js';
 import './index.scss';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
