@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@payloadcms/ui';
-import { Fingerprint, Trash } from 'lucide-react';
+import { Fingerprint, Trash } from '../icons.js';
 import type { PasskeyWithId } from './types.js';
 
 interface PasskeyListProps {
@@ -19,7 +19,7 @@ export function PasskeyList({ passkeys, onDelete }: PasskeyListProps) {
         if (!id || !createdAt) return null;
         return (
           <li key={id} className="passkeys-field__list-item">
-            <Fingerprint size={16} />
+            <Fingerprint />
             <span>{pk.name || 'My Passkey'}</span>
             <span className="passkeys-field__list-item-date"> - </span>
             <span className="passkeys-field__list-item-date">
@@ -39,7 +39,7 @@ export function PasskeyList({ passkeys, onDelete }: PasskeyListProps) {
                 className="passkeys-field__delete-button"
                 onClick={() => onDelete(id)}
               >
-                <Trash size={16} />
+                <Trash />
               </Button>
             )}
           </li>

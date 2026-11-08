@@ -1,7 +1,6 @@
 'use client';
 
 import { Button, toast } from '@payloadcms/ui';
-import { Key, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation.js';
 import { useEffect, useRef, useState } from 'react';
 import { useLoginForm } from './context.js';
@@ -9,7 +8,7 @@ import './index.scss';
 import { socialProviders } from '../../plugin/constants.js';
 import type { SocialProvider } from '../../plugin/types.js';
 import { isValidEmail } from '../form/validation.js';
-import { Icons } from '../icons.js';
+import { Icons, Key, Mail } from '../icons.js';
 
 const baseClass = 'login-form-methods';
 

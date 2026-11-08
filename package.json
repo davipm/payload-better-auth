@@ -126,7 +126,6 @@
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
     "@tanstack/react-form": "^1.33.5",
-    "lucide-react": "^1.70.0",
     "qrcode.react": "^4.2.0"
   }
 }

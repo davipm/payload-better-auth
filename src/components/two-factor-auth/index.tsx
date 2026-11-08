@@ -4,16 +4,17 @@ import './index.scss';
 
 import {
   Button,
+  CopyIcon,
   Modal,
   toast,
   useField,
   useFormFields,
   useModal,
   useTranslation,
+  XIcon,
 } from '@payloadcms/ui';
 import { twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
-import { Copy, XIcon } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useMemo, useState } from 'react';
 import { z } from 'zod';
@@ -221,7 +222,9 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
             className={`${baseClass}__close-button`}
             aria-label="Close"
           >
-            <XIcon size={24} />
+            <span aria-hidden="true">
+              <XIcon />
+            </span>
           </Button>
 
           <div className={`${baseClass}__content`} style={{ maxWidth: '38rem' }}>
@@ -251,7 +254,10 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
                     onClick={copyURI}
                     className={`${baseClass}__copy-btn`}
                   >
-                    <Copy size={18} className={`${baseClass}__copy-icon`} /> Copy URI
+                    <span aria-hidden="true">
+                      <CopyIcon />
+                    </span>
+                    Copy URI
                   </Button>
                   <VerifyForm digits={twoFactorDigits} onSubmit={verify} />
                 </div>

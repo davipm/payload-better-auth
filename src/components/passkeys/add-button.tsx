@@ -1,9 +1,8 @@
 'use client';
 
 import { passkeyClient } from '@better-auth/passkey/client';
-import { Button, Modal, toast, useModal } from '@payloadcms/ui';
+import { Button, Modal, toast, useModal, XIcon } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
-import { XIcon } from 'lucide-react';
 import type React from 'react';
 import { useMemo, useState } from 'react';
 import { z } from 'zod';
@@ -87,7 +86,9 @@ export function PassKeyAddButton({ onAdd, baseURL, basePath }: PassKeyAddButtonP
             size="small"
             className={`${baseClass}__close-button`}
           >
-            <XIcon size={24} />
+            <span aria-hidden="true">
+              <XIcon />
+            </span>
           </Button>
           <div className={`${baseClass}__content`} style={{ maxWidth: '30rem' }}>
             <h2>Create New Passkey</h2>

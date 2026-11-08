@@ -1,11 +1,21 @@
 'use client';
 
-import { Button, Modal, Select, TextInput, toast, useConfig, useModal } from '@payloadcms/ui';
+import {
+  Button,
+  CopyIcon,
+  Modal,
+  Select,
+  TextInput,
+  toast,
+  useConfig,
+  useModal,
+  XIcon,
+} from '@payloadcms/ui';
 import type { Option } from '@payloadcms/ui/elements/ReactSelect';
-import { Copy, Loader2, XIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation.js';
 import { type ChangeEvent, useState } from 'react';
 import { adminEndpoints } from '../../plugin/constants.js';
+import { LoaderCircle } from '../icons.js';
 import './index.scss';
 
 const MODAL_SLUG = 'admin-invite-modal';
@@ -130,7 +140,9 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
         className={`${baseClass}__close-button`}
         aria-label="Close"
       >
-        <XIcon size={24} />
+        <span aria-hidden="true">
+          <XIcon />
+        </span>
       </Button>
 
       <div className={`${baseClass}__content`}>
@@ -168,7 +180,7 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
 
           <div className={`${baseClass}__buttons`}>
             <Button type="submit" disabled={!canSend || pending !== null}>
-              {pending === 'email' && <Loader2 size={24} className="animate-spin" />}
+              {pending === 'email' && <LoaderCircle className="animate-spin" />}
               Send Email
             </Button>
 
@@ -181,9 +193,11 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
               disabled={!roleValue || pending !== null}
             >
               {pending === 'link' ? (
-                <Loader2 size={20} strokeWidth={1.5} className="animate-spin" />
+                <LoaderCircle strokeWidth={1.5} className="animate-spin" />
               ) : (
-                <Copy size={20} strokeWidth={1.5} />
+                <span aria-hidden="true">
+                  <CopyIcon />
+                </span>
               )}
               Generate Link
             </Button>
