@@ -118,9 +118,8 @@ export function CredentialsForm() {
         }}
       >
         <FormInputWrap className={baseClass}>
-          <form.AppField
-            name="login"
-            children={(field) => (
+          <form.AppField name="login">
+            {(field) => (
               <field.TextField
                 type="text"
                 className="email"
@@ -129,11 +128,11 @@ export function CredentialsForm() {
                 onValueChange={setEmail}
               />
             )}
-          />
+          </form.AppField>
+
           {showPasswordField && (
-            <form.AppField
-              name="password"
-              children={(field) => (
+            <form.AppField name="login">
+              {(field) => (
                 <field.TextField
                   type="password"
                   className="password"
@@ -141,7 +140,7 @@ export function CredentialsForm() {
                   label={t('general:password')}
                 />
               )}
-            />
+            </form.AppField>
           )}
         </FormInputWrap>
         {showPasswordField && (
@@ -150,14 +149,9 @@ export function CredentialsForm() {
               {t('authentication:forgotPasswordQuestion')}
             </Link>
             <button type="submit" style={{ display: 'none' }} tabIndex={-1} />
-            <form.AppForm
-              children={
-                <form.Submit
-                  label={t('authentication:login')}
-                  loadingLabel={t('general:loading')}
-                />
-              }
-            />
+            <form.AppForm>
+              <form.Submit label={t('authentication:login')} loadingLabel={t('general:loading')} />
+            </form.AppForm>
           </>
         )}
       </Form>

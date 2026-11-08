@@ -92,9 +92,8 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
         description={t('authentication:forgotPasswordEmailInstructions')}
       />
       <FormInputWrap>
-        <form.AppField
-          name="email"
-          children={(field) => (
+        <form.AppField name="email">
+          {(field) => (
             <field.TextField
               type="text"
               className="email"
@@ -102,11 +101,11 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
               label={t('general:email')}
             />
           )}
-        />
+        </form.AppField>
       </FormInputWrap>
-      <form.AppForm
-        children={<form.Submit label={t('general:submit')} loadingLabel={t('general:loading')} />}
-      />
+      <form.AppForm>
+        <form.Submit label={t('general:submit')} loadingLabel={t('general:loading')} />
+      </form.AppForm>
     </Form>
   );
 }
