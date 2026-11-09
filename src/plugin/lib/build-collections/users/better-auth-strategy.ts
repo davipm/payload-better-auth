@@ -1,6 +1,6 @@
 import type { AuthStrategy, AuthStrategyResult } from 'payload';
-import { getPayloadAuth } from '../../../index.js';
 import { baseSlugs } from '../../../constants.js';
+import { getPayloadAuth } from '../../../index.js';
 
 const STRATEGY_NAME = 'better-auth';
 const ANONYMOUS: AuthStrategyResult = { user: null };
