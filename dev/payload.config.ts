@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { betterAuthPlugin } from '@davipm/payload-better-auth';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
@@ -8,7 +9,7 @@ import sharp from 'sharp';
 import { Projects } from './collections/projects.js';
 import { Users } from './collections/users.js';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
-import { plugins } from './payload/plugins/index.js';
+import { payloadAuthOptions } from './lib/auth.js';
 import { seed } from './seed.js';
 import { getServerSideURL } from './utils/get-url.js';
 
@@ -34,17 +35,14 @@ const buildConfigWithMemoryDB = async () => {
   return buildConfig({
     admin: {
       user: 'users',
-      importMap: {
-        baseDir: path.resolve(dirname),
-      },
+      importMap: { baseDir: path.resolve(dirname) },
     },
     collections: [Projects, Users],
     cors: [getServerSideURL()].filter(Boolean),
     db: postgresAdapter({
       disableCreateDatabase: false,
       pool: { connectionString: process.env.DATABASE_URL },
-      // Keep the demo database schema in sync during development. Production uses migrations.
-      push: true,
+      push: true, // Keep the demo database schema in sync during development. Production uses migrations.
       migrationDir: path.resolve(dirname, 'migrations'),
     }),
     email: testEmailAdapter,
@@ -52,13 +50,11 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload);
     },
-    plugins: [...plugins],
+    plugins: [betterAuthPlugin(payloadAuthOptions)],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
     sharp,
-    typescript: {
-      outputFile: path.resolve(dirname, 'payload-types.ts'),
-    },
+    typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   });
 };
 

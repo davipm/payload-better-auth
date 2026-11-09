@@ -19,9 +19,7 @@ import type { BetterAuthOptions, PayloadAuthOptions } from '@/plugin/index.js';
 export const betterAuthPlugins = [
   username(),
   emailHarmony(),
-  phoneHarmony({
-    defaultCountry: 'CA',
-  }),
+  phoneHarmony({ defaultCountry: 'JP' }),
   twoFactor({
     issuer: 'payload-better-auth',
     otpOptions: {
@@ -152,7 +150,7 @@ export const payloadAuthOptions = {
   // },
   hidePluginCollections: true,
   users: {
-    slug: 'users', // not required, this is the default anyways
+    slug: 'users', // not required, this is the default anyway
     hidden: false,
     adminRoles: ['admin'],
     defaultRole: 'user',
