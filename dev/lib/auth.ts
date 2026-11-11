@@ -30,10 +30,10 @@ export const betterAuthPlugins = [
   }),
   anonymous({
     emailDomainName: 'payload-better-auth.com',
+    disableDeleteAnonymousUser: false,
     onLinkAccount: async ({ anonymousUser, newUser }) => {
       console.log('Link account for anonymous user: ', anonymousUser, newUser);
     },
-    disableDeleteAnonymousUser: false,
   }),
   phoneNumber({
     sendOTP: async ({ phoneNumber, code }, req) => {
