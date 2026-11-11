@@ -1,6 +1,6 @@
 {
   "name": "@davipm/payload-better-auth",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Better Auth adapter and plugins for Payload CMS",
   "license": "MIT",
   "type": "module",
@@ -102,7 +102,7 @@
     "react": "19.2.6"
   },
   "peerDependenciesMeta": {
-    "@better-auth/passkey": {
+    "@better-auth/api-key": {
       "optional": true
     }
   },
