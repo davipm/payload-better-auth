@@ -1,15 +1,12 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
-import { buildConfig } from 'payload';
 import dotenv from 'dotenv';
+import { buildConfig } from 'payload';
 
 dotenv.config({ path: new URL('./.env', import.meta.url).pathname });
-import {
-  // type BetterAuthOptions,
-  betterAuthPlugin,
-  BetterAuthReturn,
-  getPayloadAuth,
-  type PayloadAuthOptions,
-} from '../../plugin';
+
+import { apiKey } from '@better-auth/api-key';
+import { passkey } from '@better-auth/passkey';
+// import { nextCookies } from 'better-auth/next-js';
 import {
   admin,
   anonymous,
@@ -18,27 +15,31 @@ import {
   lastLoginMethod,
   magicLink,
   multiSession,
-  openAPI,
+  // openAPI,
   organization,
   phoneNumber,
+  testUtils,
   twoFactor,
   username,
-  testUtils,
 } from 'better-auth/plugins';
-import type { BetterAuthOptions } from 'better-auth/types';
 import {
-  defaultStatements as defaultAdminStatements,
   defaultRoles as defaultAdminRoles,
+  defaultStatements as defaultAdminStatements,
 } from 'better-auth/plugins/admin/access';
 import {
+  defaultRoles as defaultOrganizationRoles,
   defaultStatements as defaultOrganizationStatements,
   ownerAc,
-  defaultRoles as defaultOrganizationRoles,
 } from 'better-auth/plugins/organization/access';
-import { nextCookies } from 'better-auth/next-js';
-import { apiKey } from '@better-auth/api-key';
-import { passkey } from '@better-auth/passkey';
+import type { BetterAuthOptions } from 'better-auth/types';
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
+import {
+  type BetterAuthReturn,
+  // type BetterAuthOptions,
+  betterAuthPlugin,
+  getPayloadAuth,
+  type PayloadAuthOptions,
+} from '../../plugin';
 
 const statement = {
   ...defaultOrganizationStatements,

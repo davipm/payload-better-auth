@@ -162,4 +162,4 @@ const Verification: CollectionConfig = {
   timestamps: true,
 } as const;
 
-export { User, Session, Account, Verification };
+export { Account, Session, User, Verification };

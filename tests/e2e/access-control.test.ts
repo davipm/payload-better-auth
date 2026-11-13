@@ -1,5 +1,5 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { cleanupAll, createQuickSession, createQuickUser, getTestContext } from '../helpers';
 
 describe('Access Control', () => {

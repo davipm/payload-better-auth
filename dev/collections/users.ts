@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload';
 import { authenticatedAdmin } from '../auth/admin.js';
 import { authenticated } from '../auth/authenticated.js';
 
-export const Users: CollectionConfig = {
+export const Users: CollectionConfig<'users'> = {
   slug: 'users',
   timestamps: true,
   auth: true,

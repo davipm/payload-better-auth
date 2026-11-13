@@ -3,11 +3,11 @@ import type { TestHelpers } from 'better-auth/plugins';
 import type { BasePayload } from 'payload';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { payloadAdapter } from '../../src';
+import { getPayload } from '../dev';
 import {
   runBaseCollectionsNumberIdTests,
   runBaseCollectionsTests,
-} from '../adapter/base-collections-tests.js';
-import { getPayload } from '../dev';
+} from './base-collections-tests.js';
 
 describe('Handle Payload Adapter', async () => {
   it('should successfully add the Payload Adapter', async () => {

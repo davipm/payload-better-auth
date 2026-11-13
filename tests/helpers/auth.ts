@@ -1,5 +1,5 @@
 import type { TestHelpers } from 'better-auth/plugins';
-import type { getTestPayload } from './setup';
+import type { getTestPayload } from './setup.js';
 
 type TestPayload = Awaited<ReturnType<typeof getTestPayload>>;
 
@@ -98,8 +98,7 @@ export async function createQuickUser(
     name: overrides.name ?? 'Test User',
     emailVerified: overrides.emailVerified ?? true,
   });
-  const saved = await test.saveUser(user);
-  return saved;
+  return await test.saveUser(user);
 }
 
 /**
