@@ -8,9 +8,13 @@ import { getPayload } from '../dev/index.js';
  *
  * Requires a running Postgres database.
  */
-describe('Null Value Handling', async () => {
-  const payload = await getPayload();
+describe('Null Value Handling', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
   let testUserId: string | number;
+
+  beforeAll(async () => {
+    payload = await getPayload();
+  });
 
   beforeAll(async () => {
     // Clean up any existing test data

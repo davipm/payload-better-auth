@@ -11,13 +11,17 @@ import { getPayload } from '../dev/index.js';
  * and return it, returning `null` on a second call against the same `where`
  * once the row has already been consumed (the double-consume guard).
  */
-describe('Adapter consumeOne', async () => {
-  const payload = await getPayload();
+describe('Adapter consumeOne', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
+  let adapter: ReturnType<ReturnType<typeof payloadAdapter>>;
 
-  const adapter = payloadAdapter({
-    payloadClient: payload,
-    adapterConfig: { idType: 'number' },
-  })({ ...payload.betterAuth.options });
+  beforeAll(async () => {
+    payload = await getPayload();
+    adapter = payloadAdapter({
+      payloadClient: payload,
+      adapterConfig: { idType: 'number' },
+    })({ ...payload.betterAuth.options });
+  });
 
   const identifier = 'consume-one-test-identifier';
 

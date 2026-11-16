@@ -13,8 +13,9 @@ import { getTestContext } from '../helpers/index.js';
  *
  * Requires a running Postgres database.
  */
-describe('Endpoint Authentication (P0-3 Integration)', async () => {
-  const { payload, test } = await getTestContext();
+describe('Endpoint Authentication (P0-3 Integration)', () => {
+  let payload: Awaited<ReturnType<typeof getTestContext>>['payload'];
+  let test: Awaited<ReturnType<typeof getTestContext>>['test'];
 
   const roles = [
     { label: 'Admin', value: 'admin' },
@@ -55,6 +56,10 @@ describe('Endpoint Authentication (P0-3 Integration)', async () => {
       data: undefined,
     }) as any;
   }
+
+  beforeAll(async () => {
+    ({ payload, test } = await getTestContext());
+  });
 
   beforeAll(async () => {
     // Create a regular (non-admin) user directly via testUtils

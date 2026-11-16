@@ -11,10 +11,15 @@ import { cleanupAll, getTestContext } from '../helpers/index.js';
  *
  * Requires a running Postgres database.
  */
-describe('Role Handling', async () => {
-  const { payload, test } = await getTestContext();
+describe('Role Handling', () => {
+  let payload: Awaited<ReturnType<typeof getTestContext>>['payload'];
+  let test: Awaited<ReturnType<typeof getTestContext>>['test'];
 
   let userId: string;
+
+  beforeAll(async () => {
+    ({ payload, test } = await getTestContext());
+  });
 
   beforeAll(async () => {
     await cleanupAll(payload);
