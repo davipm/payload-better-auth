@@ -406,7 +406,7 @@ In local development, a database adapter configured to push schema changes can a
 | `debug.enableDebugLogs`                 | Logs Payload adapter database operation inputs and results; use for development debugging because auth records may include sensitive values |
 | `disabled`                              | Skips all plugin config changes when `true`                                                                                                 |
 
-See the [`PayloadAuthOptions` type](src/plugin/types.ts) and the [plugin options reference](https://payload-auth.dev/docs/reference/plugin-options) for the complete option list.
+See the [`PayloadAuthOptions` type](src/types/plugin.ts) and the [plugin options reference](https://payload-auth.dev/docs/reference/plugin-options) for the complete option list.
 
 ## Package exports
 

@@ -1,5 +1,5 @@
 import type { FieldHook } from 'payload';
-import type { GenerateAdminInviteUrlFn } from '../../../../types.js';
+import type { GenerateAdminInviteUrlFn } from '../../../../../types/plugin.js';
 
 export const getAdminInviteUrlAfterReadHook = ({
   generateAdminInviteUrlFn,

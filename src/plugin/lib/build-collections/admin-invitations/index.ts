@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload';
 import { generateAdminInviteUrl } from '../../../../utils/generate-admin-invite-url.js';
 import { baseSlugs, defaults } from '../../../constants.js';
-import type { PayloadAuthOptions } from '../../../types.js';
-import { isAdminWithRoles } from '../utils/payload-access.js';
+import type { PayloadAuthOptions } from '../../../../types/plugin.js';
+import { isAdminWithRoles } from '../../../../utils/plugin/build-collections/payload-access.js';
 import { getAdminInviteUrlAfterReadHook } from './hooks/get-url-after-read.js';
 import { getUrlBeforeChangeHook } from './hooks/get-url-before-change.js';
 

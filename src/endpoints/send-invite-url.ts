@@ -3,8 +3,8 @@ import { addDataAndFileToRequest, type Endpoint, headersWithCors, killTransactio
 import { z } from 'zod';
 import { adminEndpoints, defaults } from '../plugin/constants.js';
 import { getPayloadAuth } from '../plugin/index.js';
-import { hasAdminRoles } from '../plugin/lib/build-collections/utils/payload-access.js';
-import type { PayloadAuthOptions } from '../plugin/types.js';
+import { hasAdminRoles } from '../utils/plugin/build-collections/payload-access.js';
+import type { PayloadAuthOptions } from '../types/plugin.js';
 
 const requestSchema = z.object({
   email: z.email(),

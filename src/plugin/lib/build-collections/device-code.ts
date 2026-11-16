@@ -1,14 +1,14 @@
 import type { CollectionConfig } from 'payload';
-import type { DeviceCode } from '../../../generated-types.js';
+import type { DeviceCode } from '../../../types/generated-types.js';
 import { baModelKey } from '../../constants.js';
-import { getAdminAccess } from '../../helpers/get-admin-access.js';
-import type { BuildCollectionProps, FieldOverrides } from '../../types.js';
+import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
+import type { BuildCollectionProps, FieldOverrides } from '../../../types/plugin.js';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
   getSchemaFieldName,
-} from './utils/collection-schema.js';
-import { getCollectionFields } from './utils/transform-schema-fields-to-payload.js';
+} from '../../../utils/plugin/build-collections/collection-schema.js';
+import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildDeviceCodeCollection({
   incomingCollections,

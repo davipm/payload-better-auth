@@ -1,5 +1,5 @@
-import { baModelKeyToSlug, baseSlugs } from '../constants.js';
-import type { PayloadAuthOptions } from '../types.js';
+import { baModelKeyToSlug, baseSlugs } from '../../plugin/constants.js';
+import type { PayloadAuthOptions } from '../../types/plugin.js';
 
 export function getDefaultCollectionSlug({
   pluginOptions,

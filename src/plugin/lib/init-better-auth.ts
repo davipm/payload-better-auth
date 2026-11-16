@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import type { BasePayload } from 'payload';
 import { payloadAdapter } from '../../adapter/index.js';
-import type { BetterAuthFunctionOptions, BetterAuthReturn, PayloadAuthOptions } from '../types.js';
+import type { BetterAuthFunctionOptions, BetterAuthReturn, PayloadAuthOptions } from '../../types/plugin.js';
 
 export function initBetterAuth<O extends PayloadAuthOptions>({
   payload,

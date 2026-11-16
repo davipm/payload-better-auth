@@ -1,6 +1,6 @@
 import { type CollectionConfig, flattenAllFields } from 'payload';
-import type { BetterAuthFullSchema, ModelKey } from '../../../../generated-types.js';
-import type { BetterAuthSchemas, BuiltBetterAuthSchema } from '../../../types.js';
+import type { BetterAuthFullSchema, ModelKey } from '../../../types/generated-types.js';
+import type { BetterAuthSchemas, BuiltBetterAuthSchema } from '../../../types/plugin.js';
 
 export function getSchemaCollectionSlug(
   resolvedSchemas: BetterAuthSchemas,

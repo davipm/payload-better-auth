@@ -1,5 +1,5 @@
 import type { CollectionConfig, JoinField, UIField } from 'payload';
-import type { User } from '../../../../generated-types.js';
+import type { User } from '../../../../types/generated-types.js';
 import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import {
   baModelFieldKeys,
@@ -7,21 +7,21 @@ import {
   defaults,
   supportedBAPluginIds,
 } from '../../../constants.js';
-import { checkPluginExists } from '../../../helpers/check-plugin-exists.js';
-import { getAllRoleOptions } from '../../../helpers/get-all-roles.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types.js';
+import { checkPluginExists } from '../../../../utils/plugin/check-plugin-exists.js';
+import { getAllRoleOptions } from '../../../../utils/plugin/get-all-roles.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../../types/plugin.js';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
   getSchemaFieldName,
-} from '../utils/collection-schema.js';
+} from '../../../../utils/plugin/build-collections/collection-schema.js';
 import {
   hasAdminRoles,
   isAdminOrCurrentUserUpdateWithAllowedFields,
   isAdminOrCurrentUserWithRoles,
   isAdminWithRoles,
-} from '../utils/payload-access.js';
-import { getCollectionFields } from '../utils/transform-schema-fields-to-payload.js';
+} from '../../../../utils/plugin/build-collections/payload-access.js';
+import { getCollectionFields } from '../../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 import { betterAuthStrategy } from './better-auth-strategy.js';
 import {
   getGenerateInviteUrlEndpoint,

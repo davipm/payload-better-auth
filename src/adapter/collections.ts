@@ -10,7 +10,7 @@ import {
   type PayloadRequest,
   type Where as PayloadWhere,
 } from 'payload';
-import type { ModelKey } from '../generated-types.js';
+import type { ModelKey } from '../types/generated-types.js';
 import type { PayloadAdapter } from '../types/adapter.js';
 import { generateSchema } from '../utils/adapter/generate-schema.js';
 import { createTransform } from '../utils/adapter/transform.js';

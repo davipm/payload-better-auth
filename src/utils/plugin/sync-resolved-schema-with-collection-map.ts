@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
-import type { ModelKey } from '../../generated-types.js';
-import type { BetterAuthSchemas, FieldWithIds } from '../types.js';
+import type { ModelKey } from '../../types/generated-types.js';
+import type { BetterAuthSchemas, FieldWithIds } from '../../types/plugin.js';
 
 /**
  * Syncs a BetterAuth `ResolvedSchema` object with the *actual* collection

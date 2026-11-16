@@ -1,6 +1,6 @@
 import type { DBFieldAttribute } from 'better-auth/db';
 import type { Field } from 'payload';
-import type { FieldRule } from '../../../types.js';
+import type { FieldRule } from '../../../types/plugin.js';
 import { filterProps, getValidFieldPropertyKeysForType } from './filter-properties.js';
 
 function getRuleBasedFieldProperties(

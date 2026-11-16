@@ -4,7 +4,7 @@ import { useConfig } from '@payloadcms/ui';
 import { useCallback, useEffect, useState } from 'react';
 import { PassKeyAddButton } from './add-button.js';
 import { PasskeyList } from './list.js';
-import type { PasskeysClientComponentProps, PasskeyWithId } from './types.js';
+import type { PasskeysClientComponentProps, PasskeyWithId } from '../../types/passkeys.js';
 
 export function PasskeysClient({
   initialPasskeys,

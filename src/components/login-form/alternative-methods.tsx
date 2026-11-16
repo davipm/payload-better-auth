@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLoginForm } from './context.js';
 import './index.scss';
 import { socialProviders } from '../../plugin/constants.js';
-import type { SocialProvider } from '../../plugin/types.js';
+import type { SocialProvider } from '../../types/plugin.js';
 import { isValidEmail } from '../form/validation.js';
 import { Icons, Key, Mail } from '../icons.js';
 

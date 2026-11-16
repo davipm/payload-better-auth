@@ -1,5 +1,5 @@
 import type { AccessArgs } from 'payload';
-import type { User } from '../payload-types.js';
+import type { User } from '../../src/types/generated-types.js';
 
 type isAuthenticated = (args: AccessArgs<User>) => boolean;
 

@@ -1,6 +1,6 @@
 import { supportedBAPluginIds } from '../constants.js';
-import { checkPluginExists } from '../helpers/check-plugin-exists.js';
-import type { LoginMethod, PayloadAuthOptions } from '../types.js';
+import { checkPluginExists } from '../../utils/plugin/check-plugin-exists.js';
+import type { LoginMethod, PayloadAuthOptions } from '../../types/plugin.js';
 
 export function setLoginMethods({ pluginOptions }: { pluginOptions: PayloadAuthOptions }) {
   const betterAuthOptions = pluginOptions.betterAuthOptions ?? {};

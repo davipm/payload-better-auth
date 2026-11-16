@@ -7,12 +7,12 @@ import {
   flattenAllFields,
   type Where as PayloadWhere,
 } from 'payload';
-import type { ModelKey } from '../../generated-types.js';
+import type { ModelKey } from '../../types/generated-types.js';
 import {
   getCollectionByModelKey,
   getCollectionFieldNameByFieldKeyUntyped,
   getFieldKeyByCollectionFieldName,
-} from '../../plugin/helpers/get-collection.js';
+} from '../plugin/get-collection.js';
 
 type IdType = 'number' | 'text';
 type FlatFields = ReturnType<typeof flattenAllFields>;

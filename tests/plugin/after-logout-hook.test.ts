@@ -38,7 +38,7 @@ vi.mock('@/better-auth/plugin/lib/get-payload-auth', () => ({
   getPayloadAuth: vi.fn().mockResolvedValue(mockPayloadAuth),
 }));
 
-vi.mock('@/better-auth/plugin/helpers/get-collection', () => ({
+vi.mock('@/better-auth/utils/plugin/get-collection', () => ({
   getCollectionByModelKey: vi.fn().mockReturnValue({ slug: 'sessions' }),
 }));
 

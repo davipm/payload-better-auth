@@ -2,7 +2,7 @@ import { MinimalTemplate } from '@payloadcms/next/templates';
 import type { AdminViewServerProps, Payload } from 'payload';
 import { z } from 'zod';
 import { supportedBAPluginIds } from '../../plugin/constants.js';
-import { checkPluginExists } from '../../plugin/helpers/check-plugin-exists.js';
+import { checkPluginExists } from '../../utils/plugin/check-plugin-exists.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
 import { FormHeader } from '../form/ui/header/index.js';

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers.js';
 import type { CollectionAfterLogoutHook, PayloadRequest } from 'payload';
 import { baModelKey } from '../../../../constants.js';
-import { getCollectionByModelKey } from '../../../../helpers/get-collection.js';
+import { getCollectionByModelKey } from '../../../../../utils/plugin/get-collection.js';
 import { getPayloadAuth } from '../../../get-payload-auth.js';
 
 export function getAfterLogoutHook() {

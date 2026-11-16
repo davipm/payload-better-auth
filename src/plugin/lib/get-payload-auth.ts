@@ -1,6 +1,6 @@
 import type { BasePayload, SanitizedConfig } from 'payload';
 import { getPayload } from 'payload';
-import type { BetterAuthReturn, PayloadAuthOptions } from '../types.js';
+import type { BetterAuthReturn, PayloadAuthOptions } from '../../types/plugin.js';
 
 export async function getPayloadAuth<O extends PayloadAuthOptions>(
   config: Promise<SanitizedConfig> | SanitizedConfig,

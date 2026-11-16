@@ -1,5 +1,5 @@
 import { createAuthMiddleware, getOAuthState } from 'better-auth/api';
-import type { SanitizedBetterAuthOptions } from '../../../types.js';
+import type { SanitizedBetterAuthOptions } from '../../../../types/plugin.js';
 // import type { SanitizedBetterAuthOptions } from "../../../../better-auth/plugin/types";
 
 /**

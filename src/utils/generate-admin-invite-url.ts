@@ -1,5 +1,5 @@
 import { adminRoutes } from '../plugin/constants.js';
-import type { GenerateAdminInviteUrlFn } from '../plugin/types.js';
+import type { GenerateAdminInviteUrlFn } from '../types/plugin.js';
 
 export const generateAdminInviteUrl: GenerateAdminInviteUrlFn = ({ payload, token }) => {
   if (!payload?.config?.serverURL) {

@@ -1,4 +1,4 @@
-import type { BetterAuthOptions } from '../types.js';
+import type { BetterAuthOptions } from '../../types/plugin.js';
 
 /**
  * Checks if a plugin with the specified ID exists in the Better Auth options

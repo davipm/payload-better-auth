@@ -2,7 +2,7 @@
 
 import { Button } from '@payloadcms/ui';
 import { Fingerprint, Trash } from '../icons.js';
-import type { PasskeyWithId } from './types.js';
+import type { PasskeyWithId } from '../../types/passkeys.js';
 
 interface PasskeyListProps {
   passkeys: PasskeyWithId[];

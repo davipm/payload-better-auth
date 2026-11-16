@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { adminAfterRoleMiddleware } from '../../plugin/lib/sanitize-better-auth-options/utils/admin-after-role-middleware';
 import { adminBeforeRoleMiddleware } from '../../plugin/lib/sanitize-better-auth-options/utils/admin-before-role-middleware';
-import type { SanitizedBetterAuthOptions } from '../../plugin/types';
+import type { SanitizedBetterAuthOptions } from '../../types/plugin';
 
 /**
  * Creates a minimal mock auth middleware context for testing role transformation.

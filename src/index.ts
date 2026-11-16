@@ -1,3 +1,3 @@
 export * from './adapter/index.js';
 export * from './plugin/index.js';
-export * from './plugin/types.js';
+export * from './types/plugin.js';
