@@ -7,10 +7,10 @@ import {
   createQuickUser,
   getTestContext,
   signIn,
-} from '../helpers';
+} from '../helpers/index.js';
 
 describe('Admin Plugin Features', () => {
-  let payload: Awaited<ReturnType<typeof import('../helpers').getTestPayload>>;
+  let payload: Awaited<ReturnType<typeof import('../helpers/index.js').getTestPayload>>;
   let test: TestHelpers;
 
   beforeAll(async () => {

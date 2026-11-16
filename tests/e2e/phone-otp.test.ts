@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, getTestContext } from '../helpers';
+import { cleanupAll, getTestContext } from '../helpers/index.js';
 
 /**
  * Regression test for issue #160: on Better Auth >=1.6, verifying a phone

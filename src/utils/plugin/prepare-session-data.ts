@@ -1,6 +1,6 @@
-import type { Session, User } from 'better-auth';
 import type { CollectionConfig } from 'payload';
 import { getFieldsToSign } from 'payload';
+import type { Session, User } from '../../types/generated-types.js';
 
 export async function prepareUser({
   user,

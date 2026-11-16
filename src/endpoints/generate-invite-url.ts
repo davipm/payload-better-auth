@@ -1,10 +1,10 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
-import { getPayloadAuth } from '../../../../index.js';
-import { generateAdminInviteUrl } from '../../../../../utils/generate-admin-invite-url.js';
-import { adminEndpoints, baseSlugs, defaults } from '../../../../constants.js';
-import type { PayloadAuthOptions } from '../../../../types.js';
-import { hasAdminRoles } from '../../utils/payload-access.js';
+import { adminEndpoints, baseSlugs, defaults } from '../plugin/constants.js';
+import { getPayloadAuth } from '../plugin/index.js';
+import type { PayloadAuthOptions } from '../types/plugin.js';
+import { generateAdminInviteUrl } from '../utils/generate-admin-invite-url.js';
+import { hasAdminRoles } from '../utils/plugin/build-collections/payload-access.js';
 
 interface InviteEndpointProps {
   roles: { label: string; value: string }[];
@@ -40,7 +40,7 @@ export const getGenerateInviteUrlEndpoint = ({
         return Response.json({ message: 'Unauthorized' }, { status: httpStatus.UNAUTHORIZED });
       }
 
-      const body = req.data as { role: { label: string; value: string } };
+      const body = req.data as unknown;
       const generateAdminInviteUrlFn =
         pluginOptions?.adminInvitations?.generateInviteUrl ?? generateAdminInviteUrl;
 
@@ -52,7 +52,8 @@ export const getGenerateInviteUrlEndpoint = ({
         return Response.json({ message: 'Invalid body' }, { status: httpStatus.BAD_REQUEST });
       }
 
-      if (!roles.some((role) => role.value === body.role.value)) {
+      const role = (body as { role?: unknown }).role;
+      if (typeof role !== 'string' || !roles.some((option) => option.value === role)) {
         return Response.json({ message: 'Invalid role' }, { status: httpStatus.BAD_REQUEST });
       }
       const token = crypto.randomUUID();
@@ -67,7 +68,7 @@ export const getGenerateInviteUrlEndpoint = ({
           collection: pluginOptions.adminInvitations?.slug ?? baseSlugs.adminInvitations,
           data: {
             token,
-            role: body.role.value,
+            role,
             url: inviteLink,
             expiresAt,
           },
@@ -83,7 +84,7 @@ export const getGenerateInviteUrlEndpoint = ({
           },
         );
       } catch (error) {
-        console.error(error);
+        req.payload.logger.error({ err: error, msg: 'Failed to generate admin invite URL' });
         return Response.json(
           { message: 'Error generating invite link' },
           { status: httpStatus.INTERNAL_SERVER_ERROR },

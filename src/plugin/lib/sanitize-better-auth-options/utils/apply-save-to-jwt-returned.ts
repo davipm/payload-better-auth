@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload';
 import { flattenAllFields } from 'payload';
 import type { baModelKey } from '../../../constants.js';
-import type { BetterAuthSchemas, SanitizedBetterAuthOptions } from '../../../types.js';
-import { getSchemaCollectionSlug } from '../../build-collections/utils/collection-schema.js';
+import type { BetterAuthSchemas, SanitizedBetterAuthOptions } from '../../../../types/plugin.js';
+import { getSchemaCollectionSlug } from '../../../../utils/plugin/build-collections/collection-schema.js';
 
 /**
  * Mirrors Payload's `saveToJWT: false` flags into BetterAuth `additionalFields.returned: false`

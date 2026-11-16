@@ -1,17 +1,17 @@
 import type { Config, SanitizedConfig } from 'payload';
-import { getDefaultBetterAuthSchema } from './helpers/get-better-auth-schema.js';
-import { syncResolvedSchemaWithCollectionMap } from './helpers/sync-resolved-schema-with-collection-map.js';
+import type { PayloadAuthOptions } from '../types/plugin.js';
+import { getDefaultBetterAuthSchema } from '../utils/plugin/get-better-auth-schema.js';
+import { syncResolvedSchemaWithCollectionMap } from '../utils/plugin/sync-resolved-schema-with-collection-map.js';
 import { applyBetterAuthAdminConfig } from './lib/apply-ba-admin-config.js';
 import { buildCollections } from './lib/build-collections/index.js';
 import { initBetterAuth } from './lib/init-better-auth.js';
 import { sanitizeBetterAuthOptions } from './lib/sanitize-better-auth-options/index.js';
 import { setLoginMethods } from './lib/set-login-methods.js';
-import type { PayloadAuthOptions } from './types.js';
 
-export * from './helpers/index.js';
+export * from '../types/plugin.js';
+export * from '../utils/plugin/index.js';
 export { getPayloadAuth } from './lib/get-payload-auth.js';
 export { sanitizeBetterAuthOptions } from './lib/sanitize-better-auth-options/index.js';
-export * from './types.js';
 
 function buildBetterAuthData({
   payloadConfig,
@@ -113,7 +113,7 @@ export function betterAuthPlugin(pluginOptions: PayloadAuthOptions) {
           configurable: false,
         });
       } catch (error) {
-        console.error('Failed to initialize BetterAuth:', error);
+        payload.logger.error({ err: error, msg: 'Failed to initialize BetterAuth' });
         throw error;
       }
     };

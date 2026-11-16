@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation.js';
 import type React from 'react';
 import { createContext, useContext, useMemo, useState } from 'react';
 import { adminRoutes } from '../../plugin/constants.js';
-import type { LoginMethod } from '../../plugin/types.js';
+import type { LoginMethod } from '../../types/plugin.js';
 
 interface LoginFormContextValue {
   loginMethods: LoginMethod[];

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 /**
  * Integration tests for admin invite role assignment.
@@ -21,8 +21,8 @@ function futureExpiry(): string {
   return new Date(Date.now() + 60 * 60 * 1000).toISOString();
 }
 
-describe('Admin Invite Role Assignment (P0-3 / P0-4 Regression)', async () => {
-  const payload = await getPayload();
+describe('Admin Invite Role Assignment (P0-3 / P0-4 Regression)', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
 
   const testEmail = 'invite-role-test@test.com';
   const testPassword = 'invitetest123456';
@@ -47,6 +47,9 @@ describe('Admin Invite Role Assignment (P0-3 / P0-4 Regression)', async () => {
     });
   }
 
+  beforeAll(async () => {
+    payload = await getPayload();
+  });
   beforeAll(cleanup);
   afterAll(cleanup);
 

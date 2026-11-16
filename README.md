@@ -5,14 +5,11 @@
 The plugin also supplies Payload admin login, signup, password reset, and two-factor views. You configure Better Auth as usual, except the plugin owns the `database` option and maps Better Auth models to Payload collections for you.
 
 - Full example configuration in this repository: [`dev/lib/auth.ts`](dev/lib/auth.ts)
-- Payload adapter details: [`src/adapter/README.md`](src/adapter/README.md)
+- Payload adapter implementation: [`src/adapter/collections.ts`](src/adapter/collections.ts)
 
 ## Requirements
 
-- Payload CMS 3.92.1 or later in the 3.x release line
-- Better Auth 1.7.18 or later in the 1.x release line
-- Next.js 16.4.5 and React 19.2.6, as required by the current package peer dependencies
-- A Payload database adapter configured in your Payload app
+The current package peer dependencies require Payload 3.92.1 or later in the 3.x line, Better Auth 1.7.18 or later in the 1.x line, Next.js 16.4.5, and React 19.2.6. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
 
 Install the package and Better Auth in your Payload application:
 
@@ -49,8 +46,13 @@ Generate a Better Auth secret with `openssl rand -base64 32`. Use HTTPS URLs in 
 Add the plugin to `plugins` in `payload.config.ts`. Set `admin.user` to the slug of the users collection the plugin creates or extends.
 
 ```ts
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { betterAuthPlugin } from '@davipm/payload-better-auth';
+import { postgresAdapter } from '@payloadcms/db-postgres';
 import { buildConfig } from 'payload';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default buildConfig({
   admin: {
@@ -61,6 +63,7 @@ export default buildConfig({
     // Your application collections go here.
   ],
   db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL } }),
+  secret: process.env.PAYLOAD_SECRET!,
   plugins: [
     betterAuthPlugin({
       users: {
@@ -160,7 +163,7 @@ betterAuthPlugin({
 });
 ```
 
-Use the Better Auth documentation for each option's behavior and required settings. Plugin-specific collections are generated from the schemas returned by the Better Auth plugins. The package handles the model and relationship mappings for the supported Better Auth schema models. Some Better Auth plugins add models that this package does not currently map to Payload collections;
+Use the Better Auth documentation for each option's behavior and required settings. The plugin generates collections for the core Better Auth schema and supported plugin schemas. A Better Auth plugin can add schema models that this package does not map to Payload collections; check that the models used by your selected plugins are supported before enabling them.
 
 ### Match admin login methods to enabled providers
 
@@ -201,22 +204,23 @@ import type { PayloadAuthConfig } from './auth';
 export const getPayload = () => getPayloadAuth<PayloadAuthConfig>(config);
 ```
 
-The plugin registers React components (login views, logout button, admin buttons) into Payload's admin panel. Payload resolves them through its import map, so regenerate it after installing:
+The plugin registers React components (login views, logout button, and admin buttons) in Payload's admin panel. Payload resolves them through its import map, so regenerate it after installing or changing the plugin configuration:
 
-```ts
+```bash
 bun run generate:importmap
 ```
 
-Create the database schema
+### Generate Payload types and database migrations
 
-The plugin adds collections, which means new tables.
+The plugin adds Payload collections for the Better Auth models. Generate types and create/apply migrations with your app's Payload CLI:
 
-```ts
-bun run db:create
-bun run db:migrate
+```bash
+pnpm exec payload generate:types
+pnpm exec payload migrate:create
+pnpm exec payload migrate
 ```
 
-`getPayloadAuth` is a typed wrapper around Payload's `getPayload`. It throws a clear error if the plugin is missing or has not initialized. See [`dev/lib/payload.ts`](dev/lib/payload.ts) for the repository's example.
+The `bun run db:*` scripts in this repository are for developing this package; they are not included in your application. `getPayloadAuth` is a typed wrapper around Payload's `getPayload`. It throws a clear error if the plugin is missing or has not initialized. See [`dev/lib/payload.ts`](dev/lib/payload.ts) for the repository's example.
 
 ## 4. Use Better Auth from the application
 
@@ -406,7 +410,7 @@ In local development, a database adapter configured to push schema changes can a
 | `debug.enableDebugLogs`                 | Logs Payload adapter database operation inputs and results; use for development debugging because auth records may include sensitive values |
 | `disabled`                              | Skips all plugin config changes when `true`                                                                                                 |
 
-See the [`PayloadAuthOptions` type](src/plugin/types.ts) and the [plugin options reference](https://payload-auth.dev/docs/reference/plugin-options) for the complete option list.
+See the [`PayloadAuthOptions` type](src/types/plugin.ts) and the [plugin options reference](https://payload-auth.dev/docs/reference/plugin-options) for the complete option list.
 
 ## Package exports
 

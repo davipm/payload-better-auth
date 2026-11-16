@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { otpField } from '../../../shared/form/validation';
+import { otpField } from '../../src/components/form/validation.js';
 
 describe('otpField', () => {
   it('accepts a 6-digit numeric code by default', () => {

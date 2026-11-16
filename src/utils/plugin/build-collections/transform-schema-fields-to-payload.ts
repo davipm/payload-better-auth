@@ -1,6 +1,6 @@
 import type { DBFieldAttribute } from 'better-auth/db';
 import type { Field, RelationshipField } from 'payload';
-import type { BuiltBetterAuthSchema, FieldRule } from '../../../types.js';
+import type { BuiltBetterAuthSchema, FieldRule } from '../../../types/plugin.js';
 import { getAdditionalFieldProperties } from './model-field-transformations.js';
 
 export function getCollectionFields({

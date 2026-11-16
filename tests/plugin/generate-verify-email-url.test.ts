@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateVerifyEmailUrl } from '../../plugin/helpers/generate-verify-email-url';
+import { generateVerifyEmailUrl } from '../../src/utils/plugin/generate-verify-email-url.js';
 
 /**
  * Unit tests for generateVerifyEmailUrl's callback URL validation (NEW-1).

@@ -5,7 +5,7 @@ import {
   isAdminOrCurrentUserUpdateWithAllowedFields,
   isAdminOrCurrentUserWithRoles,
   isAdminWithRoles,
-} from '../../plugin/lib/build-collections/utils/payload-access';
+} from '../../src/utils/plugin/build-collections/payload-access.js';
 
 // Helper to create mock PayloadRequest objects
 function mockReq(user: Record<string, any> | null = null): PayloadRequest {

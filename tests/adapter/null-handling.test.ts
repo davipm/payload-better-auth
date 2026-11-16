@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { payloadAdapter } from '../../src/adapter/index.js';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 /**
  * Integration tests for null value handling through the adapter layer.
@@ -8,9 +8,13 @@ import { getPayload } from '../dev';
  *
  * Requires a running Postgres database.
  */
-describe('Null Value Handling', async () => {
-  const payload = await getPayload();
+describe('Null Value Handling', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
   let testUserId: string | number;
+
+  beforeAll(async () => {
+    payload = await getPayload();
+  });
 
   beforeAll(async () => {
     // Clean up any existing test data

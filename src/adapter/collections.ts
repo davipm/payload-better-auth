@@ -10,8 +10,8 @@ import {
   type PayloadRequest,
   type Where as PayloadWhere,
 } from 'payload';
-import type { ModelKey } from '../generated-types.js';
 import type { PayloadAdapter } from '../types/adapter.js';
+import type { ModelKey } from '../types/generated-types.js';
 import { generateSchema } from '../utils/adapter/generate-schema.js';
 import { createTransform } from '../utils/adapter/transform.js';
 
@@ -38,6 +38,22 @@ type Scope = {
 const isNotFound = (e: unknown) =>
   e instanceof Error && 'status' in e && (e as { status?: number }).status === 404;
 
+const debugLog = (payload: BasePayload, msg: string, data: Record<string, unknown> = {}) =>
+  payload.logger.debug({ ...data, msg: `[payload-db-adapter] ${msg}` });
+const warnLog = (payload: BasePayload, msg: string, data: Record<string, unknown> = {}) =>
+  payload.logger.warn({ ...data, msg: `[payload-db-adapter] ${msg}` });
+const errorLog = (
+  payload: BasePayload,
+  msg: string,
+  err?: unknown,
+  data: Record<string, unknown> = {},
+) =>
+  payload.logger.error({
+    ...data,
+    ...(err === undefined ? {} : { err }),
+    msg: `[payload-db-adapter] ${msg}`,
+  });
+
 /** Payload's bulk update/delete report per-document failures in `errors` instead of throwing. */
 function assertNoBulkErrors(res: { errors?: unknown[] }, op: string) {
   if (res.errors?.length) {
@@ -58,11 +74,6 @@ function assertCollection(payload: BasePayload, slug: string, model: string) {
 const joinFieldsCache = new WeakMap<object, { name: string; collection: string }[]>();
 
 const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
-  const debugLog = (message: any[]) => {
-    if (adapterConfig.enableDebugLogs) console.log(LOG, ...message);
-  };
-  const errorLog = (message: any[]) => console.error(LOG, ...message);
-
   const createAdapterContext = (data: Doc) => ({ [BETTER_AUTH_CONTEXT_KEY]: { ...data } });
 
   // Cache the promise (not the value) so concurrent first calls don't resolve twice;
@@ -96,7 +107,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
       getCollectionSlug,
       getForwardRelationFieldNames,
       singleIdQuery,
-    } = createTransform(options, adapterConfig.enableDebugLogs ?? false);
+    } = createTransform(options);
 
     /* ------------------------------------- joins ------------------------------------- */
 
@@ -130,9 +141,12 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         if (!config) continue;
         const name = resolveJoinFieldName(payload, slug, modelKey);
         if (!name) {
-          debugLog([
-            `join skipped (reverse): no join field targeting '${getCollectionSlug(modelKey as ModelKey)}' on ${slug}, will attempt forward join`,
-          ]);
+          if (adapterConfig.enableDebugLogs) {
+            debugLog(payload, 'No reverse join field found; trying a forward relationship', {
+              collection: slug,
+              relatedModel: modelKey,
+            });
+          }
           continue;
         }
         joins[name] = config === true ? {} : { ...config };
@@ -158,9 +172,16 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
       );
       if (candidates.length) {
         if (candidates.length > 1 && !candidates.includes(joinModelKey)) {
-          errorLog([
-            `forward join ambiguous for '${joinModelKey}' on ${slug}: candidates [${candidates.join(', ')}] target '${joinSlug}', using '${candidates[0]}'`,
-          ]);
+          warnLog(
+            payload,
+            'Forward join matched multiple relationship fields; using the first match',
+            {
+              collection: slug,
+              relatedCollection: joinSlug,
+              relatedModel: joinModelKey,
+              candidates,
+            },
+          );
         }
         return candidates.includes(joinModelKey) ? joinModelKey : candidates[0]!;
       }
@@ -187,9 +208,10 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
 
         const field = resolveForwardField(s, model, joinModelKey);
         if (!field) {
-          errorLog([
-            `join requested for '${joinModelKey}' on ${s.slug} but no reverse join field or forward relationship field could be resolved`,
-          ]);
+          warnLog(s.payload, 'Requested join could not be resolved', {
+            collection: s.slug,
+            relatedModel: joinModelKey,
+          });
           continue;
         }
 
@@ -224,7 +246,9 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             if (hit) d[field] = hit;
           }
         } catch (error) {
-          errorLog([`forward join lookup failed for '${joinModelKey}' on ${s.slug}:`, error]);
+          errorLog(s.payload, `Forward join lookup failed for "${joinModelKey}"`, error, {
+            collection: s.slug,
+          });
         }
       }
     }
@@ -268,11 +292,17 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
 
         try {
           const result = await fn(s);
-          debugLog([`${op} result`, { slug, result, duration: `${Date.now() - start}ms` }]);
+          if (adapterConfig.enableDebugLogs) {
+            debugLog(payload, `${op} completed`, {
+              model,
+              collection: slug,
+              durationMs: Date.now() - start,
+            });
+          }
           return result;
         } catch (error) {
           if (onNotFound && isNotFound(error)) return onNotFound();
-          errorLog([`Error in ${op}:`, model, error]);
+          errorLog(payload, `Failed to ${op}`, error, { model, collection: slug });
           throw error;
         }
       }
@@ -324,7 +354,13 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         }): Promise<R> {
           return run('create', model, async (s) => {
             const input = s.input(data);
-            debugLog(['create', { slug: s.slug, input, select }]);
+            if (adapterConfig.enableDebugLogs) {
+              debugLog(s.payload, 'Creating document', {
+                model,
+                collection: s.slug,
+                selectedFieldCount: select?.length,
+              });
+            }
             // depth 0: populated relationships would bloat the cookie-cached session.
             const doc = await s.payload.create({
               collection: s.slug,
@@ -680,7 +716,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
           return result;
         } catch (error) {
           if (started) await killTransaction(req);
-          errorLog(['Transaction rolled back:', error]);
+          errorLog(payload, 'Transaction rolled back', error);
           throw error;
         }
       },

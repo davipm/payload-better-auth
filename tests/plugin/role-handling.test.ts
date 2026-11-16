@@ -1,6 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
-import { getTestContext, cleanupAll } from '../helpers';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { cleanupAll, getTestContext } from '../helpers/index.js';
 
 /**
  * Integration tests for role field handling.
@@ -11,10 +11,15 @@ import { getTestContext, cleanupAll } from '../helpers';
  *
  * Requires a running Postgres database.
  */
-describe('Role Handling', async () => {
-  const { payload, test } = await getTestContext();
+describe('Role Handling', () => {
+  let payload: Awaited<ReturnType<typeof getTestContext>>['payload'];
+  let test: Awaited<ReturnType<typeof getTestContext>>['test'];
 
   let userId: string;
+
+  beforeAll(async () => {
+    ({ payload, test } = await getTestContext());
+  });
 
   beforeAll(async () => {
     await cleanupAll(payload);
@@ -91,8 +96,6 @@ describe('Role Handling', async () => {
     });
 
     const { session, headers } = await test.login({ userId });
-    console.log('[role-test] session:', session);
-    console.log('[role-test] headers:', headers);
     expect(session).toBeDefined();
 
     // getSession should not throw — this was the #128 bug

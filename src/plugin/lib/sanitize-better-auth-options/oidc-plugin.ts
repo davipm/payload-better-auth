@@ -1,10 +1,10 @@
-import { set } from '../../../utils/set.js';
-import { baModelFieldKeys, baModelKey } from '../../constants.js';
-import type { BetterAuthSchemas } from '../../types.js';
+import type { BetterAuthSchemas } from '../../../types/plugin.js';
 import {
   getSchemaCollectionSlug,
   getSchemaFieldName,
-} from '../build-collections/utils/collection-schema.js';
+} from '../../../utils/plugin/build-collections/collection-schema.js';
+import { set } from '../../../utils/set.js';
+import { baModelFieldKeys, baModelKey } from '../../constants.js';
 
 export function configureOidcPlugin(plugin: any, resolvedSchemas: BetterAuthSchemas): void {
   const models = [

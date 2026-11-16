@@ -1,7 +1,7 @@
 import type { CollectionConfig, Config } from 'payload';
+import type { BetterAuthSchemas, PayloadAuthOptions } from '../../types/plugin.js';
+import { checkPluginExists } from '../../utils/plugin/check-plugin-exists.js';
 import { adminRoutes, baModelKey, baseSlugs, supportedBAPluginIds } from '../constants.js';
-import { checkPluginExists } from '../helpers/check-plugin-exists.js';
-import type { BetterAuthSchemas, PayloadAuthOptions } from '../types.js';
 import { stripSecretsFromPluginOptions } from './strip-secrets.js';
 
 /**

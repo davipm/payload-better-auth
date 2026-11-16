@@ -1,4 +1,4 @@
-import type { PayloadAuthOptions } from '../types.js';
+import type { PayloadAuthOptions } from '../../types/plugin.js';
 
 /**
  * Key names that, wherever they appear inside a Better Auth plugin's config

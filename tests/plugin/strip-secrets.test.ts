@@ -1,8 +1,8 @@
 import type { CollectionConfig, Config } from 'payload';
 import { describe, expect, it } from 'vitest';
-import { applyBetterAuthAdminConfig } from '../../plugin/lib/apply-ba-admin-config';
-import { stripSecretsFromPluginOptions } from '../../plugin/lib/strip-secrets';
-import type { BetterAuthSchemas, PayloadAuthOptions } from '../../plugin/types';
+import { applyBetterAuthAdminConfig } from '../../src/plugin/lib/apply-ba-admin-config.js';
+import { stripSecretsFromPluginOptions } from '../../src/plugin/lib/strip-secrets.js';
+import type { BetterAuthSchemas, PayloadAuthOptions } from '../../src/types/plugin.js';
 
 const SECRET_SENTINEL = 'test-secret-leak-sentinel';
 const CLIENT_SECRET_SENTINEL = 'test-client-secret-sentinel';

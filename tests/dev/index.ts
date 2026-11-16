@@ -1,6 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import dotenv from 'dotenv';
-import { buildConfig } from 'payload';
+import { buildConfig, type Payload } from 'payload';
 
 dotenv.config({ path: new URL('./.env', import.meta.url).pathname });
 
@@ -39,7 +39,7 @@ import {
   betterAuthPlugin,
   getPayloadAuth,
   type PayloadAuthOptions,
-} from '../../plugin';
+} from '../../src/plugin/index.js';
 
 const statement = {
   ...defaultOrganizationStatements,
@@ -63,6 +63,12 @@ const superAdmin = ac.newRole({
   project: ['create', 'update'],
   ...ownerAc.statements,
 });
+
+let payloadLogger: Payload['logger'] | undefined;
+
+function logTestAuth(msg: string, data: Record<string, unknown> = {}) {
+  payloadLogger?.info({ ...data, msg: `[test-auth] ${msg}` });
+}
 
 export const betterAuthOptions = {
   appName: 'payload-better-auth',
@@ -92,7 +98,11 @@ export const betterAuthOptions = {
       },
       async sendInvitationEmail(data) {
         const inviteLink = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/accept-invitation/${data.id}`;
-        console.log('Send invite for org: ', data, inviteLink);
+        logTestAuth('Organization invitation generated', {
+          email: data.email,
+          organizationId: data.organization.id,
+          inviteLink,
+        });
       },
     }),
     lastLoginMethod({ storeInDatabase: true }),
@@ -100,12 +110,12 @@ export const betterAuthOptions = {
       issuer: 'payload-better-auth',
       otpOptions: {
         async sendOTP({ user, otp }) {
-          console.log('Send OTP for user: ', user, otp);
+          logTestAuth('Two-factor code generated', { email: user.email, otp });
         },
       },
     }),
     // emailHarmony is intentionally excluded from test config because it
-    // uses mailchecker to reject disposable/test email domains (@test.com,
+    // uses mail checker to reject disposable/test email domains (@test.com,
     // @example.com, @email.com) which breaks test signups.
     phoneHarmony({
       defaultCountry: 'CA',
@@ -113,23 +123,26 @@ export const betterAuthOptions = {
     anonymous({
       emailDomainName: 'payload-better-auth.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        console.log('Link account for anonymous user: ', anonymousUser, newUser);
+        logTestAuth('Anonymous account linked', {
+          anonymousUserId: anonymousUser.id,
+          userId: newUser.id,
+        });
       },
       disableDeleteAnonymousUser: false,
     }),
     phoneNumber({
-      sendOTP: async ({ phoneNumber, code }, req) => {
-        console.log('Send OTP for user: ', phoneNumber, code);
+      sendOTP: async ({ phoneNumber, code }) => {
+        logTestAuth('Phone verification code generated', { phoneNumber, code });
       },
     }),
     magicLink({
-      sendMagicLink: async ({ email, token, url }, request) => {
-        console.log('Send magic link for user: ', email, token, url);
+      sendMagicLink: async ({ email, url }) => {
+        logTestAuth('Magic link generated', { email, url });
       },
     }),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        console.log('Send verification OTP for user: ', email, otp, type);
+        logTestAuth('Email verification code generated', { email, otp, type });
       },
     }),
     passkey({
@@ -154,14 +167,19 @@ export const betterAuthOptions = {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url }) {
-      console.log('Send verification email for user: ', url);
+      logTestAuth('Email verification link generated', { userId: user.id, email: user.email, url });
     },
   },
   user: {
     changeEmail: {
       enabled: true,
       sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
-        console.log('Send change email verification for user: ', user, newEmail, url, token);
+        logTestAuth('Change email verification link generated', {
+          userId: user.id,
+          email: user.email,
+          newEmail,
+          url,
+        });
       },
     },
     deleteUser: {
@@ -210,11 +228,11 @@ export const betterAuthPluginOptions = {
       email,
       url,
     }: {
-      payload: any;
+      payload: Payload;
       email: string;
       url: string;
     }) => {
-      console.log('Send admin invite: ', email, url);
+      payload.logger.info({ email, url, msg: '[test-auth] Admin invitation generated' });
       return {
         success: true as const,
       };
@@ -231,7 +249,7 @@ const emailAdapter = () => {
     defaultFromAddress: 'test@performix.ca',
     defaultFromName: 'Test',
     sendEmail: async (message) => {
-      console.log('Sending email', message);
+      logTestAuth('Email queued', { to: message.to, subject: message.subject });
     },
   });
 };
@@ -260,7 +278,9 @@ export const payloadConfig = buildConfig({
 });
 
 export async function getPayload() {
-  return await getPayloadAuth<PayloadAuthOptionsType>(payloadConfig);
+  const payload = await getPayloadAuth<PayloadAuthOptionsType>(payloadConfig);
+  payloadLogger = payload.logger;
+  return payload;
 }
 
 export type Errors = BetterAuthReturn<PayloadAuthOptionsType>['$ERROR_CODES'];

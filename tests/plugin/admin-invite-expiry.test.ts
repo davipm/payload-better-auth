@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 /**
  * Integration tests for admin invitation token expiry (NEW-2 fix).
@@ -15,8 +15,8 @@ import { getPayload } from '../dev';
  *
  * Requires a running Postgres database.
  */
-describe('Admin Invite Token Expiry (NEW-2)', async () => {
-  const payload = await getPayload();
+describe('Admin Invite Token Expiry (NEW-2)', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
 
   const testEmail = 'invite-expiry-test@test.com';
   const testPassword = 'invitetest123456';
@@ -49,6 +49,9 @@ describe('Admin Invite Token Expiry (NEW-2)', async () => {
     });
   }
 
+  beforeAll(async () => {
+    payload = await getPayload();
+  });
   beforeAll(cleanup);
   afterAll(cleanup);
   beforeEach(cleanup);

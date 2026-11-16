@@ -9,7 +9,7 @@ import {
   runBaseCollectionsTests,
 } from './base-collections-tests.js';
 
-describe('Handle Payload Adapter', async () => {
+describe('Handle Payload Adapter', () => {
   it('should successfully add the Payload Adapter', async () => {
     const payload = await getPayload();
 
@@ -29,8 +29,9 @@ describe('Handle Payload Adapter', async () => {
   });
 });
 
-function deleteAll(payload: BasePayload) {
+function deleteAll(getPayload: () => Promise<BasePayload>) {
   beforeAll(async () => {
+    const payload = await getPayload();
     await payload.delete({
       collection: 'users',
       where: {
@@ -68,6 +69,7 @@ function deleteAll(payload: BasePayload) {
     });
   });
   afterAll(async () => {
+    const payload = await getPayload();
     await payload.delete({
       collection: 'sessions',
       where: {
@@ -105,24 +107,24 @@ function deleteAll(payload: BasePayload) {
   });
 }
 
-describe('Run BetterAuth Base Collections Adapter tests', async () => {
-  const payload = await getPayload();
+describe('Run BetterAuth Base Collections Adapter tests', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
 
-  deleteAll(payload);
-
-  const adapter = payloadAdapter({
-    payloadClient: payload,
-    adapterConfig: {
-      idType: 'number',
-    },
+  beforeAll(async () => {
+    payload = await getPayload();
   });
+  deleteAll(async () => payload);
 
-  await runBaseCollectionsTests({
+  runBaseCollectionsTests({
     getAdapter: async (
       customOptions = {
         ...payload.betterAuth.options,
       },
     ) => {
+      const adapter = payloadAdapter({
+        payloadClient: payload,
+        adapterConfig: { idType: 'number' },
+      });
       return adapter({ ...customOptions });
     },
     disableTests: {
@@ -131,19 +133,15 @@ describe('Run BetterAuth Base Collections Adapter tests', async () => {
   });
 });
 
-describe('Run BetterAuth Base Collections Adapter tests with number id', async () => {
-  const payload = await getPayload();
+describe('Run BetterAuth Base Collections Adapter tests with number id', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
 
-  deleteAll(payload);
-
-  const adapter = payloadAdapter({
-    payloadClient: payload,
-    adapterConfig: {
-      idType: 'number',
-    },
+  beforeAll(async () => {
+    payload = await getPayload();
   });
+  deleteAll(async () => payload);
 
-  await runBaseCollectionsNumberIdTests(
+  runBaseCollectionsNumberIdTests(
     {
       getAdapter: async (
         customOptions = {
@@ -155,6 +153,10 @@ describe('Run BetterAuth Base Collections Adapter tests with number id', async (
           },
         },
       ) => {
+        const adapter = payloadAdapter({
+          payloadClient: payload,
+          adapterConfig: { idType: 'number' },
+        });
         return adapter({ ...customOptions });
       },
       disableTests: {
@@ -174,18 +176,19 @@ describe('Run BetterAuth Base Collections Adapter tests with number id', async (
   );
 });
 
-describe('Authentication Flow Tests', async () => {
-  const payload = await getPayload();
+describe('Authentication Flow Tests', () => {
+  let payload: Awaited<ReturnType<typeof getPayload>>;
   let test: TestHelpers;
 
   beforeAll(async () => {
+    payload = await getPayload();
     const ctx = (await payload.betterAuth.$context) as unknown as {
       test: TestHelpers;
     };
     test = ctx.test;
   });
 
-  deleteAll(payload);
+  deleteAll(async () => payload);
 
   it('should successfully sign up a new user via API', async () => {
     const user = await payload.betterAuth.api.signUpEmail({

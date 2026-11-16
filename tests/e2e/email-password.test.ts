@@ -1,14 +1,14 @@
+import type { TestHelpers } from 'better-auth/plugins';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import {
   cleanupAll,
   createAuthenticatedUser,
   getSession,
-  getTestPayload,
+  getTestContext,
+  type getTestPayload,
   signIn,
   signUp,
-} from '../helpers';
-import type { TestHelpers } from 'better-auth/plugins';
-import { getTestContext } from '../helpers';
+} from '../helpers/index.js';
 
 describe('Email/Password Auth Flow', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;
@@ -111,9 +111,6 @@ describe('Email/Password Auth Flow', () => {
         password: 'Password123!',
         name: 'Sign in user',
       });
-
-      console.log('[email-password-test] body:', user);
-      console.log('[email-password-test] cookies:', cookies);
 
       expect(user).toBeDefined();
       expect(user.email).toBe('signin@test.com');

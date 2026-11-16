@@ -1,4 +1,4 @@
-import type { PayloadAuthOptions } from '../types.js';
+import type { PayloadAuthOptions } from '../../types/plugin.js';
 
 export function getAllRoleOptions(pluginOptions: PayloadAuthOptions) {
   const adminRoles = pluginOptions.users?.adminRoles ?? ['admin'];

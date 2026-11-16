@@ -236,7 +236,7 @@ const generated = gen();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 (async () => {
-  const file = path.resolve(__dirname, '../generated-types.ts');
+  const file = path.resolve(__dirname, '../types/generated-types.ts');
   await fs.writeFile(file, generated, 'utf8');
   console.log(`Generated types written to ${file}`);
 })();

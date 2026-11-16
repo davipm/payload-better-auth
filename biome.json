@@ -6,7 +6,23 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!.agents",
+      "!.github",
+      "!dist",
+      "!build",
+      "!src/payload.types.ts",
+      "!src/components/ui",
+      "!src/migrations",
+      "!src/seed",
+      "!public",
+      "!dev/app/(payload)/admin/importMap.js",
+      "!src/payload-types.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

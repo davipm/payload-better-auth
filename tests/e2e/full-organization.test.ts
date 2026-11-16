@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers';
+import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers/index.js';
 import { payloadAdapter } from '../../src/adapter/index.js';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
 

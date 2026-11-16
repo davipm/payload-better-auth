@@ -1,5 +1,5 @@
-import { isAdminWithRoles } from '../lib/build-collections/utils/payload-access.js';
-import type { PayloadAuthOptions } from '../types.js';
+import type { PayloadAuthOptions } from '../../types/plugin.js';
+import { isAdminWithRoles } from './build-collections/payload-access.js';
 
 export function getAdminAccess(pluginOptions: PayloadAuthOptions) {
   const adminRoles = pluginOptions.users?.adminRoles ?? ['admin'];

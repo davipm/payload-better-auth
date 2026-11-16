@@ -1,9 +1,9 @@
 import type { TestHelpers } from 'better-auth/plugins';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, createQuickSession, createQuickUser, getTestContext } from '../helpers';
+import { cleanupAll, createQuickSession, createQuickUser, getTestContext } from '../helpers/index.js';
 
 describe('Access Control', () => {
-  let payload: Awaited<ReturnType<typeof import('../helpers').getTestPayload>>;
+  let payload: Awaited<ReturnType<typeof import('../helpers/index.js').getTestPayload>>;
   let test: TestHelpers;
 
   beforeAll(async () => {

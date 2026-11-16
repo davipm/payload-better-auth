@@ -1,9 +1,9 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
-import { getGenerateInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/generate-invite-url';
-import { getSendInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/send-invite-url';
-import { betterAuthPluginOptions } from '../dev';
-import { getTestContext } from '../helpers';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { getGenerateInviteUrlEndpoint } from '../../src/endpoints/generate-invite-url.js';
+import { getSendInviteUrlEndpoint } from '../../src/endpoints/send-invite-url.js';
+import { betterAuthPluginOptions } from '../dev/index.js';
+import { getTestContext } from '../helpers/index.js';
 
 /**
  * Integration tests for endpoint authentication (P0-3 regression).
@@ -13,8 +13,9 @@ import { getTestContext } from '../helpers';
  *
  * Requires a running Postgres database.
  */
-describe('Endpoint Authentication (P0-3 Integration)', async () => {
-  const { payload, test } = await getTestContext();
+describe('Endpoint Authentication (P0-3 Integration)', () => {
+  let payload: Awaited<ReturnType<typeof getTestContext>>['payload'];
+  let test: Awaited<ReturnType<typeof getTestContext>>['test'];
 
   const roles = [
     { label: 'Admin', value: 'admin' },
@@ -55,6 +56,10 @@ describe('Endpoint Authentication (P0-3 Integration)', async () => {
       data: undefined,
     }) as any;
   }
+
+  beforeAll(async () => {
+    ({ payload, test } = await getTestContext());
+  });
 
   beforeAll(async () => {
     // Create a regular (non-admin) user directly via testUtils

@@ -1,11 +1,14 @@
 import type { CollectionConfig } from 'payload';
-import type { Session } from '../../../generated-types.js';
+import type { Session } from '../../../types/generated-types.js';
 import { baModelKey, baseSlugs } from '../../constants.js';
-import { getAdminAccess } from '../../helpers/get-admin-access.js';
-import { getDefaultCollectionSlug } from '../../helpers/get-collection-slug.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../types.js';
-import { assertAllSchemaFields, getSchemaCollectionSlug } from './utils/collection-schema.js';
-import { getCollectionFields } from './utils/transform-schema-fields-to-payload.js';
+import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
+import { getDefaultCollectionSlug } from '../../../utils/plugin/get-collection-slug.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types/plugin.js';
+import {
+  assertAllSchemaFields,
+  getSchemaCollectionSlug,
+} from '../../../utils/plugin/build-collections/collection-schema.js';
+import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildSessionsCollection({
   incomingCollections,

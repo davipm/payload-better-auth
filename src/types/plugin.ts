@@ -20,14 +20,14 @@ import type {
   Payload,
   PayloadRequest,
 } from 'payload';
-import type { ModelKey } from '../generated-types.js';
 import type {
   adminRoutes,
   baPluginSlugs,
   defaults,
   loginMethods,
   socialProviders,
-} from './constants.js';
+} from '../plugin/constants.js';
+import type { ModelKey } from './generated-types.js';
 /**
  * BetterAuth options with the following caveats:
  * - The `database` option is removed as it is configured internally

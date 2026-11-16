@@ -1,7 +1,7 @@
 import { PasskeysClient } from './client.js';
 import './index.scss';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
-import type { PasskeysServerComponentProps, PasskeyWithId } from './types.js';
+import type { PasskeysServerComponentProps, PasskeyWithId } from '../../types/passkeys.js';
 
 export async function Passkeys({ ...props }: PasskeysServerComponentProps) {
   const { id, passkeySlug, payload, passkeyUserIdFieldName, req, user, pluginOptions } = props;

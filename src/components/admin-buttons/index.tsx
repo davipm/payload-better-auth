@@ -38,14 +38,12 @@ export function AdminButtons({ baseURL, basePath }: AdminButtonsProps) {
     try {
       const { error } = await action();
       if (error) {
-        console.error(failure, error);
         toast.error(error.message || failure);
         return;
       }
       if (success) toast.success(success);
       onDone();
-    } catch (err) {
-      console.error(failure, err);
+    } catch {
       toast.error(failure);
     } finally {
       setPending(false);

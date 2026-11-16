@@ -1,15 +1,18 @@
 import type { CollectionConfig } from 'payload';
-import type { Account } from '../../../../generated-types.js';
+import type { Account } from '../../../../types/generated-types.js';
 import { baModelKey, defaults } from '../../../constants.js';
-import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types.js';
+import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../../types/plugin.js';
 
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
   getSchemaFieldName,
-} from '../utils/collection-schema.js';
-import { isAdminOrCurrentUserWithRoles, isAdminWithRoles } from '../utils/payload-access.js';
-import { getCollectionFields } from '../utils/transform-schema-fields-to-payload.js';
+} from '../../../../utils/plugin/build-collections/collection-schema.js';
+import {
+  isAdminOrCurrentUserWithRoles,
+  isAdminWithRoles,
+} from '../../../../utils/plugin/build-collections/payload-access.js';
+import { getCollectionFields } from '../../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildAccountsCollection({
   incomingCollections,

@@ -1,10 +1,10 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint, headersWithCors, killTransaction } from 'payload';
 import { z } from 'zod';
-import { getPayloadAuth } from '../../../../index.js';
-import { adminEndpoints, defaults } from '../../../../constants.js';
-import type { PayloadAuthOptions } from '../../../../types.js';
-import { hasAdminRoles } from '../../utils/payload-access.js';
+import { adminEndpoints, defaults } from '../plugin/constants.js';
+import { getPayloadAuth } from '../plugin/index.js';
+import type { PayloadAuthOptions } from '../types/plugin.js';
+import { hasAdminRoles } from '../utils/plugin/build-collections/payload-access.js';
 
 const requestSchema = z.object({
   email: z.email(),
@@ -14,7 +14,7 @@ const requestSchema = z.object({
 export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): Endpoint => {
   const adminRoles = pluginOptions.users?.adminRoles ?? [defaults.adminRole];
 
-  const endpoint: Endpoint = {
+  return {
     path: adminEndpoints.sendInvite,
     method: 'post',
     handler: async (req) => {
@@ -87,5 +87,4 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
       }
     },
   };
-  return endpoint;
 };

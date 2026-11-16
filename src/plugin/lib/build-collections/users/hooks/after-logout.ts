@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers.js';
 import type { CollectionAfterLogoutHook, PayloadRequest } from 'payload';
+import { getCollectionByModelKey } from '../../../../../utils/plugin/get-collection.js';
 import { baModelKey } from '../../../../constants.js';
-import { getCollectionByModelKey } from '../../../../helpers/get-collection.js';
 import { getPayloadAuth } from '../../../get-payload-auth.js';
 
 export function getAfterLogoutHook() {
@@ -70,7 +70,11 @@ async function deleteSessionFromDb(
       req,
     });
   } catch (error) {
-    console.error('Failed to delete session from database during logout:', error);
+    req.payload.logger.error({
+      err: error,
+      collection: slug,
+      msg: 'Failed to delete session from database during logout',
+    });
   }
 }
 

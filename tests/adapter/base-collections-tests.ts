@@ -56,7 +56,7 @@ interface NumberIdAdapterTestOptions {
   testPrefix?: string;
 }
 
-export async function runBaseCollectionsTests(
+export function runBaseCollectionsTests(
   { getAdapter, disableTests: disabledTests, testPrefix }: AdapterTestOptions,
   internalOptions?: {
     predefinedOptions: Omit<BetterAuthOptions, 'database'>;
@@ -633,21 +633,21 @@ export async function runBaseCollectionsTests(
   );
 }
 
-export async function runBaseCollectionsNumberIdTests(
+export function runBaseCollectionsNumberIdTests(
   opts: NumberIdAdapterTestOptions,
   internalOptions?: { predefinedOptions: Omit<BetterAuthOptions, 'database'> },
 ) {
   const cleanup: { modelName: string; id: string }[] = [];
   const adapter = async () => await opts.getAdapter(internalOptions?.predefinedOptions);
 
-  describe('Should run number id specific tests', async () => {
+  describe('Should run number id specific tests', () => {
     let idNumber = -1;
 
     test.skipIf(opts.disableTests?.SHOULD_RETURN_A_NUMBER_ID_AS_A_RESULT)(
       `${opts.testPrefix ? `${opts.testPrefix} - ` : ''}${numberIdAdapterTests.SHOULD_RETURN_A_NUMBER_ID_AS_A_RESULT}`,
       async ({ onTestFailed }) => {
         onTestFailed(() => {
-          console.log(`ID number from last create: ${idNumber}`);
+          console.error(`ID number from last create: ${idNumber}`);
         });
         const res = await (await adapter()).create({
           model: models.user,
@@ -666,7 +666,7 @@ export async function runBaseCollectionsNumberIdTests(
       `${opts.testPrefix ? `${opts.testPrefix} - ` : ''}${numberIdAdapterTests.SHOULD_INCREMENT_THE_ID_BY_1}`,
       async ({ onTestFailed }) => {
         onTestFailed(() => {
-          console.log(`ID number from last create: ${idNumber}`);
+          console.error(`ID number from last create: ${idNumber}`);
         });
         const res = await (await adapter()).create({
           model: models.user,
@@ -681,7 +681,7 @@ export async function runBaseCollectionsNumberIdTests(
     );
   });
 
-  describe('Should run normal adapter tests with number id enabled', async () => {
+  describe('Should run normal adapter tests with number id enabled', () => {
     beforeAll(async () => {
       for (const { modelName, id } of cleanup) {
         await (await adapter()).delete({
@@ -690,7 +690,7 @@ export async function runBaseCollectionsNumberIdTests(
         });
       }
     });
-    await runBaseCollectionsTests(
+    runBaseCollectionsTests(
       {
         getAdapter: async () => await adapter(),
         disableTests: {

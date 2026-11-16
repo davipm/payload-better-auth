@@ -5,10 +5,10 @@ export {
   getSession,
   signIn,
   signUp,
-} from './auth';
+} from './auth.js';
 export {
   cleanupAll,
   getTestContext,
   getTestHelpers,
   getTestPayload,
-} from './setup';
+} from './setup.js';

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { getTestPayload } from '../helpers';
+import { getTestPayload } from '../helpers/index.js';
 
 describe('Plugin Collection Configuration', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;
