@@ -44,8 +44,7 @@ export function syncResolvedSchemaWithCollectionMap(
     // Find the collection corresponding to this BetterAuth model
     const collection = collections.find((c) => (c.custom as any)?.betterAuthModelKey === modelKey);
     if (!collection) {
-      console.error(`Collection not found for model key: ${modelKey}`);
-      continue;
+      throw new Error(`Collection not found for Better Auth model key "${modelKey}".`);
     }
 
     // ───── Sync slug ─────────────────────────────────────────────────────────
@@ -69,8 +68,9 @@ export function syncResolvedSchemaWithCollectionMap(
       const matchingField = collectionFields.find((f) => f.custom?.betterAuthFieldKey === fieldKey);
 
       if (!matchingField) {
-        console.error(`Field not found for key "${fieldKey}" in collection "${collection.slug}"`);
-        continue;
+        throw new Error(
+          `Field "${fieldKey}" was not found in the Payload collection "${collection.slug}" while syncing the Better Auth schema.`,
+        );
       }
 
       const newName = matchingField.name;

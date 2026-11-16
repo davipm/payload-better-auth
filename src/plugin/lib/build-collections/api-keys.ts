@@ -3,7 +3,10 @@ import type { Apikey } from '../../../types/generated-types.js';
 import { baModelKey } from '../../constants.js';
 import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types/plugin.js';
-import { assertAllSchemaFields, getSchemaCollectionSlug } from '../../../utils/plugin/build-collections/collection-schema.js';
+import {
+  assertAllSchemaFields,
+  getSchemaCollectionSlug,
+} from '../../../utils/plugin/build-collections/collection-schema.js';
 import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildApiKeysCollection({

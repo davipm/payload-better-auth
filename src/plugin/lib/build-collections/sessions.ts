@@ -4,7 +4,10 @@ import { baModelKey, baseSlugs } from '../../constants.js';
 import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
 import { getDefaultCollectionSlug } from '../../../utils/plugin/get-collection-slug.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types/plugin.js';
-import { assertAllSchemaFields, getSchemaCollectionSlug } from '../../../utils/plugin/build-collections/collection-schema.js';
+import {
+  assertAllSchemaFields,
+  getSchemaCollectionSlug,
+} from '../../../utils/plugin/build-collections/collection-schema.js';
 import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildSessionsCollection({

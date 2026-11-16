@@ -647,7 +647,7 @@ export async function runBaseCollectionsNumberIdTests(
       `${opts.testPrefix ? `${opts.testPrefix} - ` : ''}${numberIdAdapterTests.SHOULD_RETURN_A_NUMBER_ID_AS_A_RESULT}`,
       async ({ onTestFailed }) => {
         onTestFailed(() => {
-          console.log(`ID number from last create: ${idNumber}`);
+          console.error(`ID number from last create: ${idNumber}`);
         });
         const res = await (await adapter()).create({
           model: models.user,
@@ -666,7 +666,7 @@ export async function runBaseCollectionsNumberIdTests(
       `${opts.testPrefix ? `${opts.testPrefix} - ` : ''}${numberIdAdapterTests.SHOULD_INCREMENT_THE_ID_BY_1}`,
       async ({ onTestFailed }) => {
         onTestFailed(() => {
-          console.log(`ID number from last create: ${idNumber}`);
+          console.error(`ID number from last create: ${idNumber}`);
         });
         const res = await (await adapter()).create({
           model: models.user,

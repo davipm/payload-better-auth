@@ -8,7 +8,10 @@ import {
   getSchemaCollectionSlug,
   getSchemaFieldName,
 } from '../../../../utils/plugin/build-collections/collection-schema.js';
-import { isAdminOrCurrentUserWithRoles, isAdminWithRoles } from '../../../../utils/plugin/build-collections/payload-access.js';
+import {
+  isAdminOrCurrentUserWithRoles,
+  isAdminWithRoles,
+} from '../../../../utils/plugin/build-collections/payload-access.js';
 import { getCollectionFields } from '../../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
 
 export function buildAccountsCollection({

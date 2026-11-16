@@ -1,7 +1,11 @@
 import type { CollectionConfig } from 'payload';
 import type { ModelKey } from '../../../types/generated-types.js';
 import { baModelKey, baseSlugs } from '../../constants.js';
-import type { BetterAuthSchemas, BuildCollectionProps, PayloadAuthOptions } from '../../../types/plugin.js';
+import type {
+  BetterAuthSchemas,
+  BuildCollectionProps,
+  PayloadAuthOptions,
+} from '../../../types/plugin.js';
 import { buildAccountsCollection } from './accounts/index.js';
 import { buildAdminInvitationsCollection } from './admin-invitations/index.js';
 import { buildApiKeysCollection } from './api-keys.js';

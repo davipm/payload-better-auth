@@ -1,6 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
-import { getTestContext, cleanupAll } from '../helpers';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { cleanupAll, getTestContext } from '../helpers';
 
 /**
  * Integration tests for role field handling.
@@ -91,8 +91,6 @@ describe('Role Handling', async () => {
     });
 
     const { session, headers } = await test.login({ userId });
-    console.log('[role-test] session:', session);
-    console.log('[role-test] headers:', headers);
     expect(session).toBeDefined();
 
     // getSession should not throw — this was the #128 bug

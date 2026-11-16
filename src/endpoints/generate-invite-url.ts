@@ -2,9 +2,9 @@ import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
 import { adminEndpoints, baseSlugs, defaults } from '../plugin/constants.js';
 import { getPayloadAuth } from '../plugin/index.js';
-import { hasAdminRoles } from '../utils/plugin/build-collections/payload-access.js';
 import type { PayloadAuthOptions } from '../types/plugin.js';
 import { generateAdminInviteUrl } from '../utils/generate-admin-invite-url.js';
+import { hasAdminRoles } from '../utils/plugin/build-collections/payload-access.js';
 
 interface InviteEndpointProps {
   roles: { label: string; value: string }[];
@@ -84,7 +84,7 @@ export const getGenerateInviteUrlEndpoint = ({
           },
         );
       } catch (error) {
-        console.error(error);
+        req.payload.logger.error({ err: error, msg: 'Failed to generate admin invite URL' });
         return Response.json(
           { message: 'Error generating invite link' },
           { status: httpStatus.INTERNAL_SERVER_ERROR },

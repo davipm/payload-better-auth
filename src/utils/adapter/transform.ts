@@ -52,7 +52,7 @@ function coerceId(value: unknown, idType: IdType): unknown {
   return value;
 }
 
-export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boolean) => {
+export const createTransform = (options: BetterAuthOptions) => {
   const schema = getAuthTables(options);
 
   // BA core hardcodes session.userId / account.userId `references.model` to the literal
@@ -67,15 +67,10 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
     }
   }
 
-  const debugLog = enableDebugLogs
-    ? (message: any[]) => console.log('[payload-db-adapter]', ...message)
-    : () => {};
-
   /* ----------------------------- model / field resolution ----------------------------- */
 
   function getCollectionSlug(model: ModelKey): CollectionSlug {
     const slug = schema?.[model]?.modelName || model;
-    debugLog(['getCollectionSlug:', { model, resolvedSlug: slug }]);
     return slug as CollectionSlug;
   }
 
@@ -98,7 +93,6 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
   function getFieldName(model: ModelKey, field: string): string {
     if (isIdKey(field)) return field;
     const fieldName = schema[model]?.fields[field]?.fieldName || field;
-    debugLog(['getField: ', { model, originalField: field, fieldName }]);
     return fieldName;
   }
 
@@ -199,7 +193,6 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
       const converted = Array.isArray(value)
         ? value.map((v) => (v == null ? v : coerceId(v, idType)))
         : coerceId(value, idType);
-      debugLog([`ID conversion: ${key}`, { original: value, converted }]);
       return converted;
     }
 
@@ -356,7 +349,6 @@ export const createTransform = (options: BetterAuthOptions, enableDebugLogs: boo
       }
 
       if (isJoinResult(value)) {
-        debugLog(['transformOutput: flattening join result', { key, baKey }]);
         const docs = flattenJoinResult(value);
         const joinField = flat?.find((f: any) => f.type === 'join' && f.name === key) as
           | { collection?: unknown }

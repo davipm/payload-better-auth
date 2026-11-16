@@ -1,7 +1,7 @@
-import { set } from '../../../utils/set.js';
-import { baModelKey, defaults } from '../../constants.js';
 import type { BetterAuthSchemas, PayloadAuthOptions } from '../../../types/plugin.js';
 import { getSchemaCollectionSlug } from '../../../utils/plugin/build-collections/collection-schema.js';
+import { set } from '../../../utils/set.js';
+import { baModelKey, defaults } from '../../constants.js';
 
 export function configureAdminPlugin(
   plugin: any,

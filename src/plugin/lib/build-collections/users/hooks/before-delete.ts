@@ -109,7 +109,10 @@ export function getBeforeDeleteHook(): CollectionBeforeDeleteHook {
       return;
     } catch (error) {
       await killTransaction(req);
-      console.error('Error in user beforeDelete hook:', error);
+      req.payload.logger.error({
+        err: error,
+        msg: 'Failed to clean up Better Auth records before user deletion',
+      });
       throw error;
     }
   };

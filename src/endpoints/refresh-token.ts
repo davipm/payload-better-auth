@@ -2,8 +2,8 @@ import type { GenericEndpointContext } from 'better-auth';
 import { setCookieCache } from 'better-auth/cookies';
 import { type Endpoint, getFieldsToSign, refreshOperation, type TypedUser } from 'payload';
 import { adminEndpoints } from '../plugin/constants.js';
-import { getSignedCookie } from '../utils/plugin/get-signed-cookie.js';
 import { getPayloadAuth } from '../plugin/index.js';
+import { getSignedCookie } from '../utils/plugin/get-signed-cookie.js';
 
 export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
   return {
@@ -39,7 +39,7 @@ export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
           });
           return new Response(JSON.stringify(result), { status: 200 });
         } catch (error) {
-          console.error('Token refresh failed:', error);
+          req.payload.logger.error({ err: error, msg: 'Token refresh failed' });
           return new Response(JSON.stringify({ message: 'Token refresh failed' }), { status: 401 });
         }
       }
