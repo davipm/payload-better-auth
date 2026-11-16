@@ -14,6 +14,7 @@ export async function prepareUser({
     email: user.email,
     user: {
       ...user,
+      id: user.id,
       collection: userCollection.slug,
     },
   });
@@ -33,6 +34,7 @@ export async function prepareSession({
     email: '',
     user: {
       ...session,
+      id: session.id,
       collection: sessionCollection.slug,
     },
   });
