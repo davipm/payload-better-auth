@@ -8,7 +8,7 @@ import {
   type getTestPayload,
   signIn,
   signUp,
-} from '../helpers';
+} from '../helpers/index.js';
 
 describe('Email/Password Auth Flow', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;

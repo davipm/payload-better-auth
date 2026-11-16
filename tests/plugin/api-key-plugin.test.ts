@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { baModelKey } from '../../plugin/constants';
-import { configureApiKeyPlugin } from '../../plugin/lib/sanitize-better-auth-options/api-key-plugin';
-import { BetterAuthSchemas } from '../../types/plugin';
+import { baModelKey } from '../../src/plugin/constants.js';
+import { configureApiKeyPlugin } from '../../src/plugin/lib/sanitize-better-auth-options/api-key-plugin.js';
+import { BetterAuthSchemas } from '../../src/types/plugin.js';
 
 // Helper to create a minimal resolved schemas object
 function createMockResolvedSchemas(

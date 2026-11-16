@@ -39,7 +39,7 @@ import {
   betterAuthPlugin,
   getPayloadAuth,
   type PayloadAuthOptions,
-} from '../../plugin';
+} from '../../src/plugin/index.js';
 
 const statement = {
   ...defaultOrganizationStatements,

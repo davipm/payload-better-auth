@@ -1,6 +1,6 @@
 import type { TestHelpers } from 'better-auth/plugins';
 import type { BasePayload } from 'payload';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 let _payload: Awaited<ReturnType<typeof getPayload>> | null = null;
 

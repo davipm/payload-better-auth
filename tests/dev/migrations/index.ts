@@ -1,8 +1,8 @@
-import * as migration_20260305_071436_init from './20260305_071436_init';
-import * as migration_20260305_072846_removeEmialHarmony from './20260305_072846_removeEmialHarmony';
-import * as migration_20260322_212925_init from './20260322_212925_init';
-import * as migration_20260729_172137 from './20260729_172137';
-import * as migration_20260729_173904_ba_1_6_schema_updates from './20260729_173904_ba_1_6_schema_updates';
+import * as migration_20260305_071436_init from './20260305_071436_init.js';
+import * as migration_20260305_072846_removeEmialHarmony from './20260305_072846_removeEmialHarmony.js';
+import * as migration_20260322_212925_init from './20260322_212925_init.js';
+import * as migration_20260729_172137 from './20260729_172137.js';
+import * as migration_20260729_173904_ba_1_6_schema_updates from './20260729_173904_ba_1_6_schema_updates.js';
 
 export const migrations = [
   {

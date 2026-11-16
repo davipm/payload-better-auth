@@ -42,7 +42,7 @@ vi.mock('@/better-auth/utils/plugin/get-collection', () => ({
   getCollectionByModelKey: vi.fn().mockReturnValue({ slug: 'sessions' }),
 }));
 
-import { getAfterLogoutHook } from '../../plugin/lib/build-collections/users/hooks/after-logout';
+import { getAfterLogoutHook } from '../../src/plugin/lib/build-collections/users/hooks/after-logout.js';
 
 describe('getAfterLogoutHook', () => {
   beforeEach(() => {

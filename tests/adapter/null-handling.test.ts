@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { payloadAdapter } from '../../src/adapter/index.js';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 /**
  * Integration tests for null value handling through the adapter layer.

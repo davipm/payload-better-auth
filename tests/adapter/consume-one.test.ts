@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { payloadAdapter } from '../../src/adapter/index.js';
-import { getPayload } from '../dev';
+import { getPayload } from '../dev/index.js';
 
 /**
  * Regression coverage for the payload adapter's `consumeOne` implementation

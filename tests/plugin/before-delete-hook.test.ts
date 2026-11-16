@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getBeforeDeleteHook } from '../../plugin/lib/build-collections/users/hooks/before-delete';
+import { getBeforeDeleteHook } from '../../src/plugin/lib/build-collections/users/hooks/before-delete.js';
 
 // Mock Payload's transaction utilities so they don't try to access db.beginTransaction
 vi.mock('payload', async (importOriginal) => {

@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, getTestPayload } from '../helpers';
+import { cleanupAll, getTestPayload } from '../helpers/index.js';
 
 describe('Adapter CRUD via Payload Local API', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;

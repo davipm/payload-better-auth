@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { betterAuthStrategy } from '../../plugin/lib/build-collections/users/better-auth-strategy';
+import { betterAuthStrategy } from '../../src/plugin/lib/build-collections/users/better-auth-strategy.js';
 
 /**
  * Unit tests for the Better Auth strategy.

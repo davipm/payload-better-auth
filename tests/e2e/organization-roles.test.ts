@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
-import { cleanupAll, createQuickSession, getTestContext } from '../helpers';
+import { cleanupAll, createQuickSession, getTestContext } from '../helpers/index.js';
 import type { BasePayload } from 'payload';
 
 /**

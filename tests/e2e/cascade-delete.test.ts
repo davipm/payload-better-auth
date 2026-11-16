@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers';
+import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers/index.js';
 
 /**
  * Cascade delete tests need createAuthenticatedUser (not createQuickSession)

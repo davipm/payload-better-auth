@@ -1,9 +1,9 @@
 import type { TestHelpers } from 'better-auth/plugins';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { getGenerateInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/generate-invite-url';
-import { getSendInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/send-invite-url';
-import { betterAuthPluginOptions } from '../dev';
-import { getTestContext } from '../helpers';
+import { getGenerateInviteUrlEndpoint } from '../../src/endpoints/generate-invite-url.js';
+import { getSendInviteUrlEndpoint } from '../../src/endpoints/send-invite-url.js';
+import { betterAuthPluginOptions } from '../dev/index.js';
+import { getTestContext } from '../helpers/index.js';
 
 /**
  * Integration tests for endpoint authentication (P0-3 regression).
