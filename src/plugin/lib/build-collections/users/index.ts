@@ -27,7 +27,7 @@ import {
   getGenerateInviteUrlEndpoint,
   getRefreshTokenEndpoint,
   getSendInviteUrlEndpoint,
-} from './endpoints/index.js';
+} from '../../../../endpoints/index.js';
 import { getAfterLogoutHook, getBeforeDeleteHook } from './hooks/index.js';
 
 export function buildUsersCollection({

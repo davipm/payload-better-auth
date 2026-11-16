@@ -1,9 +1,9 @@
 import type { GenericEndpointContext } from 'better-auth';
 import { setCookieCache } from 'better-auth/cookies';
 import { type Endpoint, getFieldsToSign, refreshOperation, type TypedUser } from 'payload';
-import { getPayloadAuth } from '../../../../index.js';
-import { adminEndpoints } from '../../../../constants.js';
-import { getSignedCookie } from '../../../../helpers/get-signed-cookie.js';
+import { adminEndpoints } from '../plugin/constants.js';
+import { getSignedCookie } from '../plugin/helpers/get-signed-cookie.js';
+import { getPayloadAuth } from '../plugin/index.js';
 
 export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
   return {

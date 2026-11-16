@@ -1,10 +1,10 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
-import { getPayloadAuth } from '../../../../index.js';
-import { generateAdminInviteUrl } from '../../../../../utils/generate-admin-invite-url.js';
-import { adminEndpoints, baseSlugs, defaults } from '../../../../constants.js';
-import type { PayloadAuthOptions } from '../../../../types.js';
-import { hasAdminRoles } from '../../utils/payload-access.js';
+import { adminEndpoints, baseSlugs, defaults } from '../plugin/constants.js';
+import { getPayloadAuth } from '../plugin/index.js';
+import { hasAdminRoles } from '../plugin/lib/build-collections/utils/payload-access.js';
+import type { PayloadAuthOptions } from '../plugin/types.js';
+import { generateAdminInviteUrl } from '../utils/generate-admin-invite-url.js';
 
 interface InviteEndpointProps {
   roles: { label: string; value: string }[];

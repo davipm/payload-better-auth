@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getGenerateInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/generate-invite-url';
 import { getSendInviteUrlEndpoint } from '../../plugin/lib/build-collections/users/endpoints/send-invite-url';
 import { betterAuthPluginOptions } from '../dev';

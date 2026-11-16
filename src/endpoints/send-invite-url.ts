@@ -1,10 +1,10 @@
 import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint, headersWithCors, killTransaction } from 'payload';
 import { z } from 'zod';
-import { getPayloadAuth } from '../../../../index.js';
-import { adminEndpoints, defaults } from '../../../../constants.js';
-import type { PayloadAuthOptions } from '../../../../types.js';
-import { hasAdminRoles } from '../../utils/payload-access.js';
+import { adminEndpoints, defaults } from '../plugin/constants.js';
+import { getPayloadAuth } from '../plugin/index.js';
+import { hasAdminRoles } from '../plugin/lib/build-collections/utils/payload-access.js';
+import type { PayloadAuthOptions } from '../plugin/types.js';
 
 const requestSchema = z.object({
   email: z.email(),
