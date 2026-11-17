@@ -26,7 +26,8 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * hooks) alongside their plain-data `options`.
  */
 function stripSecretKeysDeep<T>(value: T, depth = 0): T {
-  if (depth >= MAX_SCAN_DEPTH) return value;
+  // Values beyond the scan limit cannot be proven safe for serialization.
+  if (depth >= MAX_SCAN_DEPTH) return null as T;
 
   if (Array.isArray(value)) {
     return value.map((item) => stripSecretKeysDeep(item, depth + 1)) as T;

@@ -1,7 +1,7 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
-import { cleanupAll, createQuickSession, getTestContext } from '../helpers/index.js';
 import type { BasePayload } from 'payload';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { cleanupAll, createQuickSession, getTestContext } from '../helpers/index.js';
 
 /**
  * Regression tests for #112: creating an organization via the Better Auth API
@@ -53,11 +53,11 @@ describe('Organization role handling (#112)', () => {
     });
 
     expect(org).toBeDefined();
-    expect(org!.id).toBeDefined();
+    expect(org?.id).toBeDefined();
 
     const members = await payload.find({
       collection: 'members' as any,
-      where: { organization: { equals: org!.id } },
+      where: { organization: { equals: org?.id } },
     });
 
     expect(members.docs.length).toBeGreaterThan(0);
@@ -65,8 +65,8 @@ describe('Organization role handling (#112)', () => {
       (m: any) => String(m.user) === String(user.id) || String(m.user?.id) === String(user.id),
     );
     expect(ownerMember).toBeDefined();
-    expect(typeof ownerMember!.role).toBe('string');
-    expect(ownerMember!.role).toBe('owner');
+    expect(typeof ownerMember?.role).toBe('string');
+    expect(ownerMember?.role).toBe('owner');
   });
 
   it('invitation role round-trips as a string', async () => {
@@ -87,7 +87,7 @@ describe('Organization role handling (#112)', () => {
 
     const invitation = await payload.betterAuth.api.createInvitation({
       body: {
-        organizationId: org!.id,
+        organizationId: org?.id,
         email: 'invitee@test.com',
         role: 'admin',
       },

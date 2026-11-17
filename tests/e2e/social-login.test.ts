@@ -1,7 +1,7 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, getTestPayload } from '../helpers/index.js';
-import { payloadAdapter } from '../../src/adapter/index.js';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { payloadAdapter } from '../../src/adapter/index.js';
+import { cleanupAll, getTestPayload } from '../helpers/index.js';
 
 describe('Social Login Flow', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;
@@ -67,19 +67,19 @@ describe('Social Login Flow', () => {
       })) as any;
 
       expect(found).not.toBeNull();
-      expect(found!.accountId).toBe(account.accountId);
-      expect(found!.providerId).toBe('google');
+      expect(found?.accountId).toBe(account.accountId);
+      expect(found?.providerId).toBe('google');
 
       // The critical assertion: found.user must be a populated object,
       // not just a raw ID string.
-      expect(found!.user).toBeDefined();
-      expect(typeof found!.user).toBe('object');
-      expect(found!.user.id).toBe(String(user.id));
-      expect(found!.user.email).toBe('social@test.com');
-      expect(found!.user.name).toBe('Social User');
+      expect(found?.user).toBeDefined();
+      expect(typeof found?.user).toBe('object');
+      expect(found?.user.id).toBe(String(user.id));
+      expect(found?.user.email).toBe('social@test.com');
+      expect(found?.user.name).toBe('Social User');
 
       // userId should still be present as a string ID
-      expect(found!.userId).toBe(String(user.id));
+      expect(found?.userId).toBe(String(user.id));
     });
 
     it('should allow session creation after resolving user from account join (re-login flow)', async () => {
@@ -97,7 +97,7 @@ describe('Social Login Flow', () => {
 
       // Extract user.id from the populated join result.
       // Before the fix, found.user was a string, so user.id was undefined.
-      const resolvedUser = found!.user;
+      const resolvedUser = found?.user;
       expect(typeof resolvedUser).toBe('object');
       expect(resolvedUser.id).toBeDefined();
 
@@ -107,7 +107,7 @@ describe('Social Login Flow', () => {
         model: 'session',
         data: {
           userId: resolvedUser.id,
-          token: 'test-session-token-' + Date.now(),
+          token: `test-session-token-${Date.now()}`,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           ipAddress: '127.0.0.1',
           userAgent: 'test-agent',

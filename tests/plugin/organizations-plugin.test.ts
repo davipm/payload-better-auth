@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { baModelKey } from '../../src/plugin/constants.js';
 import { configureOrganizationPlugin } from '../../src/plugin/lib/sanitize-better-auth-options/organizations-plugin.js';
-import { BetterAuthSchemas } from '../../src/types/plugin.js';
+import type { BetterAuthSchemas } from '../../src/types/plugin.js';
 
 // Helper to create a minimal resolved schemas object
 function createMockResolvedSchemas(

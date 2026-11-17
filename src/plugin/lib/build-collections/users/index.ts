@@ -270,7 +270,16 @@ export function buildUsersCollection({
       afterChange: [...(existingUserCollection?.hooks?.afterChange ?? [])],
 
       afterLogout: [...(existingUserCollection?.hooks?.afterLogout ?? []), getAfterLogoutHook()],
-      beforeDelete: [...(existingUserCollection?.hooks?.beforeDelete ?? []), getBeforeDeleteHook()],
+      beforeDelete: [
+        ...(existingUserCollection?.hooks?.beforeDelete ?? []),
+        getBeforeDeleteHook({
+          apiKeyReferencesOrganization: Boolean(
+            pluginOptions.betterAuthOptions?.plugins?.find(
+              (plugin) => plugin.id === supportedBAPluginIds.apiKey,
+            )?.options?.references === 'organization',
+          ),
+        }),
+      ],
     },
     auth: {
       ...(existingUserCollection && typeof existingUserCollection.auth === 'object'

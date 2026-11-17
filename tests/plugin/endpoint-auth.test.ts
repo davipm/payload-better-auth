@@ -1,4 +1,3 @@
-import type { TestHelpers } from 'better-auth/plugins';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getGenerateInviteUrlEndpoint } from '../../src/endpoints/generate-invite-url.js';
 import { getSendInviteUrlEndpoint } from '../../src/endpoints/send-invite-url.js';
@@ -59,9 +58,6 @@ describe('Endpoint Authentication (P0-3 Integration)', () => {
 
   beforeAll(async () => {
     ({ payload, test } = await getTestContext());
-  });
-
-  beforeAll(async () => {
     // Create a regular (non-admin) user directly via testUtils
     const user = await test.saveUser(
       test.createUser({

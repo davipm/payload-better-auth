@@ -658,8 +658,8 @@ export function runBaseCollectionsNumberIdTests(
         });
         cleanup.push({ modelName: models.user, id: res.id });
         expect(typeof res.id).toBe('string'); // we forcefully return all `id`s as strings. this is intentional.
-        expect(Number.parseInt(res.id)).toBeGreaterThan(0);
-        idNumber = Number.parseInt(res.id);
+        expect(Number.parseInt(res.id, 10)).toBeGreaterThan(0);
+        idNumber = Number.parseInt(res.id, 10);
       },
     );
     test.skipIf(opts.disableTests?.SHOULD_INCREMENT_THE_ID_BY_1)(
@@ -676,7 +676,7 @@ export function runBaseCollectionsNumberIdTests(
           },
         });
         cleanup.push({ modelName: models.user, id: res.id });
-        expect(Number.parseInt(res.id)).toBe(idNumber + 1);
+        expect(Number.parseInt(res.id, 10)).toBe(idNumber + 1);
       },
     );
   });

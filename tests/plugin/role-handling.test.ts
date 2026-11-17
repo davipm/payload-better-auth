@@ -1,4 +1,3 @@
-import type { TestHelpers } from 'better-auth/plugins';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { cleanupAll, getTestContext } from '../helpers/index.js';
 
@@ -19,9 +18,6 @@ describe('Role Handling', () => {
 
   beforeAll(async () => {
     ({ payload, test } = await getTestContext());
-  });
-
-  beforeAll(async () => {
     await cleanupAll(payload);
 
     // Create test user via test helpers (bypasses email verification)
@@ -101,10 +97,10 @@ describe('Role Handling', () => {
     // getSession should not throw — this was the #128 bug
     const sessionResult = await payload.betterAuth.api.getSession({ headers });
     expect(sessionResult).toBeDefined();
-    expect(sessionResult!.user).toBeDefined();
+    expect(sessionResult?.user).toBeDefined();
 
     // Accessing role on the session user must not throw TypeError (#128)
-    expect(() => (sessionResult!.user as any)?.role).not.toThrow();
+    expect(() => (sessionResult?.user as any)?.role).not.toThrow();
 
     // The authoritative role lives on the Payload user document
     const payloadUser = await payload.findByID({

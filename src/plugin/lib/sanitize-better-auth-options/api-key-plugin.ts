@@ -22,6 +22,9 @@ export function configureApiKeyPlugin(plugin: any, resolvedSchemas: BetterAuthSc
   set(
     plugin,
     `schema.${model}.fields.referenceId.references.model`,
-    getSchemaCollectionSlug(resolvedSchemas, baModelKey.user),
+    getSchemaCollectionSlug(
+      resolvedSchemas,
+      plugin.options?.references === 'organization' ? baModelKey.organization : baModelKey.user,
+    ),
   );
 }

@@ -14,9 +14,6 @@ describe('Null Value Handling', () => {
 
   beforeAll(async () => {
     payload = await getPayload();
-  });
-
-  beforeAll(async () => {
     // Clean up any existing test data
     await payload.delete({
       collection: 'users',

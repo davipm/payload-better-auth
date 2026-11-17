@@ -1,12 +1,12 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { TestHelpers } from 'better-auth/plugins';
+import type { BasePayload } from 'payload';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import {
   cleanupAll,
   createQuickSession,
   createQuickUser,
   getTestContext,
 } from '../helpers/index.js';
-import type { BasePayload } from 'payload';
 
 /**
  * Regression test for #128: Better Auth's admin plugin impersonateUser route
@@ -58,7 +58,7 @@ describe('Admin impersonation role handling (#128)', () => {
 
     expect(thrown).toBeNull();
     expect(result).toBeDefined();
-    expect(result!.session).toBeDefined();
-    expect(String(result!.session.impersonatedBy)).toBe(String(adminUser.id));
+    expect(result?.session).toBeDefined();
+    expect(String(result?.session.impersonatedBy)).toBe(String(adminUser.id));
   });
 });

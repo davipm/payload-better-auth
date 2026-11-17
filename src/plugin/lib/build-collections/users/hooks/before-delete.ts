@@ -6,7 +6,11 @@ import {
 } from 'payload';
 import { baModelKey } from '../../../../constants.js';
 
-export function getBeforeDeleteHook(): CollectionBeforeDeleteHook {
+export function getBeforeDeleteHook({
+  apiKeyReferencesOrganization = false,
+}: {
+  apiKeyReferencesOrganization?: boolean;
+} = {}): CollectionBeforeDeleteHook {
   const hook: CollectionBeforeDeleteHook = async ({ req, id }) => {
     const collections = req.payload.collections;
 
@@ -75,7 +79,7 @@ export function getBeforeDeleteHook(): CollectionBeforeDeleteHook {
 
       // API keys use referenceId instead of userId (can reference user or org)
       const apikeySlug = getSlugSafe(baModelKey.apikey);
-      if (apikeySlug) {
+      if (apikeySlug && !apiKeyReferencesOrganization) {
         await payload.delete({
           collection: apikeySlug,
           where: { referenceId: { equals: String(userId) } },

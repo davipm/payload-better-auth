@@ -18,6 +18,7 @@
       "!src/payload.types.ts",
       "!src/components/ui",
       "!src/migrations",
+      "!tests/dev/migrations",
       "!src/seed",
       "!public",
       "!dev/app/(payload)/admin/importMap.js",

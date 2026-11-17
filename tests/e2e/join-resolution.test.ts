@@ -1,7 +1,7 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, getTestPayload, signIn, signUp } from '../helpers/index.js';
-import { payloadAdapter } from '../../src/adapter/index.js';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { payloadAdapter } from '../../src/adapter/index.js';
+import { cleanupAll, getTestPayload, signIn } from '../helpers/index.js';
 
 describe('Join Resolution', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;

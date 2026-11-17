@@ -51,8 +51,8 @@ describe('Admin Invite Token Expiry (NEW-2)', () => {
 
   beforeAll(async () => {
     payload = await getPayload();
+    await cleanup();
   });
-  beforeAll(cleanup);
   afterAll(cleanup);
   beforeEach(cleanup);
 
