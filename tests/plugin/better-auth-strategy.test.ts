@@ -14,9 +14,11 @@ const { mockGetPayloadAuth } = vi.hoisted(() => ({
   mockGetPayloadAuth: vi.fn(),
 }));
 
-vi.mock('@/better-auth/plugin/lib/get-payload-auth', () => ({
+vi.mock('../../src/plugin/index.js', () => ({
   getPayloadAuth: mockGetPayloadAuth,
 }));
+
+const mockPayload = { config: {}, logger: { error: vi.fn() } };
 
 function createMockPayloadAuth(overrides: {
   session?: any;
@@ -62,15 +64,15 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
     expect(result.user).toBeDefined();
-    expect(result.user!.id).toBe('user-1');
-    expect(result.user!.collection).toBe('users');
-    expect(result.user!._strategy).toBe('better-auth');
+    expect(result.user?.id).toBe('user-1');
+    expect(result.user?.collection).toBe('users');
+    expect(result.user?._strategy).toBe('better-auth');
   });
 
   // Issue #139: the strategy must perform a read-only session lookup so it never
@@ -91,8 +93,8 @@ describe('betterAuthStrategy', () => {
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
     const headers = new Headers();
-    await strategy.authenticate!({
-      payload: { config: {} } as any,
+    await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers,
     });
 
@@ -108,8 +110,8 @@ describe('betterAuthStrategy', () => {
     const mockPayloadAuth = createMockPayloadAuth({ session: undefined });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -123,8 +125,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -138,8 +140,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -152,8 +154,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -167,8 +169,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -191,8 +193,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -214,8 +216,8 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
@@ -238,13 +240,13 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
     expect(result.user).toBeDefined();
-    expect(result.user!.id).toBe('user-1');
+    expect(result.user?.id).toBe('user-1');
   });
 
   it('uses default slug when userSlug not provided', async () => {
@@ -257,40 +259,39 @@ describe('betterAuthStrategy', () => {
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await defaultStrategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await defaultStrategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
-    expect(result.user!.collection).toBe('users');
-    expect(mockPayloadAuth.findByID).toHaveBeenCalledWith({
-      collection: 'users',
-      id: 'user-1',
-      depth: 0,
-    });
+    expect(result.user?.collection).toBe('users');
+    expect(mockPayloadAuth.findByID).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'users',
+        id: 'user-1',
+        depth: 0,
+        disableErrors: true,
+        overrideAccess: true,
+      }),
+    );
   });
 
-  // P3-9: Strategy should log errors instead of silently swallowing them
-  it('logs error to console when authentication throws', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
+  it('logs errors through the Payload logger when authentication throws', async () => {
     const dbError = new Error('Database connection lost');
     const mockPayloadAuth = createMockPayloadAuth({
       getSessionError: dbError,
     });
     mockGetPayloadAuth.mockResolvedValue(mockPayloadAuth);
 
-    const result = await strategy.authenticate!({
-      payload: { config: {} } as any,
+    const result = await strategy.authenticate?.({
+      payload: mockPayload as any,
       headers: new Headers(),
     });
 
     expect(result.user).toBeNull();
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      '[BetterAuth Strategy] Authentication error:',
-      dbError,
-    );
-
-    consoleErrorSpy.mockRestore();
+    expect(mockPayload.logger.error).toHaveBeenCalledWith({
+      err: dbError,
+      msg: '[BetterAuth Strategy] Authentication error',
+    });
   });
 });

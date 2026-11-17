@@ -21,16 +21,14 @@ describe('Adapter consumeOne', () => {
       payloadClient: payload,
       adapterConfig: { idType: 'number' },
     })({ ...payload.betterAuth.options });
-  });
-
-  const identifier = 'consume-one-test-identifier';
-
-  beforeAll(async () => {
+    const identifier = 'consume-one-test-identifier';
     await payload.delete({
       collection: 'verifications',
       where: { identifier: { equals: identifier } },
     });
   });
+
+  const identifier = 'consume-one-test-identifier';
 
   afterAll(async () => {
     await payload.delete({
@@ -40,7 +38,7 @@ describe('Adapter consumeOne', () => {
   });
 
   it('returns the row on first call and null on a second call against the same where (double-consume guard)', async () => {
-    const created = await adapter.create<Record<string, any>>({
+    const created = await adapter.create<Record<string, unknown>>({
       model: 'verification',
       data: {
         identifier,
@@ -56,7 +54,7 @@ describe('Adapter consumeOne', () => {
 
     const where = [{ field: 'identifier', value: identifier }];
 
-    const first = await adapter.consumeOne<Record<string, any>>({
+    const first = await adapter.consumeOne<Record<string, unknown>>({
       model: 'verification',
       where,
     });
@@ -65,7 +63,7 @@ describe('Adapter consumeOne', () => {
     expect(first?.identifier).toBe(identifier);
     expect(first?.value).toBe('123456:0');
 
-    const second = await adapter.consumeOne<Record<string, any>>({
+    const second = await adapter.consumeOne<Record<string, unknown>>({
       model: 'verification',
       where,
     });

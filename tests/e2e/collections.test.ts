@@ -19,7 +19,7 @@ describe('Plugin Collection Configuration', () => {
 
   describe('Users Collection', () => {
     it('should have auth disabled (disableLocalStrategy)', () => {
-      const config = payload.collections['users'].config;
+      const config = payload.collections.users.config;
       expect(config.auth).toBeTruthy();
       if (typeof config.auth === 'object') {
         expect(config.auth.disableLocalStrategy).toBe(true);
@@ -27,7 +27,7 @@ describe('Plugin Collection Configuration', () => {
     });
 
     it('should have required base fields', () => {
-      const config = payload.collections['users'].config;
+      const config = payload.collections.users.config;
       const fieldNames = config.fields.map((f: any) => f.name).filter(Boolean);
 
       expect(fieldNames).toContain('name');
@@ -36,13 +36,13 @@ describe('Plugin Collection Configuration', () => {
     });
 
     it('should have a role field', () => {
-      const config = payload.collections['users'].config;
+      const config = payload.collections.users.config;
       const roleField = config.fields.find((f: any) => f.name === 'role');
       expect(roleField).toBeDefined();
     });
 
     it('should have the admin plugin fields (banned, banReason)', () => {
-      const config = payload.collections['users'].config;
+      const config = payload.collections.users.config;
       const fieldNames = config.fields.map((f: any) => f.name).filter(Boolean);
 
       // admin() plugin adds these
@@ -53,13 +53,13 @@ describe('Plugin Collection Configuration', () => {
 
   describe('Sessions Collection', () => {
     it('should have a user relationship field', () => {
-      const config = payload.collections['sessions'].config;
+      const config = payload.collections.sessions.config;
       const userField = config.fields.find((f: any) => f.name === 'user' || f.name === 'userId');
       expect(userField).toBeDefined();
     });
 
     it('should have token and expiresAt fields', () => {
-      const config = payload.collections['sessions'].config;
+      const config = payload.collections.sessions.config;
       const fieldNames = config.fields.map((f: any) => f.name).filter(Boolean);
 
       expect(fieldNames).toContain('token');
@@ -67,7 +67,7 @@ describe('Plugin Collection Configuration', () => {
     });
 
     it('should have admin plugin impersonatedBy field', () => {
-      const config = payload.collections['sessions'].config;
+      const config = payload.collections.sessions.config;
       const fieldNames = config.fields.map((f: any) => f.name).filter(Boolean);
 
       expect(fieldNames).toContain('impersonatedBy');
@@ -76,7 +76,7 @@ describe('Plugin Collection Configuration', () => {
 
   describe('Accounts Collection', () => {
     it('should have provider and account ID fields', () => {
-      const config = payload.collections['accounts'].config;
+      const config = payload.collections.accounts.config;
       const fieldNames = config.fields.map((f: any) => f.name).filter(Boolean);
 
       expect(fieldNames).toContain('accountId');
@@ -84,7 +84,7 @@ describe('Plugin Collection Configuration', () => {
     });
 
     it('should have a user relationship', () => {
-      const config = payload.collections['accounts'].config;
+      const config = payload.collections.accounts.config;
       const userField = config.fields.find((f: any) => f.name === 'user' || f.name === 'userId');
       expect(userField).toBeDefined();
     });

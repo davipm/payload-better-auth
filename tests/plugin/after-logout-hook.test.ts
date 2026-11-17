@@ -34,11 +34,11 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn().mockResolvedValue(mockCookieStore),
 }));
 
-vi.mock('@/better-auth/plugin/lib/get-payload-auth', () => ({
+vi.mock('../../src/plugin/lib/get-payload-auth.js', () => ({
   getPayloadAuth: vi.fn().mockResolvedValue(mockPayloadAuth),
 }));
 
-vi.mock('@/better-auth/utils/plugin/get-collection', () => ({
+vi.mock('../../src/utils/plugin/get-collection.js', () => ({
   getCollectionByModelKey: vi.fn().mockReturnValue({ slug: 'sessions' }),
 }));
 
@@ -78,7 +78,7 @@ describe('getAfterLogoutHook', () => {
 
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
 
@@ -111,7 +111,7 @@ describe('getAfterLogoutHook', () => {
 
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
 
@@ -139,7 +139,7 @@ describe('getAfterLogoutHook', () => {
 
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
 
@@ -168,7 +168,7 @@ describe('getAfterLogoutHook', () => {
     // Should resolve without throwing
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
   });
@@ -192,7 +192,7 @@ describe('getAfterLogoutHook', () => {
     // Should not crash even if delete throws (empty catch block)
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
   });
@@ -212,7 +212,7 @@ describe('getAfterLogoutHook', () => {
 
     await hook({
       req: {
-        payload: { config: {}, collections: {} },
+        payload: { config: {}, collections: {}, logger: { error: vi.fn() } },
       },
     } as any);
 

@@ -32,7 +32,7 @@ import {
   ownerAc,
 } from 'better-auth/plugins/organization/access';
 import type { BetterAuthOptions } from 'better-auth/types';
-import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
+import { phoneHarmony } from 'better-auth-harmony';
 import {
   type BetterAuthReturn,
   // type BetterAuthOptions,
@@ -187,10 +187,10 @@ export const betterAuthOptions = {
       sendDeleteAccountVerification: async ({ user, url, token }) => {
         // Send delete account verification
       },
-      beforeDelete: async (user) => {
+      beforeDelete: async (_user) => {
         // Perform actions before user deletion
       },
-      afterDelete: async (user) => {
+      afterDelete: async (_user) => {
         // Perform cleanup after user deletion
       },
     },
@@ -248,7 +248,7 @@ const emailAdapter = () => {
     name: 'dev',
     defaultFromAddress: 'test@performix.ca',
     defaultFromName: 'Test',
-    sendEmail: async (message) => {
+    sendEmail: async (message: { to: any; subject: any }) => {
       logTestAuth('Email queued', { to: message.to, subject: message.subject });
     },
   });

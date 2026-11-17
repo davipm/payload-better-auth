@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers/index.js';
-import { payloadAdapter } from '../../src/adapter/index.js';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { payloadAdapter } from '../../src/adapter/index.js';
+import { cleanupAll, createAuthenticatedUser, getTestPayload } from '../helpers/index.js';
 
 /**
  * Regression / closure evidence for issue #124: `getFullOrganization`
@@ -94,7 +94,7 @@ describe('Full organization resolution (#124)', () => {
     // Sanity check: createOrganization auto-adds the creator as a member.
     const memberDocs = await payload.find({
       collection: 'members',
-      where: { organization: { equals: org!.id } },
+      where: { organization: { equals: org?.id } },
     });
     expect(memberDocs.docs.length).toBe(1);
 
@@ -103,7 +103,7 @@ describe('Full organization resolution (#124)', () => {
     await adapter.create<Record<string, any>>({
       model: 'invitation',
       data: {
-        organizationId: String(org!.id),
+        organizationId: String(org?.id),
         email: 'full-org-invitee@test.com',
         role: 'member',
         status: 'pending',
@@ -117,7 +117,7 @@ describe('Full organization resolution (#124)', () => {
     let thrownError: unknown = null;
     try {
       full = await payload.betterAuth.api.getFullOrganization({
-        query: { organizationId: org!.id },
+        query: { organizationId: org?.id },
         headers,
       });
     } catch (error) {

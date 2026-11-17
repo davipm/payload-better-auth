@@ -36,7 +36,7 @@ describe('adminBeforeRoleMiddleware', () => {
     // Simulate the middleware execution
     const ctx = createMockCtx('/admin/list-users', ['admin', 'editor']);
     // createAuthMiddleware wraps our function - call the hook directly
-    const middleware = options.hooks!.before as any;
+    const middleware = options.hooks?.before as any;
     // createAuthMiddleware returns a function; we need to call it like BA would
     if (typeof middleware === 'function') {
       await middleware(ctx);
@@ -51,7 +51,7 @@ describe('adminBeforeRoleMiddleware', () => {
     adminBeforeRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/sign-in/email', ['admin', 'editor']);
-    const middleware = options.hooks!.before as any;
+    const middleware = options.hooks?.before as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -65,7 +65,7 @@ describe('adminBeforeRoleMiddleware', () => {
     adminBeforeRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin');
-    const middleware = options.hooks!.before as any;
+    const middleware = options.hooks?.before as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -79,7 +79,7 @@ describe('adminBeforeRoleMiddleware', () => {
     adminBeforeRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', undefined);
-    const middleware = options.hooks!.before as any;
+    const middleware = options.hooks?.before as any;
 
     // Should not throw
     await expect(
@@ -95,7 +95,7 @@ describe('adminBeforeRoleMiddleware', () => {
     adminBeforeRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', ['admin']);
-    const middleware = options.hooks!.before as any;
+    const middleware = options.hooks?.before as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -117,7 +117,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin,editor');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -132,7 +132,7 @@ describe('adminAfterRoleMiddleware', () => {
     // When role is already an array (e.g., from Payload's hasMany select),
     // calling .split(",") on it crashes with "split is not a function"
     const ctx = createMockCtx('/admin/list-users', ['admin', 'editor']);
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
 
     // This should NOT crash — needs to handle array input gracefully
     if (typeof middleware === 'function') {
@@ -149,7 +149,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/sign-in/email', 'admin,editor');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -163,7 +163,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -176,7 +176,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin , editor , user');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -189,7 +189,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin,,editor,');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }
@@ -208,7 +208,7 @@ describe('adminAfterRoleMiddleware', () => {
     adminAfterRoleMiddleware({ sanitizedOptions: options });
 
     const ctx = createMockCtx('/admin/list-users', 'admin');
-    const middleware = options.hooks!.after as any;
+    const middleware = options.hooks?.after as any;
     if (typeof middleware === 'function') {
       await middleware(ctx);
     }

@@ -46,6 +46,7 @@ function createMockReq(userId: string, extraCollections: Record<string, any> = {
       payload: {
         collections,
         delete: deleteMock,
+        logger: { error: vi.fn() },
       },
       transactionID: undefined,
     },
@@ -214,6 +215,7 @@ describe('getBeforeDeleteHook', () => {
           verifications: mockCollectionEntry('verifications', 'verification'),
         },
         delete: deleteMock,
+        logger: { error: vi.fn() },
       },
       transactionID: undefined,
     };

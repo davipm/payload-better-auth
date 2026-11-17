@@ -1,5 +1,5 @@
 import type { TestHelpers } from 'better-auth/plugins';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import {
   cleanupAll,
   createAuthenticatedUser,
@@ -12,12 +12,12 @@ import {
 
 describe('Email/Password Auth Flow', () => {
   let payload: Awaited<ReturnType<typeof getTestPayload>>;
-  let test: TestHelpers;
+  let _test: TestHelpers;
 
   beforeAll(async () => {
     const ctx = await getTestContext();
     payload = ctx.payload;
-    test = ctx.test;
+    _test = ctx.test;
   });
 
   afterEach(async () => {

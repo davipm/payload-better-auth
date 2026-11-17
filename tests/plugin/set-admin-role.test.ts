@@ -49,8 +49,8 @@ describe('Admin Invite Role Assignment (P0-3 / P0-4 Regression)', () => {
 
   beforeAll(async () => {
     payload = await getPayload();
+    await cleanup();
   });
-  beforeAll(cleanup);
   afterAll(cleanup);
 
   // Clean up between each test so they're isolated
