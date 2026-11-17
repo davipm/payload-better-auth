@@ -1,12 +1,14 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, useConfig, useTranslation } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
 import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { adminRoutes } from '../../plugin/constants.js';
 import { emailRegex } from '../../utils/regex.js';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 
@@ -41,34 +43,33 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
     }),
   });
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       email: '',
     },
-    onSubmit: async ({ value }) => {
-      const { email } = value;
-      try {
-        const { data, error } = await authClient.requestPasswordReset({
-          email,
-          redirectTo: `${adminRoute}${adminRoutes.resetPassword}`,
-        });
-        if (error) {
-          toast.error(error.message || t('authentication:emailNotValid') || 'Error');
-          return;
-        }
-        if (data?.status) {
-          setHasSubmitted(true);
-          toast.success('Successfully sent reset email.');
-        } else {
-          toast.error(t('general:error') || 'Server Error');
-        }
-      } catch (e) {
-        toast.error(t('general:error') || 'An unexpected error occurred');
+    resolver: zodResolver(forgotSchema),
+    mode: 'onSubmit',
+  });
+
+  const onSubmit = form.handleSubmit(async ({ email }) => {
+    try {
+      const { data, error } = await authClient.requestPasswordReset({
+        email,
+        redirectTo: `${adminRoute}${adminRoutes.resetPassword}`,
+      });
+      if (error) {
+        toast.error(error.message || t('authentication:emailNotValid') || 'Error');
+        return;
       }
-    },
-    validators: {
-      onSubmit: forgotSchema,
-    },
+      if (data?.status) {
+        setHasSubmitted(true);
+        toast.success('Successfully sent reset email.');
+      } else {
+        toast.error(t('general:error') || 'Server Error');
+      }
+    } catch {
+      toast.error(t('general:error') || 'An unexpected error occurred');
+    }
   });
 
   if (hasSubmitted) {
@@ -81,31 +82,21 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
   }
 
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
+    <Form form={form} onSubmit={onSubmit}>
       <FormHeader
         heading={t('authentication:forgotPassword')}
         description={t('authentication:forgotPasswordEmailInstructions')}
       />
       <FormInputWrap>
-        <form.AppField name="email">
-          {(field) => (
-            <field.TextField
-              type="text"
-              className="email"
-              autoComplete="email"
-              label={t('general:email')}
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="email"
+          type="text"
+          className="email"
+          autoComplete="email"
+          label={t('general:email')}
+        />
       </FormInputWrap>
-      <form.AppForm>
-        <form.Submit label={t('general:submit')} loadingLabel={t('general:loading')} />
-      </form.AppForm>
+      <Submit onSubmit={onSubmit} label={t('general:submit')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }

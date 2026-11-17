@@ -59,6 +59,7 @@
     "@better-auth/sso": "^1.7.25",
     "@better-auth/stripe": "^1.7.25",
     "@biomejs/biome": "2.6.8",
+    "@hookform/resolvers": "^7.0.7",
     "@payloadcms/db-mongodb": "3.93.0",
     "@payloadcms/db-postgres": "3.93.0",
     "@payloadcms/db-sqlite": "3.93.0",
@@ -93,6 +94,7 @@
     "zod": "^4.6.7"
   },
   "peerDependencies": {
+    "@hookform/resolvers": "^7.0.7",
     "@payloadcms/ui": "^3.93.0",
     "@payloadcms/next": "^3.93.0",
     "@better-auth/api-key": "^1.7.25",
@@ -100,7 +102,8 @@
     "better-auth": "^1.7.25",
     "payload": "^3.93.0",
     "next": "^16.4.5",
-    "react": "^19.2.6"
+    "react": "^19.2.6",
+    "react-hook-form": "^7.92.0"
   },
   "peerDependenciesMeta": {
     "@better-auth/api-key": {
@@ -123,7 +126,6 @@
   ],
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
-    "@tanstack/react-form": "^1.33.5",
     "qrcode.react": "^4.2.0"
   }
 }

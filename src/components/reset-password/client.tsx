@@ -1,12 +1,14 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, useAuth, useConfig, useTranslation } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
 import { useRouter } from 'next/navigation.js';
 import { formatAdminURL } from 'payload/shared';
 import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 
 interface PasswordResetFormProps {
@@ -54,81 +56,68 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
       },
     );
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       password: '',
       confirmPassword: '',
     },
-    onSubmit: async ({ value }) => {
-      const { password } = value;
-      try {
-        const { data, error } = await authClient.resetPassword({
-          newPassword: password,
-          token,
-        });
-        if (error) {
-          toast.error(error.message || 'Error resetting password');
-          return;
-        }
-        if (data?.status) {
-          const user = await fetchFullUser();
-          if (user) {
-            history.push(adminRoute);
-          } else {
-            history.push(
-              formatAdminURL({
-                adminRoute,
-                path: loginRoute,
-              }),
-            );
-          }
-          toast.success(t('authentication:passwordResetSuccessfully'));
-        }
-      } catch (e) {
-        toast.error('An unexpected error occurred');
+    resolver: zodResolver(resetPasswordSchema),
+    mode: 'onSubmit',
+  });
+
+  const onSubmit = form.handleSubmit(async ({ password }) => {
+    try {
+      const { data, error } = await authClient.resetPassword({
+        newPassword: password,
+        token,
+      });
+      if (error) {
+        toast.error(error.message || 'Error resetting password');
+        return;
       }
-    },
-    validators: {
-      onSubmit: resetPasswordSchema,
-    },
+      if (data?.status) {
+        const user = await fetchFullUser();
+        if (user) {
+          history.push(adminRoute);
+        } else {
+          history.push(
+            formatAdminURL({
+              adminRoute,
+              path: loginRoute,
+            }),
+          );
+        }
+        toast.success(t('authentication:passwordResetSuccessfully'));
+      }
+    } catch {
+      toast.error('An unexpected error occurred');
+    }
   });
 
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
+    <Form form={form} onSubmit={onSubmit}>
       <FormInputWrap className="login__form">
-        <form.AppField name="password">
-          {(field) => (
-            <field.TextField
-              type="password"
-              className="password"
-              label={t('authentication:newPassword')}
-              required
-            />
-          )}
-        </form.AppField>
-
-        <form.AppField name="confirmPassword">
-          {(field) => (
-            <field.TextField
-              type="password"
-              className="password"
-              label={t('authentication:confirmPassword')}
-              required
-            />
-          )}
-        </form.AppField>
-      </FormInputWrap>
-      <form.AppForm>
-        <form.Submit
-          label={t('authentication:resetPassword')}
-          loadingLabel={t('general:loading')}
+        <TextField
+          name="password"
+          type="password"
+          className="password"
+          label={t('authentication:newPassword')}
+          required
         />
-      </form.AppForm>
+
+        <TextField
+          name="confirmPassword"
+          type="password"
+          className="password"
+          label={t('authentication:confirmPassword')}
+          required
+        />
+      </FormInputWrap>
+      <Submit
+        onSubmit={onSubmit}
+        label={t('authentication:resetPassword')}
+        loadingLabel={t('general:loading')}
+      />
     </Form>
   );
 }

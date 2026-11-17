@@ -1,14 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, useConfig, useTranslation } from '@payloadcms/ui';
 import { usernameClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import type { LoginWithUsernameOptions } from 'payload';
 import type React from 'react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import type { LoginMethod } from '../../plugin/index.js';
 import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 import { createSignupSchema } from '../form/validation.js';
@@ -74,7 +76,7 @@ function SignupForm({
     requireConfirmPassword,
   });
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: '',
       email: '',
@@ -82,44 +84,44 @@ function SignupForm({
       ...(requireConfirmPassword ? { confirmPassword: '' } : {}),
       ...(loginWithUsername ? { username: '' } : {}),
     },
-    onSubmit: async ({ value }) => {
-      const { name, email, username, password } = value;
+    resolver: zodResolver(signupSchema),
+    mode: 'onSubmit',
+  });
 
-      const { data, error } = await authClient.signUp.email({
-        name,
-        email,
-        password,
-        callbackURL: redirectUrl,
-        ...(loginWithUsername && username ? { username } : {}),
-        fetchOptions: {
-          query: {
-            adminInviteToken,
-          },
+  const onSubmit = form.handleSubmit(async (value) => {
+    const { name, email, username, password } = value;
+
+    const { data, error } = await authClient.signUp.email({
+      name,
+      email,
+      password,
+      callbackURL: redirectUrl,
+      ...(loginWithUsername && username ? { username } : {}),
+      fetchOptions: {
+        query: {
+          adminInviteToken,
         },
-      });
+      },
+    });
 
-      if (
-        (error && error.code === 'EMAIL_NOT_VERIFIED') ||
-        (!error && !data.token && !data?.user.emailVerified)
-      ) {
-        setRequireEmailVerification(true);
-        toast.success('Check your email for a verification link');
-        return;
-      }
+    if (
+      (error && error.code === 'EMAIL_NOT_VERIFIED') ||
+      (!error && !data.token && !data?.user.emailVerified)
+    ) {
+      setRequireEmailVerification(true);
+      toast.success('Check your email for a verification link');
+      return;
+    }
 
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
 
-      if (data?.token) {
-        toast.success(t('general:success'));
-        window.location.href = redirectUrl;
-      }
-    },
-    validators: {
-      onSubmit: signupSchema,
-    },
+    if (data?.token) {
+      toast.success(t('general:success'));
+      window.location.href = redirectUrl;
+    }
   });
 
   if (requireEmailVerification) {
@@ -133,74 +135,51 @@ function SignupForm({
   }
 
   return (
-    <Form
-      className={baseClass}
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
+    <Form className={baseClass} form={form} onSubmit={onSubmit}>
       <FormInputWrap className="login__form">
-        <form.AppField name="name">
-          {(field) => (
-            <field.TextField
-              type="name"
-              className="text"
-              autoComplete="name"
-              label="Name"
-              required
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="name"
+          type="name"
+          className="text"
+          autoComplete="name"
+          label="Name"
+          required
+        />
 
-        <form.AppField name="email">
-          {(field) => (
-            <field.TextField
-              type="email"
-              className="email"
-              autoComplete="email"
-              label={t('general:email')}
-              required
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="email"
+          type="email"
+          className="email"
+          autoComplete="email"
+          label={t('general:email')}
+          required
+        />
         {loginWithUsername && (
-          <form.AppField name="username">
-            {(field) => (
-              <field.TextField
-                type="name"
-                className="text"
-                autoComplete="username"
-                label={t('authentication:username')}
-                required={requireUsername}
-              />
-            )}
-          </form.AppField>
+          <TextField
+            name="username"
+            type="name"
+            className="text"
+            autoComplete="username"
+            label={t('authentication:username')}
+            required={requireUsername}
+          />
         )}
-        <form.AppField name="password">
-          {(field) => (
-            <field.TextField
-              type="password"
-              className="password"
-              label={t('authentication:newPassword')}
-              required
-            />
-          )}
-        </form.AppField>
-        <form.AppField name="confirmPassword">
-          {(field) => (
-            <field.TextField
-              type="password"
-              className="password"
-              label={t('authentication:confirmPassword')}
-              required
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="password"
+          type="password"
+          className="password"
+          label={t('authentication:newPassword')}
+          required
+        />
+        <TextField
+          name="confirmPassword"
+          type="password"
+          className="password"
+          label={t('authentication:confirmPassword')}
+          required
+        />
       </FormInputWrap>
-      <form.AppForm>
-        <form.Submit label={t('general:create')} loadingLabel={t('general:loading')} />
-      </form.AppForm>
+      <Submit onSubmit={onSubmit} label={t('general:create')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }

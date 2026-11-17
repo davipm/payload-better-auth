@@ -2,6 +2,7 @@
 
 import './index.scss';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   CopyIcon,
@@ -17,8 +18,9 @@ import { twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 import { otpField, passwordField } from '../form/validation.js';
 
@@ -37,12 +39,6 @@ const parseBackupCodes = (raw: unknown): string[] | null => {
   return String(raw).split(/\s+/).filter(Boolean);
 };
 
-const handleSubmit = (submit: () => Promise<void>) => (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  e.stopPropagation(); // modal lives inside Payload's document <form>
-  void submit();
-};
-
 /* ---------- Sub-forms (module scope: stable identity, no remount on parent render) ---------- */
 
 function PasswordForm({
@@ -59,30 +55,33 @@ function PasswordForm({
   const { t } = useTranslation();
   const schema = useMemo(() => z.object({ password: passwordField({ t }) }), [t]);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: { password: '' },
-    validators: { onSubmit: schema },
-    onSubmit: ({ value }) => onSubmit(value.password),
+    resolver: zodResolver(schema),
+    mode: 'onSubmit',
   });
+  const submit = form.handleSubmit(({ password }) => onSubmit(password));
 
   return (
-    <Form onSubmit={handleSubmit(form.handleSubmit)} className={className}>
+    <Form
+      form={form}
+      onSubmit={(event) => {
+        event.stopPropagation(); // modal lives inside Payload's document <form>
+        void submit(event);
+      }}
+      className={className}
+    >
       <FormInputWrap className={`${className}__inputWrap`}>
-        <form.AppField name="password">
-          {(field) => (
-            <field.TextField
-              type="password"
-              className="password"
-              autoComplete="current-password"
-              label="Password"
-              required
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="password"
+          type="password"
+          className="password"
+          autoComplete="current-password"
+          label="Password"
+          required
+        />
       </FormInputWrap>
-      <form.AppForm>
-        <form.Submit label={label} loadingLabel={loadingLabel} />
-      </form.AppForm>
+      <Submit onSubmit={submit} label={label} loadingLabel={loadingLabel} />
     </Form>
   );
 }
@@ -96,30 +95,33 @@ function VerifyForm({
 }) {
   const schema = useMemo(() => z.object({ otp: otpField({ digits }) }), [digits]);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: { otp: '' },
-    validators: { onSubmit: schema },
-    onSubmit: ({ value }) => onSubmit(value.otp),
+    resolver: zodResolver(schema),
+    mode: 'onSubmit',
   });
+  const submit = form.handleSubmit(({ otp }) => onSubmit(otp));
 
   return (
-    <Form onSubmit={handleSubmit(form.handleSubmit)} className="two-factor-verify-form">
+    <Form
+      form={form}
+      onSubmit={(event) => {
+        event.stopPropagation(); // modal lives inside Payload's document <form>
+        void submit(event);
+      }}
+      className="two-factor-verify-form"
+    >
       <FormInputWrap className="tf__inputWrap">
-        <form.AppField name="otp">
-          {(field) => (
-            <field.TextField
-              type="text"
-              autoComplete="one-time-code"
-              className="text otp"
-              label={`${digits}-digit Code`}
-              required
-            />
-          )}
-        </form.AppField>
+        <TextField
+          name="otp"
+          type="text"
+          autoComplete="one-time-code"
+          className="text otp"
+          label={`${digits}-digit Code`}
+          required
+        />
       </FormInputWrap>
-      <form.AppForm>
-        <form.Submit label="Verify" loadingLabel="Verifying" />
-      </form.AppForm>
+      <Submit onSubmit={submit} label="Verify" loadingLabel="Verifying" />
     </Form>
   );
 }
