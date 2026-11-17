@@ -396,20 +396,20 @@ In local development, a database adapter configured to push schema changes can a
 
 ## Plugin options at a glance
 
-| Option                                  | Purpose |
-| --------------------------------------- | ------- |
-| `betterAuthOptions`                     | Better Auth options except `database`, which the plugin configures internally. |
-| `users`                                 | User collection slug, roles, default roles, allowed self-service fields, visibility, and collection overrides. |
-| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and collection overrides. |
-| `adminInvitations`                      | Invite collection slug and visibility, invite URL generation, email delivery, and collection overrides. |
-| `admin.loginMethods`                    | Explicitly controls the methods shown in Payload's auth views. |
-| `requireAdminInviteForSignUp`           | Requires an invitation for public email and social signups. |
-| `hidePluginCollections`                 | Hides collections generated for Better Auth plugin schemas. |
-| `collectionAdminGroup`                  | Admin navigation group for generated auth collections; defaults to `Auth`. |
-| `pluginCollectionOverrides`             | Overrides generated collection configs for supported Better Auth plugins. |
+| Option                                  | Purpose                                                                                                                            |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `betterAuthOptions`                     | Better Auth options except `database`, which the plugin configures internally.                                                     |
+| `users`                                 | User collection slug, roles, default roles, allowed self-service fields, visibility, and collection overrides.                     |
+| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and collection overrides.                                                                       |
+| `adminInvitations`                      | Invite collection slug and visibility, invite URL generation, email delivery, and collection overrides.                            |
+| `admin.loginMethods`                    | Explicitly controls the methods shown in Payload's auth views.                                                                     |
+| `requireAdminInviteForSignUp`           | Requires an invitation for public email and social signups.                                                                        |
+| `hidePluginCollections`                 | Hides collections generated for Better Auth plugin schemas.                                                                        |
+| `collectionAdminGroup`                  | Admin navigation group for generated auth collections; defaults to `Auth`.                                                         |
+| `pluginCollectionOverrides`             | Overrides generated collection configs for supported Better Auth plugins.                                                          |
 | `debug.enableDebugLogs`                 | Logs Payload adapter database operation inputs and results. Use for development because auth records may include sensitive values. |
-| `debug.logTables`                       | Logs the Better Auth tables needed during initialization. |
-| `disabled`                              | Skips all plugin config changes when `true`. |
+| `debug.logTables`                       | Logs the Better Auth tables needed during initialization.                                                                          |
+| `disabled`                              | Skips all plugin config changes when `true`.                                                                                       |
 
 The options described here are the package's configuration reference. The [`PayloadAuthOptions` type](src/types/plugin.ts) contains the exact TypeScript signatures. For Better Auth settings passed through `betterAuthOptions`, see [Better Auth's options documentation](https://www.better-auth.com/docs/reference/options).
 

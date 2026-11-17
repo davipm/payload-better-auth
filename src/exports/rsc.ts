@@ -1,5 +1,3 @@
-export { BeforeDashboardServer } from '../components/BeforeDashboardServer.js';
-
 import AdminLogin from '../components/admin-login/index.js';
 import AdminSignup from '../components/admin-signup/index.js';
 import ForgotPassword from '../components/forgot-password/index.js';

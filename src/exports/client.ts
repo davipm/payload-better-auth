@@ -10,8 +10,6 @@ import {
 import { LogoutButton } from '../components/logout-button.js';
 import { TwoFactorAuth } from '../components/two-factor-auth/index.js';
 
-export { BeforeDashboardClient } from '../components/BeforeDashboardClient.js';
-
 export {
   AdminButtons,
   AdminInviteButton,

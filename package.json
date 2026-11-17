@@ -94,16 +94,16 @@
     "zod": "^4.6.7"
   },
   "peerDependencies": {
-    "@hookform/resolvers": "^7.0.7",
-    "@payloadcms/ui": "^3.93.0",
-    "@payloadcms/next": "^3.93.0",
-    "@better-auth/api-key": "^1.7.25",
-    "@better-auth/passkey": "^1.7.25",
-    "better-auth": "^1.7.25",
-    "payload": "^3.93.0",
-    "next": "^16.4.5",
-    "react": "^19.2.6",
-    "react-hook-form": "^7.92.0"
+    "@hookform/resolvers": ">=7.0.7 <8",
+    "@payloadcms/ui": ">=3.90.0 <4",
+    "@payloadcms/next": ">=3.90.0 <4",
+    "@better-auth/api-key": ">=1.7.25 <2",
+    "@better-auth/passkey": ">=1.7.25 <2",
+    "better-auth": ">=1.7.25 <2",
+    "payload": ">=3.90.0 <4",
+    "next": ">=16.4.5 <17",
+    "react": ">=19.2.1 <20",
+    "react-hook-form": ">=7.92.0 <8"
   },
   "peerDependenciesMeta": {
     "@better-auth/api-key": {
@@ -116,6 +116,8 @@
     "payload-plugin",
     "better-auth",
     "authentication",
+    "payload-auth",
+    "nextjs",
     "adapter"
   ],
   "packageManager": "bun@1.4.4",
