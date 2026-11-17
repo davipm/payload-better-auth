@@ -9,14 +9,14 @@ The plugin also supplies Payload admin login, signup, password reset, and two-fa
 
 ## Requirements
 
-The current package peer dependencies require Payload 3.92.1 or later in the 3.x line, Better Auth 1.7.18 or later in the 1.x line, Next.js 16.4.5, and React 19.2.6. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
+The current package peer dependencies require Payload 3.90.0 or later in the 3.x line, Better Auth 1.7.25 or later in the 1.x line, Next.js 16.4.5 or later in the 16.x line, and React 19.2.1 or later in the 19.x line. The admin forms also require React Hook Form 7.92.0 or later and `@hookform/resolvers` 7.0.7 or later. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
 
 Install the package and Better Auth in your Payload application:
 
 ```bash
-pnpm add @davipm/payload-better-auth better-auth @better-auth/passkey
-# or: npm install @davipm/payload-better-auth better-auth @better-auth/passkey
-# or: bun add @davipm/payload-better-auth better-auth @better-auth/passkey
+pnpm add @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
+# or: npm install @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
+# or: bun add @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
 ```
 
 Install any additional Better Auth plugin packages that you use. For example, API keys are provided by separate packages:

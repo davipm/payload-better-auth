@@ -3,7 +3,7 @@ import { Button, Translation } from '@payloadcms/ui';
 import Link from 'next/link.js';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { adminRoutes } from '../../plugin/constants.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
