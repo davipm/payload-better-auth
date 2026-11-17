@@ -1,30 +1,26 @@
 import { FormSubmit } from '@payloadcms/ui';
 import type React from 'react';
-import { useFormContext } from '../index.js';
+import type { BaseSyntheticEvent } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 type SubmitProps = {
   label: string;
   loadingLabel: string;
+  onSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
 };
 
-export const Submit: React.FC<SubmitProps> = ({ label, loadingLabel }) => {
-  const form = useFormContext();
+export const Submit: React.FC<SubmitProps> = ({ label, loadingLabel, onSubmit }) => {
+  const { formState } = useFormContext();
 
   return (
-    <form.Subscribe
-      selector={(state) => [state.canSubmit, state.isSubmitting]}
-      // biome-ignore lint/correctness/noChildrenProp: <explanation>
-      children={([canSubmit, isSubmitting]) => (
-        <FormSubmit
-          buttonStyle="primary"
-          type="button"
-          onClick={() => form.handleSubmit()}
-          size="large"
-          disabled={!canSubmit}
-        >
-          {isSubmitting ? loadingLabel : label}
-        </FormSubmit>
-      )}
-    />
+    <FormSubmit
+      buttonStyle="primary"
+      type="button"
+      onClick={() => void onSubmit()}
+      size="large"
+      disabled={formState.isSubmitting || (formState.isSubmitted && !formState.isValid)}
+    >
+      {formState.isSubmitting ? loadingLabel : label}
+    </FormSubmit>
   );
 };

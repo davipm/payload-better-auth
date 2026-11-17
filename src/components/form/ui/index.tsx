@@ -1,8 +1,8 @@
 import { Tooltip } from '@payloadcms/ui/elements/Tooltip';
-import type { AnyFieldMeta } from '@tanstack/react-form';
 import clsx from 'clsx';
 import type React from 'react';
 import type { ReactNode } from 'react';
+import { type FieldValues, FormProvider, type UseFormReturn } from 'react-hook-form';
 
 import './index.scss';
 
@@ -34,19 +34,17 @@ function FormLabel({ label, required = false, className, ...rest }: FormLabelPro
 }
 
 interface FieldErrorsProps {
-  meta: AnyFieldMeta;
+  error?: string;
+  visible: boolean;
   className?: string;
 }
 
-function FieldErrors({ meta, className }: FieldErrorsProps) {
-  if (!meta.isTouched) return null;
-  const error = meta.errors.at(0)?.message || null;
-
+function FieldErrors({ error, visible, className }: FieldErrorsProps) {
   return (
     <Tooltip
       alignCaret="right"
       className={clsx('field-error', className)}
-      show={!!error}
+      show={visible && !!error}
       delay={0}
       staticPositioning
     >
@@ -65,13 +63,17 @@ function FormError({ errors, className }: FormErrorProps) {
   return <div className={clsx('form-error', className)}>{errors.join(', ')}</div>;
 }
 
-interface FormProps extends React.ComponentProps<'form'> {}
+interface FormProps<T extends FieldValues> extends React.ComponentProps<'form'> {
+  form: UseFormReturn<T>;
+}
 
-function Form({ children, className, ...rest }: FormProps) {
+function Form<T extends FieldValues>({ form, children, className, ...rest }: FormProps<T>) {
   return (
-    <form className={clsx('form', className)} {...rest}>
-      {children}
-    </form>
+    <FormProvider {...form}>
+      <form className={clsx('form', className)} {...rest}>
+        {children}
+      </form>
+    </FormProvider>
   );
 }
 

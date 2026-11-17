@@ -9,14 +9,14 @@ The plugin also supplies Payload admin login, signup, password reset, and two-fa
 
 ## Requirements
 
-The current package peer dependencies require Payload 3.92.1 or later in the 3.x line, Better Auth 1.7.18 or later in the 1.x line, Next.js 16.4.5, and React 19.2.6. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
+The current package peer dependencies require Payload 3.90.0 or later in the 3.x line, Better Auth 1.7.25 or later in the 1.x line, Next.js 16.4.5 or later in the 16.x line, and React 19.2.1 or later in the 19.x line. The admin forms also require React Hook Form 7.92.0 or later and `@hookform/resolvers` 7.0.7 or later. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
 
 Install the package and Better Auth in your Payload application:
 
 ```bash
-pnpm add @davipm/payload-better-auth better-auth @better-auth/passkey
-# or: npm install @davipm/payload-better-auth better-auth @better-auth/passkey
-# or: bun add @davipm/payload-better-auth better-auth @better-auth/passkey
+pnpm add @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
+# or: npm install @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
+# or: bun add @davipm/payload-better-auth better-auth @better-auth/passkey react-hook-form @hookform/resolvers
 ```
 
 Install any additional Better Auth plugin packages that you use. For example, API keys are provided by separate packages:
@@ -396,20 +396,20 @@ In local development, a database adapter configured to push schema changes can a
 
 ## Plugin options at a glance
 
-| Option                                  | Purpose |
-| --------------------------------------- | ------- |
-| `betterAuthOptions`                     | Better Auth options except `database`, which the plugin configures internally. |
-| `users`                                 | User collection slug, roles, default roles, allowed self-service fields, visibility, and collection overrides. |
-| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and collection overrides. |
-| `adminInvitations`                      | Invite collection slug and visibility, invite URL generation, email delivery, and collection overrides. |
-| `admin.loginMethods`                    | Explicitly controls the methods shown in Payload's auth views. |
-| `requireAdminInviteForSignUp`           | Requires an invitation for public email and social signups. |
-| `hidePluginCollections`                 | Hides collections generated for Better Auth plugin schemas. |
-| `collectionAdminGroup`                  | Admin navigation group for generated auth collections; defaults to `Auth`. |
-| `pluginCollectionOverrides`             | Overrides generated collection configs for supported Better Auth plugins. |
+| Option                                  | Purpose                                                                                                                            |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `betterAuthOptions`                     | Better Auth options except `database`, which the plugin configures internally.                                                     |
+| `users`                                 | User collection slug, roles, default roles, allowed self-service fields, visibility, and collection overrides.                     |
+| `accounts`, `sessions`, `verifications` | Base collection slugs, visibility, and collection overrides.                                                                       |
+| `adminInvitations`                      | Invite collection slug and visibility, invite URL generation, email delivery, and collection overrides.                            |
+| `admin.loginMethods`                    | Explicitly controls the methods shown in Payload's auth views.                                                                     |
+| `requireAdminInviteForSignUp`           | Requires an invitation for public email and social signups.                                                                        |
+| `hidePluginCollections`                 | Hides collections generated for Better Auth plugin schemas.                                                                        |
+| `collectionAdminGroup`                  | Admin navigation group for generated auth collections; defaults to `Auth`.                                                         |
+| `pluginCollectionOverrides`             | Overrides generated collection configs for supported Better Auth plugins.                                                          |
 | `debug.enableDebugLogs`                 | Logs Payload adapter database operation inputs and results. Use for development because auth records may include sensitive values. |
-| `debug.logTables`                       | Logs the Better Auth tables needed during initialization. |
-| `disabled`                              | Skips all plugin config changes when `true`. |
+| `debug.logTables`                       | Logs the Better Auth tables needed during initialization.                                                                          |
+| `disabled`                              | Skips all plugin config changes when `true`.                                                                                       |
 
 The options described here are the package's configuration reference. The [`PayloadAuthOptions` type](src/types/plugin.ts) contains the exact TypeScript signatures. For Better Auth settings passed through `betterAuthOptions`, see [Better Auth's options documentation](https://www.better-auth.com/docs/reference/options).
 

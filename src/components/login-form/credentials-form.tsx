@@ -2,12 +2,14 @@
 
 import { Link, toast, useConfig, useTranslation } from '@payloadcms/ui';
 import { formatAdminURL } from 'payload/shared';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLoginForm } from './context.js';
 import './index.scss';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { adminRoutes } from '../../plugin/constants.js';
 import { valueOrDefaultString } from '../../utils/value-or-default.js';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormError, FormInputWrap } from '../form/ui/index.js';
 import { createLoginSchema, isValidEmail } from '../form/validation.js';
@@ -45,43 +47,45 @@ export function CredentialsForm() {
     canLoginWithUsername: loginType !== 'email',
   });
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       login: prefill.email ?? prefill.username ?? '',
       password: prefill.password ?? '',
     },
-    onSubmit: async ({ value }) => {
-      if (!showPasswordField) return;
+    resolver: showPasswordField ? zodResolver(loginSchema) : undefined,
+    mode: 'onSubmit',
+  });
 
-      const { login, password } = value;
-      const isEmail = isValidEmail(login);
+  const onSubmit = form.handleSubmit(async (value) => {
+    if (!showPasswordField) return;
 
-      try {
-        const { data, error } = await (loginType === 'email' ||
-        (loginType === 'emailOrUsername' && isEmail)
-          ? authClient.signIn.email({
-              email: login,
-              password,
-              callbackURL: redirectUrl,
-            })
-          : authClient.signIn.username({ username: login, password }));
-        if (error) {
-          if (error.code === 'EMAIL_NOT_VERIFIED') {
-            setRequireEmailVerification(true);
-          }
-          if (error.message) {
-            toast.error(error.message.charAt(0).toUpperCase() + error.message.slice(1));
-          }
+    const { login, password } = value;
+    const isEmail = isValidEmail(login);
+
+    try {
+      const { data, error } = await (loginType === 'email' ||
+      (loginType === 'emailOrUsername' && isEmail)
+        ? authClient.signIn.email({
+            email: login,
+            password,
+            callbackURL: redirectUrl,
+          })
+        : authClient.signIn.username({ username: login, password }));
+      if (error) {
+        if (error.code === 'EMAIL_NOT_VERIFIED') {
+          setRequireEmailVerification(true);
         }
-        if (data?.token) {
-          toast.success(t('general:success'));
-          window.location.href = redirectUrl;
+        if (error.message) {
+          toast.error(error.message.charAt(0).toUpperCase() + error.message.slice(1));
         }
-      } catch {
-        toast.error(t('error:unknown') || 'An unexpected error occurred');
       }
-    },
-    validators: showPasswordField ? { onSubmit: loginSchema } : undefined,
+      if (data?.token) {
+        toast.success(t('general:success'));
+        window.location.href = redirectUrl;
+      }
+    } catch {
+      toast.error(t('error:unknown') || 'An unexpected error occurred');
+    }
   });
 
   if (!showEmailField) return null;
@@ -110,37 +114,27 @@ export function CredentialsForm() {
       {searchParamError === 'signup_disabled' && <FormError errors={['Sign up is disabled.']} />}
       <Form
         className={baseClass}
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (showPasswordField) {
-            void form.handleSubmit();
-          }
-        }}
+        form={form}
+        onSubmit={showPasswordField ? onSubmit : (event) => event.preventDefault()}
       >
         <FormInputWrap className={baseClass}>
-          <form.AppField name="login">
-            {(field) => (
-              <field.TextField
-                type="text"
-                className="email"
-                autoComplete="email"
-                label={getLoginTypeLabel()}
-                onValueChange={setEmail}
-              />
-            )}
-          </form.AppField>
+          <TextField
+            name="login"
+            type="text"
+            className="email"
+            autoComplete="email"
+            label={getLoginTypeLabel()}
+            onValueChange={setEmail}
+          />
 
           {showPasswordField && (
-            <form.AppField name="password">
-              {(field) => (
-                <field.TextField
-                  type="password"
-                  className="password"
-                  autoComplete="password"
-                  label={t('general:password')}
-                />
-              )}
-            </form.AppField>
+            <TextField
+              name="password"
+              type="password"
+              className="password"
+              autoComplete="password"
+              label={t('general:password')}
+            />
           )}
         </FormInputWrap>
         {showPasswordField && (
@@ -149,9 +143,11 @@ export function CredentialsForm() {
               {t('authentication:forgotPasswordQuestion')}
             </Link>
             <button type="submit" style={{ display: 'none' }} tabIndex={-1} />
-            <form.AppForm>
-              <form.Submit label={t('authentication:login')} loadingLabel={t('general:loading')} />
-            </form.AppForm>
+            <Submit
+              onSubmit={onSubmit}
+              label={t('authentication:login')}
+              loadingLabel={t('general:loading')}
+            />
           </>
         )}
       </Form>

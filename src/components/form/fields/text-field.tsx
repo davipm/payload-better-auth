@@ -1,7 +1,8 @@
-import { useSelector } from '@tanstack/react-form';
 import type { ComponentPropsWithoutRef } from 'react';
-import { useFieldContext } from '../index.js';
+import { type FieldPath, useController, useFormContext } from 'react-hook-form';
 import { FieldErrors, FieldInputWrap, FormField, FormLabel } from '../ui/index.js';
+
+type FormValues = Record<string, string>;
 
 type TextFieldProps = Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -9,45 +10,44 @@ type TextFieldProps = Omit<
 > & {
   className: string;
   label: string;
+  name: FieldPath<FormValues>;
   onValueChange?: (value: string) => void;
 };
 
 export function TextField({
+  name,
   className,
   label,
   required = false,
   type = 'text',
   autoComplete = 'off',
   onValueChange,
-  ...inputProps // inputMode, placeholder, maxLength, disabled, etc.
+  ...inputProps
 }: TextFieldProps) {
-  const field = useFieldContext<string>();
-  const value = useSelector(field.store, (state) => state.value);
-  const meta = useSelector(field.store, (state) => state.meta);
-
-  const hasError = meta.isTouched && meta.errors.length > 0;
+  const { control, formState } = useFormContext<FormValues>();
+  const { field, fieldState } = useController({ name, control });
+  const hasError = Boolean(fieldState.error && (fieldState.isTouched || formState.isSubmitted));
 
   return (
-    <FormField id={field.name} className={className} hasError={hasError}>
-      <FormLabel label={label} htmlFor={field.name} required={required} />
+    <FormField id={name} className={className} hasError={hasError}>
+      <FormLabel label={label} htmlFor={name} required={required} />
       <FieldInputWrap>
         <input
+          {...field}
           {...inputProps}
-          id={field.name}
-          name={field.name}
+          id={name}
           type={type}
           autoComplete={autoComplete}
-          value={value ?? ''}
-          onChange={(e) => {
-            field.handleChange(e.target.value);
-            onValueChange?.(e.target.value);
+          value={field.value ?? ''}
+          onChange={(event) => {
+            field.onChange(event);
+            onValueChange?.(event.target.value);
           }}
-          onBlur={field.handleBlur}
           required={required}
           aria-invalid={hasError || undefined}
           className="text-field"
         />
-        <FieldErrors meta={meta} />
+        <FieldErrors error={fieldState.error?.message} visible={hasError} />
       </FieldInputWrap>
     </FormField>
   );

@@ -1,12 +1,14 @@
 'use client';
 
 import { passkeyClient } from '@better-auth/passkey/client';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Modal, toast, useModal, XIcon } from '@payloadcms/ui';
 import { createAuthClient } from 'better-auth/react';
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useAppForm } from '../form/index.js';
+import { Submit, TextField } from '../form/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 
 const baseClass = 'passkeys-modal';
@@ -27,48 +29,33 @@ export function PassKeyAddButton({ onAdd, baseURL, basePath }: PassKeyAddButtonP
 
   // biome-ignore lint/correctness/noComponentHookFactories: <explanation>
   const AddPasskeyForm: React.FC = () => {
-    const [isLoading, setIsLoading] = useState(false);
     const nameSchema = z.object({
       name: z.string().min(1, 'Name is required'),
     });
 
-    const form = useAppForm({
+    const form = useForm({
       defaultValues: { name: '' },
-      onSubmit: async ({ value }) => {
-        setIsLoading(true);
-        const res = await authClient.passkey.addPasskey({ name: value.name });
-        setIsLoading(false);
-        if (res?.error) {
-          toast.error(res.error.message);
-          return;
-        }
-        toast.success('Passkey added successfully');
-        closeModal('passkeys-modal');
-        if (typeof onAdd === 'function') onAdd();
-      },
-      validators: {
-        onSubmit: nameSchema,
-      },
+      resolver: zodResolver(nameSchema),
+      mode: 'onSubmit',
+    });
+
+    const onSubmit = form.handleSubmit(async ({ name }) => {
+      const res = await authClient.passkey.addPasskey({ name });
+      if (res?.error) {
+        toast.error(res.error.message);
+        return;
+      }
+      toast.success('Passkey added successfully');
+      closeModal('passkeys-modal');
+      if (typeof onAdd === 'function') onAdd();
     });
 
     return (
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void form.handleSubmit();
-        }}
-        className="passkeys-add-form"
-      >
+      <Form form={form} onSubmit={onSubmit} className="passkeys-add-form">
         <FormInputWrap className="passkeys-add-form__inputWrap">
-          <form.AppField name="name">
-            {(field: any) => (
-              <field.TextField type="text" className="text name" label="Passkey Name" required />
-            )}
-          </form.AppField>
+          <TextField name="name" type="text" className="text name" label="Passkey Name" required />
         </FormInputWrap>
-        <form.AppForm>
-          <form.Submit label="Create Passkey" loadingLabel="Creating" />
-        </form.AppForm>
+        <Submit onSubmit={onSubmit} label="Create Passkey" loadingLabel="Creating" />
       </Form>
     );
   };
