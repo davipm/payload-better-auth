@@ -8,7 +8,9 @@ import { baModelKey } from '../../../../constants.js';
 
 export function getBeforeDeleteHook({
   apiKeyReferencesOrganization = false,
-}: { apiKeyReferencesOrganization?: boolean } = {}): CollectionBeforeDeleteHook {
+}: {
+  apiKeyReferencesOrganization?: boolean;
+} = {}): CollectionBeforeDeleteHook {
   const hook: CollectionBeforeDeleteHook = async ({ req, id }) => {
     const collections = req.payload.collections;
 
