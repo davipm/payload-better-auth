@@ -55,14 +55,20 @@ export const useAdminInviteAfterSignUpMiddleware = async ({
       return;
     }
 
-    // Look up the invitation by token
-    const adminInvitation = (await adapter.findOne({
+    // Consume the unexpired invitation before assigning its role. consumeOne
+    // returns null when another signup has already claimed the same token.
+    const adminInvitation = (await adapter.consumeOne({
       model: adminInvitationCollectionSlug,
       where: [
         {
           field: 'token',
           value: adminInviteToken,
           operator: 'eq',
+        },
+        {
+          field: 'expiresAt',
+          value: new Date(),
+          operator: 'gt',
         },
       ],
     })) as any;
@@ -71,23 +77,6 @@ export const useAdminInviteAfterSignUpMiddleware = async ({
       if (typeof originalAfter === 'function') await originalAfter(ctx);
       return;
     }
-
-    if (adminInvitation.expiresAt && new Date(adminInvitation.expiresAt) <= new Date()) {
-      if (typeof originalAfter === 'function') await originalAfter(ctx);
-      return;
-    }
-
-    // Immediately consume (delete) the token to prevent reuse.
-    await adapter.delete({
-      model: adminInvitationCollectionSlug,
-      where: [
-        {
-          field: 'id',
-          value: adminInvitation.id,
-          operator: 'eq',
-        },
-      ],
-    });
 
     // Find the user to assign the role to
     let userId: string | undefined;

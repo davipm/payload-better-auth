@@ -59,7 +59,6 @@
       },
       "optionalPeers": [
         "@better-auth/api-key",
-        "@better-auth/passkey",
       ],
     },
   },

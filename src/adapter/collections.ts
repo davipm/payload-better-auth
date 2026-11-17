@@ -626,36 +626,53 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             'incrementOne',
             model,
             async (s) => {
-              const payloadWhere = s.where(where);
-              const current = await findFirst(s, payloadWhere, 'incrementOneRead');
-              if (!current) return null; // where doubles as a guard (e.g. remaining > 0)
+              const retries = 10;
+              for (let attempt = 0; attempt < retries; attempt += 1) {
+                const payloadWhere = s.where(where);
+                const current = await findFirst(s, payloadWhere, 'incrementOneRead');
+                if (!current) return null; // where doubles as a guard (e.g. remaining > 0)
 
-              // Read through the BA shape so renamed fields resolve correctly.
-              const baCurrent = s.out(current);
-              const data: Doc = { ...set };
-              for (const [field, delta] of Object.entries(increment)) {
-                const base = Number(baCurrent[field] ?? 0);
-                if (Number.isNaN(base)) {
-                  throw new BetterAuthError(
-                    `${LOG} Cannot increment non-numeric field "${field}" on "${model}"`,
-                  );
+                // Read through the BA shape so renamed fields resolve correctly.
+                const baCurrent = s.out(current);
+                const data: Doc = { ...set };
+                const snapshot: Where[] = [];
+                for (const [field, delta] of Object.entries(increment)) {
+                  const priorValue = baCurrent[field] ?? null;
+                  const base = Number(priorValue ?? 0);
+                  if (Number.isNaN(base)) {
+                    throw new BetterAuthError(
+                      `${LOG} Cannot increment non-numeric field "${field}" on "${model}"`,
+                    );
+                  }
+                  data[field] = base + delta;
+                  snapshot.push({ field, value: priorValue, operator: 'eq' });
                 }
-                data[field] = base + delta;
+
+                // Compare the incremented fields with the snapshot. A concurrent
+                // update causes a retry instead of losing an increment.
+                const compareSnapshot = snapshot.length ? s.where(snapshot) : undefined;
+                const res = await s.payload.update({
+                  collection: s.slug,
+                  where: {
+                    and: [
+                      { id: { equals: current.id } },
+                      payloadWhere,
+                      ...(compareSnapshot ? [compareSnapshot] : []),
+                    ],
+                  },
+                  data: s.input(data),
+                  depth: DEPTH,
+                  req,
+                  context: s.ctx('incrementOne'),
+                });
+                assertNoBulkErrors(res, 'incrementOne');
+                const updated = res.docs[0];
+                if (updated) return s.out(updated) as R;
               }
 
-              // Pin to the row we read AND re-apply the guard (compare-and-swap).
-              // Previously the update hit every row matching `where`.
-              const res = await s.payload.update({
-                collection: s.slug,
-                where: { and: [{ id: { equals: current.id } }, payloadWhere] },
-                data: s.input(data),
-                depth: DEPTH,
-                req,
-                context: s.ctx('incrementOne'),
-              });
-              assertNoBulkErrors(res, 'incrementOne');
-              const updated = res.docs[0];
-              return updated ? (s.out(updated) as R) : null;
+              throw new BetterAuthError(
+                `${LOG} Could not increment a record in "${model}" after ${retries} concurrent retries`,
+              );
             },
             () => null,
           );
