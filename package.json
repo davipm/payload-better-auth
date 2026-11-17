@@ -1,6 +1,6 @@
 {
   "name": "@davipm/payload-better-auth",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Better Auth adapter and plugins for Payload CMS",
   "license": "MIT",
   "type": "module",
