@@ -14,7 +14,9 @@ import {
 } from 'better-auth/plugins';
 import type { BetterAuthPlugin as BetterAuthPluginType } from 'better-auth/types';
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
+import type { CollectionConfig } from 'payload';
 import type { BetterAuthOptions, PayloadAuthOptions } from '@/plugin/index.js';
+import { hiddenUnlessAdmin } from '../utils/auth.js';
 
 export const betterAuthPlugins = [
   username(),
@@ -157,6 +159,13 @@ export const payloadAuthOptions = {
     defaultAdminRole: 'admin',
     roles: ['user', 'admin', 'publisher'] as const,
     allowedFields: ['name'],
+    collectionOverrides: ({ collection }): CollectionConfig => ({
+      ...collection,
+      admin: {
+        ...collection.admin,
+        hidden: hiddenUnlessAdmin(),
+      },
+    }),
   },
   accounts: {
     slug: 'accounts',
