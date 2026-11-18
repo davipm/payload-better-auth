@@ -98,7 +98,6 @@ export const betterAuthOptions = {
       console.log('Send verification email for user: ', url, user);
     },
   },
-  plugins: betterAuthPlugins,
   user: {
     changeEmail: {
       enabled: true,
@@ -134,6 +133,7 @@ export const betterAuthOptions = {
       trustedProviders: ['google', 'email-password'],
     },
   },
+  plugins: betterAuthPlugins,
 } satisfies BetterAuthOptions;
 
 // export type ConstructedBetterAuthOptions = typeof betterAuthOptions;
