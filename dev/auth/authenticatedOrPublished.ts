@@ -1,5 +1,5 @@
+import { type AdminConfig, adminCheck } from '@davipm/payload-better-auth';
 import type { Access, Where } from 'payload';
-import { type AdminConfig, adminCheck } from '../utils/auth.js';
 
 type PublishedConfig = {
   /** Field holding draft/published state. Default: '_status' */

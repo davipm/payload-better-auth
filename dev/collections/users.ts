@@ -1,5 +1,5 @@
+import { isAdmin, isAuthenticated } from '@davipm/payload-better-auth';
 import type { CollectionConfig } from 'payload';
-import { isAdmin, isAuthenticated } from '../utils/auth.js';
 
 export const Users: CollectionConfig<'users'> = {
   slug: 'users',

@@ -1,5 +1,5 @@
+import { anyone, isAuthenticated } from '@davipm/payload-better-auth';
 import type { CollectionConfig } from 'payload';
-import { anyone, isAuthenticated } from '../utils/auth.js';
 
 export const Projects: CollectionConfig<'projects'> = {
   slug: 'projects',

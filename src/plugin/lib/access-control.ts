@@ -1,4 +1,3 @@
-// access/helpers.ts
 import type { Access, FieldAccess, PayloadRequest, Where } from 'payload';
 
 type AnyUser = { id: string | number } & Record<string, unknown>;
@@ -40,19 +39,17 @@ const userRoles = (user: unknown, roleField = DEFAULT_ROLE_FIELD): string[] =>
 
 const hasAny = (user: unknown, roles: string[], roleField?: string) => {
   const owned = userRoles(user, roleField);
-  return roles.some((r) => owned.includes(r));
+  return roles.some((role) => owned.includes(role));
 };
 
 const hasAll = (user: unknown, roles: string[], roleField?: string) => {
   if (!user || roles.length === 0) return false;
   const owned = userRoles(user, roleField);
-  return roles.every((r) => owned.includes(r));
+  return roles.every((role) => owned.includes(role));
 };
 
 export const adminCheck = (user: unknown, config?: AdminConfig) =>
   hasAny(user, config?.adminRoles ?? DEFAULT_ADMIN_ROLES, config?.roleField);
-
-// ───────────── Admin ─────────────
 
 export const isAdmin =
   (config?: AdminConfig): BooleanAccess =>
@@ -64,8 +61,6 @@ export const isAdminField =
   ({ req: { user } }) =>
     adminCheck(user, config);
 
-// ───────────── Admin or self ─────────────
-
 export const isAdminOrSelf =
   (config?: SelfConfig): Access =>
   ({ req: { user } }) => {
@@ -75,8 +70,6 @@ export const isAdminOrSelf =
     return where;
   };
 
-// ───────────── Update own fields ─────────────
-
 export const canUpdateOwnFields =
   (config?: UpdateOwnFieldsConfig): Access =>
   ({ req: { user }, id, data }) => {
@@ -84,16 +77,14 @@ export const canUpdateOwnFields =
     if (adminCheck(user, config)) return true;
 
     const allowed = new Set(config?.allowedFields ?? ['name', 'image']);
-    if (data && !Object.keys(data).every((k) => allowed.has(k))) return false;
+    if (data && !Object.keys(data).every((key) => allowed.has(key))) return false;
 
     const selfId = (user as unknown as AnyUser).id;
-    // Single-doc update: id must match. Access-operation / bulk: constrain by query.
+    // Single-document update: id must match. Access operation / bulk: constrain by query.
     if (id != null) return String(id) === String(selfId);
     const where: Where = { id: { equals: selfId } };
     return where;
   };
-
-// ───────────── Authenticated ─────────────
 
 export const isAuthenticated =
   (): BooleanAccess =>
@@ -108,8 +99,6 @@ export const isAuthenticatedField =
 export const anyone = (): BooleanAccess => () => true;
 
 export const anyoneField = (): FieldAccess => () => true;
-
-// ───────────── Roles ─────────────
 
 export const hasRole =
   (roles: string[], roleField?: string): BooleanAccess =>
@@ -126,8 +115,6 @@ export const requireAllRoles =
   ({ req: { user } }) =>
     hasAll(user, roles, roleField);
 
-// ───────────── Admin UI visibility ─────────────
-
 /** Collection/global: `admin.hidden`. Hides from nav + routes unless user is admin. */
 export const hiddenUnlessAdmin =
   (config?: AdminConfig) =>
@@ -140,83 +127,14 @@ export const showForAdmin =
   (_data: unknown, _siblingData: unknown, { user }: { user?: unknown }): boolean =>
     adminCheck(user, config);
 
-/** Collection/global: hide unless user has any of roles. */
+/** Collection/global: hide unless user has any of the given roles. */
 export const hiddenUnlessRole =
   (roles: string[], roleField?: string) =>
   ({ user }: { user?: unknown }): boolean =>
     !hasAny(user, roles, roleField);
 
-/** Field: show only for users with any of roles. */
+/** Field: show only for users with any of the given roles. */
 export const showForRole =
   (roles: string[], roleField?: string) =>
   (_data: unknown, _siblingData: unknown, { user }: { user?: unknown }): boolean =>
     hasAny(user, roles, roleField);
-
-/**
- * some examples of Usage:
- *
- * import type { CollectionConfig } from 'payload'
- * import {
- *   isAdmin, isAdminField, isAdminOrSelf, canUpdateOwnFields, isAuthenticated, hasRole, requireAllRoles,
- * } from '@/access/helpers'
- *
- * export const Users: CollectionConfig = {
- *   slug: 'users',
- *   access: {
- *     read: isAdminOrSelf(),
- *     create: isAdmin(),
- *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
- *     delete: isAdmin({ adminRoles: ['admin', 'superadmin'] }),
- *   },
- *   fields: [
- *     { name: 'role', type: 'text', access: { update: isAdminField(), create: isAdminField() } },
- *   ],
- * }
- *
- * export const Posts: CollectionConfig = {
- *   slug: 'posts',
- *   access: {
- *     read: isAuthenticated(),
- *     update: hasRole(['editor', 'admin']),
- *     delete: requireAllRoles(['admin', 'billing']),
- *   },
- *   fields: [],
- * }
- *
- * import type { CollectionConfig } from 'payload'
- * import { isAdmin, isAdminOrSelf, canUpdateOwnFields } from '@/access/helpers'
- *
- * export const Users: CollectionConfig = {
- *   slug: 'users',
- *   access: {
- *     read: isAdminOrSelf(),
- *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
- *     delete: isAdmin(),
- *   },
- *   fields: [
- *     {
- *       name: 'role',
- *       type: 'text',
- *       access: { create: isAdminField(), update: isAdminField() },
- *     },
- *   ],
- * }
- *
- * export const Users: CollectionConfig = {
- *   slug: 'users',
- *   admin: { hidden: hiddenUnlessAdmin() },
- *   access: {
- *     read: isAdminOrSelf(),
- *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
- *     delete: isAdmin(),
- *   },
- *   fields: [
- *     {
- *       name: 'role',
- *       type: 'text',
- *       access: { create: isAdminField(), update: isAdminField() },
- *       admin: { condition: showForAdmin() },
- *     },
- *   ],
- * }
- */
