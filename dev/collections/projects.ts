@@ -1,7 +1,14 @@
+import { anyone, isAuthenticated } from '@davipm/payload-better-auth';
 import type { CollectionConfig } from 'payload';
 
 export const Projects: CollectionConfig<'projects'> = {
   slug: 'projects',
+  access: {
+    create: isAuthenticated(),
+    delete: isAuthenticated(),
+    read: anyone(),
+    update: isAuthenticated(),
+  },
   admin: {
     useAsTitle: 'name',
   },

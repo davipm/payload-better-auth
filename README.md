@@ -289,6 +289,126 @@ const { user } = await payload.auth({ headers: await headers() });
 
 Pass the resolved user to Local API calls that should apply the user's Payload access rules. For example, omit `overrideAccess` or set it to `false` when querying content on behalf of the signed-in user.
 
+## Payload access control helpers
+
+The package exports reusable Payload access control helpers from its main entry point:
+
+```ts
+import { anyone, isAuthenticated } from '@davipm/payload-better-auth';
+```
+
+Call the helpers when assigning them to `access`. They return Payload access functions. Collection and global access functions can return `true`, `false`, or a `Where` query constraint. Field access functions return only `true` or `false`, so they cannot filter documents.
+
+### Quick example
+
+This makes project reads public while requiring a signed-in user to create, update, or delete a project:
+
+```ts
+import { anyone, isAuthenticated } from '@davipm/payload-better-auth';
+import type { CollectionConfig } from 'payload';
+
+export const Projects: CollectionConfig = {
+  slug: 'projects',
+  access: {
+    create: isAuthenticated(),
+    read: anyone(),
+    update: isAuthenticated(),
+    delete: isAuthenticated(),
+  },
+  fields: [{ name: 'name', type: 'text', required: true }],
+};
+```
+
+### Helper reference
+
+| Helper                                | Where to use it                  | Behavior                                                                                                     |
+| ------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `anyone()`                            | Collection/global access         | Always allows the operation.                                                                                 |
+| `isAuthenticated()`                   | Collection/global access         | Allows the operation when `req.user` exists.                                                                 |
+| `isAdmin(config?)`                    | Collection/global access         | Allows users with any configured admin role.                                                                 |
+| `isAdminOrSelf(config?)`              | Collection/global access         | Allows admins, or constrains access to the current user's ID.                                                |
+| `canUpdateOwnFields(config?)`         | Collection `update` access       | Allows admins; otherwise checks allowed input fields and limits the update to the current user's own record. |
+| `hasRole(roles, roleField?)`          | Collection/global access         | Allows users who have at least one of the listed roles.                                                      |
+| `requireAllRoles(roles, roleField?)`  | Collection/global access         | Allows users who have every listed role. An empty role list denies access.                                   |
+| `anyoneField()`                       | Field access                     | Always allows the field operation.                                                                           |
+| `isAuthenticatedField()`              | Field access                     | Allows the field operation when `req.user` exists.                                                           |
+| `isAdminField(config?)`               | Field access                     | Allows the field operation for admins.                                                                       |
+| `hasRoleField(roles, roleField?)`     | Field access                     | Allows the field operation when the user has at least one listed role.                                       |
+| `hiddenUnlessAdmin(config?)`          | Collection/global `admin.hidden` | Hides the collection/global from the admin UI unless the user is an admin.                                   |
+| `showForAdmin(config?)`               | Field `admin.condition`          | Shows the field only to admins.                                                                              |
+| `hiddenUnlessRole(roles, roleField?)` | Collection/global `admin.hidden` | Hides it unless the user has at least one listed role.                                                       |
+| `showForRole(roles, roleField?)`      | Field `admin.condition`          | Shows the field only when the user has at least one listed role.                                             |
+| `adminCheck(user, config?)`           | Custom access/UI logic           | Returns whether a user has any configured admin role.                                                        |
+
+The helpers accept these options:
+
+- `AdminConfig`: `adminRoles` defaults to `['admin']`; `roleField` defaults to `'role'`.
+- `SelfConfig`: extends `AdminConfig` with `idField`, which defaults to `'id'`. Use this to check ownership through another field, such as `owner`.
+- `UpdateOwnFieldsConfig`: extends `AdminConfig` with `allowedFields`, which defaults to `['name', 'image']`.
+- Role helpers accept `roleField` as their second argument. A role value can be a string, a comma-separated string, or an array of strings on `req.user`.
+
+These helpers inspect the Payload user attached to the request; they do not create a role field or grant roles. Configure the user roles in your application and make sure the role value is present on `req.user`. The plugin's `users.adminRoles` option controls access to plugin-generated auth collections; helper `AdminConfig.adminRoles` controls these helper checks.
+
+### Detailed example: protect user roles and project records
+
+This example keeps user records private, lets users update their own profile fields, and prevents non-admins from changing the role field. Projects are public to read, signed-in users can create them, and project updates are restricted to the owner or an admin. The `owner` field is a relationship to the `users` collection, so `idField: 'owner'` makes the helper apply a query constraint against that field.
+
+```ts
+import {
+  anyone,
+  canUpdateOwnFields,
+  hasRole,
+  isAdmin,
+  isAdminField,
+  isAdminOrSelf,
+  isAuthenticated,
+} from '@davipm/payload-better-auth';
+import type { CollectionConfig } from 'payload';
+
+const adminConfig = { adminRoles: ['admin', 'superadmin'] };
+
+export const Users: CollectionConfig = {
+  slug: 'users',
+  auth: true,
+  access: {
+    read: isAdminOrSelf(adminConfig),
+    update: canUpdateOwnFields({ ...adminConfig, allowedFields: ['name', 'image'] }),
+    create: isAdmin(adminConfig),
+    delete: isAdmin(adminConfig),
+  },
+  fields: [
+    {
+      name: 'role',
+      type: 'select',
+      options: ['user', 'editor', 'admin', 'superadmin'],
+      defaultValue: 'user',
+      access: {
+        create: isAdminField(adminConfig),
+        update: isAdminField(adminConfig),
+      },
+    },
+  ],
+};
+
+export const Projects: CollectionConfig = {
+  slug: 'projects',
+  access: {
+    read: anyone(),
+    create: isAuthenticated(),
+    update: isAdminOrSelf({ ...adminConfig, idField: 'owner' }),
+    delete: hasRole(['admin', 'superadmin']),
+  },
+  fields: [
+    { name: 'name', type: 'text', required: true },
+    { name: 'owner', type: 'relationship', relationTo: 'users', required: true },
+  ],
+};
+```
+
+`isAdminOrSelf` returns a query constraint for non-admin users, so collection reads and bulk operations are scoped to matching records. `canUpdateOwnFields` is designed for the user's own document: it checks top-level submitted field names and uses the user's ID for the record constraint. It does not validate nested field paths or arbitrary relationship ownership. For fields that determine ownership, restrict writes with field access or set them server-side in a hook.
+
+Admin UI visibility helpers only affect what Payload displays. Keep the matching collection or field access rule in place to enforce the permission in API requests too. Also, Local API calls that should honor access need a user and `overrideAccess: false` (or the default access behavior); calls with access override bypass these checks.
+
 ## Payload admin panel
 
 The plugin replaces Payload's built-in login flow with Better Auth views for login, signup, forgot password, reset password, and (when enabled) two-factor verification. Set `admin.user` to the plugin's user collection slug. The plugin disables Payload's local password strategy for that collection and installs a Better Auth strategy.

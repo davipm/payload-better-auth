@@ -10,6 +10,7 @@ import { setLoginMethods } from './lib/set-login-methods.js';
 
 export * from '../types/plugin.js';
 export * from '../utils/plugin/index.js';
+export * from './lib/access-control.js';
 export { getPayloadAuth } from './lib/get-payload-auth.js';
 export { sanitizeBetterAuthOptions } from './lib/sanitize-better-auth-options/index.js';
 

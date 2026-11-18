@@ -1,4 +1,5 @@
 import { passkey } from '@better-auth/passkey';
+import { hiddenUnlessAdmin } from '@davipm/payload-better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import {
   admin,
@@ -14,6 +15,7 @@ import {
 } from 'better-auth/plugins';
 import type { BetterAuthPlugin as BetterAuthPluginType } from 'better-auth/types';
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
+import type { CollectionConfig } from 'payload';
 import type { BetterAuthOptions, PayloadAuthOptions } from '@/plugin/index.js';
 
 export const betterAuthPlugins = [
@@ -37,12 +39,12 @@ export const betterAuthPlugins = [
   }),
   phoneNumber({
     sendOTP: async ({ phoneNumber, code }, req) => {
-      console.log('Send OTP for user: ', phoneNumber, code);
+      console.log('Send OTP for user: ', phoneNumber, code, req);
     },
   }),
   magicLink({
     sendMagicLink: async ({ email, token, url }, request) => {
-      console.log('Send magic link for user: ', email, token, url);
+      console.log('Send magic link for user: ', email, token, url, request);
     },
   }),
   emailOTP({
@@ -71,7 +73,7 @@ export const betterAuthPlugins = [
   nextCookies(),
 ] satisfies BetterAuthPluginType[];
 
-export type BetterAuthPlugins = typeof betterAuthPlugins;
+// export type BetterAuthPlugins = typeof betterAuthPlugins;
 
 export const betterAuthOptions = {
   appName: 'payload-better-auth',
@@ -98,13 +100,12 @@ export const betterAuthOptions = {
       console.log('Send verification email for user: ', url, user);
     },
   },
-  plugins: betterAuthPlugins,
   user: {
     changeEmail: {
       enabled: true,
-      // sendChangeEmailVerification: async ({ user, newEmail, url, token }) => {
-      //   console.log('Send change email verification for user: ', user, newEmail, url, token);
-      // },
+      sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
+        console.log('Send change email verification for user: ', user, newEmail, url, token);
+      },
     },
     deleteUser: {
       enabled: true,
@@ -134,12 +135,13 @@ export const betterAuthOptions = {
       trustedProviders: ['google', 'email-password'],
     },
   },
+  plugins: betterAuthPlugins,
 } satisfies BetterAuthOptions;
 
-export type ConstructedBetterAuthOptions = typeof betterAuthOptions;
+// export type ConstructedBetterAuthOptions = typeof betterAuthOptions;
 
 export const payloadAuthOptions = {
-  betterAuthOptions: betterAuthOptions,
+  betterAuthOptions,
   disabled: false,
   debug: {
     logTables: false,
@@ -157,6 +159,13 @@ export const payloadAuthOptions = {
     defaultAdminRole: 'admin',
     roles: ['user', 'admin', 'publisher'] as const,
     allowedFields: ['name'],
+    collectionOverrides: ({ collection }): CollectionConfig => ({
+      ...collection,
+      admin: {
+        ...collection.admin,
+        hidden: hiddenUnlessAdmin(),
+      },
+    }),
   },
   accounts: {
     slug: 'accounts',
@@ -169,7 +178,7 @@ export const payloadAuthOptions = {
   },
   adminInvitations: {
     sendInviteEmail: async ({ payload, email, url }) => {
-      console.log('Send admin invite: ', email, url);
+      console.log('Send admin invite: ', email, url, payload);
       return { success: true };
     },
   },

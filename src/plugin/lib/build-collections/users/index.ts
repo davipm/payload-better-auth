@@ -266,6 +266,7 @@ export function buildUsersCollection({
       getSendInviteUrlEndpoint(pluginOptions),
     ],
     hooks: {
+      ...existingUserCollection?.hooks,
       beforeChange: [...(existingUserCollection?.hooks?.beforeChange ?? [])],
       afterChange: [...(existingUserCollection?.hooks?.afterChange ?? [])],
 
