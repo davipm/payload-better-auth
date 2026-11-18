@@ -1,17 +1,16 @@
 import type { CollectionConfig } from 'payload';
-import { authenticatedAdmin } from '../auth/admin.js';
-import { authenticated } from '../auth/authenticated.js';
+import { isAdmin, isAuthenticated } from '../utils/auth.js';
 
 export const Users: CollectionConfig<'users'> = {
   slug: 'users',
   timestamps: true,
   auth: true,
   access: {
-    admin: authenticated,
-    create: authenticatedAdmin,
-    delete: authenticated,
-    read: authenticated,
-    update: authenticatedAdmin,
+    admin: isAuthenticated(),
+    create: isAdmin(),
+    delete: isAuthenticated(),
+    read: isAuthenticated(),
+    update: isAdmin(),
   },
   admin: {
     defaultColumns: ['name', 'email'],

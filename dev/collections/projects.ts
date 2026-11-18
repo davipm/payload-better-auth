@@ -1,7 +1,14 @@
 import type { CollectionConfig } from 'payload';
+import { anyone, isAuthenticated } from '../utils/auth.js';
 
 export const Projects: CollectionConfig<'projects'> = {
   slug: 'projects',
+  access: {
+    create: isAuthenticated(),
+    delete: isAuthenticated(),
+    read: anyone(),
+    update: isAuthenticated(),
+  },
   admin: {
     useAsTitle: 'name',
   },
