@@ -142,6 +142,7 @@ export function buildAccountsCollection({
       betterAuthModelKey: baModelKey.account,
     },
     hooks: {
+      ...existingAccountCollection?.hooks,
       afterChange: [...(existingAccountCollection?.hooks?.afterChange ?? [])],
     },
     fields: [...(existingAccountCollection?.fields ?? []), ...(collectionFields ?? [])],
