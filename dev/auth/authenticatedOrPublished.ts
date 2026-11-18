@@ -1,4 +1,5 @@
-import type { Access } from 'payload';
+import type { Access, Where } from 'payload';
+import { type AdminConfig, adminCheck } from '../utils/auth.js';
 
 type PublishedConfig = {
   /** Field holding draft/published state. Default: '_status' */
@@ -15,4 +16,14 @@ export const authenticatedOrPublished =
     return {
       [config?.statusField ?? '_status']: { equals: config?.publishedValue ?? 'published' },
     };
+  };
+
+export const isAdminOrPublished =
+  (config?: AdminConfig & PublishedConfig): Access =>
+  ({ req: { user } }) => {
+    if (adminCheck(user, config)) return true;
+    const where: Where = {
+      [config?.statusField ?? '_status']: { equals: config?.publishedValue ?? 'published' },
+    };
+    return where;
   };

@@ -49,7 +49,7 @@ const hasAll = (user: unknown, roles: string[], roleField?: string) => {
   return roles.every((r) => owned.includes(r));
 };
 
-const adminCheck = (user: unknown, config?: AdminConfig) =>
+export const adminCheck = (user: unknown, config?: AdminConfig) =>
   hasAny(user, config?.adminRoles ?? DEFAULT_ADMIN_ROLES, config?.roleField);
 
 // ───────────── Admin ─────────────
