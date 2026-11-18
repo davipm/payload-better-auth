@@ -151,3 +151,72 @@ export const showForRole =
   (roles: string[], roleField?: string) =>
   (_data: unknown, _siblingData: unknown, { user }: { user?: unknown }): boolean =>
     hasAny(user, roles, roleField);
+
+/**
+ * some examples of Usage:
+ *
+ * import type { CollectionConfig } from 'payload'
+ * import {
+ *   isAdmin, isAdminField, isAdminOrSelf, canUpdateOwnFields, isAuthenticated, hasRole, requireAllRoles,
+ * } from '@/access/helpers'
+ *
+ * export const Users: CollectionConfig = {
+ *   slug: 'users',
+ *   access: {
+ *     read: isAdminOrSelf(),
+ *     create: isAdmin(),
+ *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
+ *     delete: isAdmin({ adminRoles: ['admin', 'superadmin'] }),
+ *   },
+ *   fields: [
+ *     { name: 'role', type: 'text', access: { update: isAdminField(), create: isAdminField() } },
+ *   ],
+ * }
+ *
+ * export const Posts: CollectionConfig = {
+ *   slug: 'posts',
+ *   access: {
+ *     read: isAuthenticated(),
+ *     update: hasRole(['editor', 'admin']),
+ *     delete: requireAllRoles(['admin', 'billing']),
+ *   },
+ *   fields: [],
+ * }
+ *
+ * import type { CollectionConfig } from 'payload'
+ * import { isAdmin, isAdminOrSelf, canUpdateOwnFields } from '@/access/helpers'
+ *
+ * export const Users: CollectionConfig = {
+ *   slug: 'users',
+ *   access: {
+ *     read: isAdminOrSelf(),
+ *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
+ *     delete: isAdmin(),
+ *   },
+ *   fields: [
+ *     {
+ *       name: 'role',
+ *       type: 'text',
+ *       access: { create: isAdminField(), update: isAdminField() },
+ *     },
+ *   ],
+ * }
+ *
+ * export const Users: CollectionConfig = {
+ *   slug: 'users',
+ *   admin: { hidden: hiddenUnlessAdmin() },
+ *   access: {
+ *     read: isAdminOrSelf(),
+ *     update: canUpdateOwnFields({ allowedFields: ['name', 'image'] }),
+ *     delete: isAdmin(),
+ *   },
+ *   fields: [
+ *     {
+ *       name: 'role',
+ *       type: 'text',
+ *       access: { create: isAdminField(), update: isAdminField() },
+ *       admin: { condition: showForAdmin() },
+ *     },
+ *   ],
+ * }
+ */
