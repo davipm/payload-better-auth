@@ -15,6 +15,7 @@
   ],
   "compilerOptions": {
     "baseUrl": "./",
+    "rootDir": "..",
     "paths": {
       "@/*": ["../src/*"],
       "@payload-config": ["./payload.config.ts"],
