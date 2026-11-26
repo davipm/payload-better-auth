@@ -4,7 +4,7 @@
   "description": "Better Auth adapter and plugins for Payload CMS",
   "license": "MIT",
   "type": "module",
-  "author": "Davi Mendonca @davipm",
+  "author": "Davi Mendonca",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -129,5 +129,10 @@
   "registry": "https://registry.npmjs.org/",
   "dependencies": {
     "qrcode.react": "^4.2.0"
+  },
+  "homepage": "https://github.com/davipm/payload-better-auth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davipm/payload-better-auth.git"
   }
 }
