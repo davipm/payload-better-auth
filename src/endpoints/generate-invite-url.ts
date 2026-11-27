@@ -1,4 +1,3 @@
-import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint } from 'payload';
 import { adminEndpoints, baseSlugs, defaults } from '../plugin/constants.js';
 import { getPayloadAuth } from '../plugin/index.js';
@@ -24,10 +23,10 @@ export const getGenerateInviteUrlEndpoint = ({
       await addDataAndFileToRequest(req);
 
       if (!req.user) {
-        return Response.json({ message: 'Unauthorized' }, { status: httpStatus.UNAUTHORIZED });
+        return Response.json({ message: 'Unauthorized' }, { status: 401 });
       }
       if (!hasAdminRoles(adminRoles)({ req })) {
-        return Response.json({ message: 'Forbidden' }, { status: httpStatus.FORBIDDEN });
+        return Response.json({ message: 'Forbidden' }, { status: 403 });
       }
 
       // Belt-and-suspenders: also validate the Better Auth session
@@ -37,7 +36,7 @@ export const getGenerateInviteUrlEndpoint = ({
         headers: req.headers,
       });
       if (!session) {
-        return Response.json({ message: 'Unauthorized' }, { status: httpStatus.UNAUTHORIZED });
+        return Response.json({ message: 'Unauthorized' }, { status: 401 });
       }
 
       const body = req.data as unknown;
@@ -45,16 +44,16 @@ export const getGenerateInviteUrlEndpoint = ({
         pluginOptions?.adminInvitations?.generateInviteUrl ?? generateAdminInviteUrl;
 
       if (!body) {
-        return Response.json({ message: 'No body provided' }, { status: httpStatus.BAD_REQUEST });
+        return Response.json({ message: 'No body provided' }, { status: 400 });
       }
 
       if (typeof body !== 'object' || !('role' in body)) {
-        return Response.json({ message: 'Invalid body' }, { status: httpStatus.BAD_REQUEST });
+        return Response.json({ message: 'Invalid body' }, { status: 400 });
       }
 
       const role = (body as { role?: unknown }).role;
       if (typeof role !== 'string' || !roles.some((option) => option.value === role)) {
-        return Response.json({ message: 'Invalid role' }, { status: httpStatus.BAD_REQUEST });
+        return Response.json({ message: 'Invalid role' }, { status: 400 });
       }
       const token = crypto.randomUUID();
       const inviteLink = generateAdminInviteUrlFn({
@@ -66,6 +65,7 @@ export const getGenerateInviteUrlEndpoint = ({
       try {
         await req.payload.create({
           collection: pluginOptions.adminInvitations?.slug ?? baseSlugs.adminInvitations,
+          overrideAccess: true,
           data: {
             token,
             role,
@@ -87,7 +87,7 @@ export const getGenerateInviteUrlEndpoint = ({
         req.payload.logger.error({ err: error, msg: 'Failed to generate admin invite URL' });
         return Response.json(
           { message: 'Error generating invite link' },
-          { status: httpStatus.INTERNAL_SERVER_ERROR },
+          { status: 500 },
         );
       }
     },

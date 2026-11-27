@@ -69,8 +69,8 @@ export function PassKeyAddButton({ onAdd, baseURL, basePath }: PassKeyAddButtonP
         <div className={`${baseClass}__wrapper`}>
           <Button
             onClick={() => closeModal('passkeys-modal')}
-            buttonStyle="icon-label"
-            size="small"
+            buttonStyle="secondary"
+            size="medium"
             className={`${baseClass}__close-button`}
           >
             <span aria-hidden="true">

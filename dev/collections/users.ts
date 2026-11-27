@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload';
 
 export const Users: CollectionConfig<'users'> = {
   slug: 'users',
+  authorship: false,
   timestamps: true,
   auth: true,
   access: {
@@ -20,4 +21,5 @@ export const Users: CollectionConfig<'users'> = {
     // Email added by default
     // Add more fields as needed
   ],
+  versions: false,
 };

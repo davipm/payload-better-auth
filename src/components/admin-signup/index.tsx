@@ -1,4 +1,4 @@
-import { MinimalTemplate } from '@payloadcms/next/templates';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import type { AdminViewServerProps, Payload } from 'payload';
 import { z } from 'zod';
 import { supportedBAPluginIds } from '../../plugin/constants.js';
@@ -50,6 +50,7 @@ async function AdminSignup({
   initPageResult,
   params,
   searchParams,
+  server,
   pluginOptions,
   adminInvitationsSlug,
 }: AdminSignupProps) {
@@ -103,6 +104,7 @@ async function AdminSignup({
           payload={payload}
           permissions={permissions}
           searchParams={searchParams}
+          server={server}
           user={user ?? undefined}
         />
       </div>

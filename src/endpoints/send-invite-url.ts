@@ -1,4 +1,3 @@
-import { status as httpStatus } from 'http-status';
 import { addDataAndFileToRequest, type Endpoint, headersWithCors, killTransaction } from 'payload';
 import { z } from 'zod';
 import { adminEndpoints, defaults } from '../plugin/constants.js';
@@ -21,10 +20,10 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
       await addDataAndFileToRequest(req);
 
       if (!req.user) {
-        return Response.json({ message: 'Unauthorized' }, { status: httpStatus.UNAUTHORIZED });
+        return Response.json({ message: 'Unauthorized' }, { status: 401 });
       }
       if (!hasAdminRoles(adminRoles)({ req })) {
-        return Response.json({ message: 'Forbidden' }, { status: httpStatus.FORBIDDEN });
+        return Response.json({ message: 'Forbidden' }, { status: 403 });
       }
 
       // Belt-and-suspenders: also validate the Better Auth session
@@ -34,13 +33,13 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
         headers: req.headers,
       });
       if (!session) {
-        return Response.json({ message: 'Unauthorized' }, { status: httpStatus.UNAUTHORIZED });
+        return Response.json({ message: 'Unauthorized' }, { status: 401 });
       }
 
       const { t } = req;
       const body = requestSchema.safeParse(req.data);
       if (!body.success) {
-        return Response.json({ message: body.error.message }, { status: httpStatus.BAD_REQUEST });
+        return Response.json({ message: body.error.message }, { status: 400 });
       }
 
       const sendInviteEmailFn = pluginOptions.adminInvitations?.sendInviteEmail;
@@ -51,7 +50,7 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
         );
         return Response.json(
           { message: 'Send invite email function not found' },
-          { status: httpStatus.INTERNAL_SERVER_ERROR },
+          { status: 500 },
         );
       }
 
@@ -65,7 +64,7 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
         if (!res.success) {
           return Response.json(
             { message: res.message },
-            { status: httpStatus.INTERNAL_SERVER_ERROR },
+            { status: 500 },
           );
         }
 
@@ -78,7 +77,7 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
               headers: new Headers(),
               req,
             }),
-            status: httpStatus.OK,
+            status: 200,
           },
         );
       } catch (error) {

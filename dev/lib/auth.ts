@@ -1,4 +1,5 @@
 import { passkey } from '@better-auth/passkey';
+import type { BetterAuthOptions, PayloadAuthOptions } from '@davipm/payload-better-auth';
 import { hiddenUnlessAdmin } from '@davipm/payload-better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import {
@@ -16,7 +17,6 @@ import {
 import type { BetterAuthPlugin as BetterAuthPluginType } from 'better-auth/types';
 import { emailHarmony, phoneHarmony } from 'better-auth-harmony';
 import type { CollectionConfig } from 'payload';
-import type { BetterAuthOptions, PayloadAuthOptions } from '@/plugin/index.js';
 
 export const betterAuthPlugins = [
   username(),

@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload';
 
 export const Projects: CollectionConfig<'projects'> = {
   slug: 'projects',
+  authorship: false,
   access: {
     create: isAuthenticated(),
     delete: isAuthenticated(),
@@ -27,4 +28,5 @@ export const Projects: CollectionConfig<'projects'> = {
       options: ['active', 'inactive'],
     },
   ],
+  versions: false,
 };

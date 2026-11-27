@@ -112,7 +112,7 @@ export function AdminButtons({ baseURL, basePath }: AdminButtonsProps) {
       ) : (
         <Button
           onClick={handleBan}
-          buttonStyle="error"
+          buttonStyle="destructive"
           className="ban-button"
           size="medium"
           disabled={pending}

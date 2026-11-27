@@ -15,9 +15,9 @@ export function getTimestampFields(
     {
       name: 'updatedAt',
       type: 'date',
-      saveToJWT: options.saveUpdatedAtToJWT,
+      saveToJWT: options.saveUpdatedAtToJWT as any,
       admin: {
-        disableBulkEdit: true,
+        disabled: { bulkEdit: true },
         hidden: true,
       },
       index: true,
@@ -25,9 +25,9 @@ export function getTimestampFields(
     },
     {
       name: 'createdAt',
-      saveToJWT: options.saveCreatedAtToJWT,
+      saveToJWT: options.saveCreatedAtToJWT as any,
       admin: {
-        disableBulkEdit: true,
+        disabled: { bulkEdit: true },
         hidden: true,
       },
       type: 'date',

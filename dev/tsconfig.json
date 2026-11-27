@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.json",
-  "exclude": [],
+  "exclude": ["int.spec.ts"],
   "include": [
     "**/*.js",
     "**/*.jsx",
@@ -8,20 +8,13 @@
     "**/*.cjs",
     "**/*.ts",
     "**/*.tsx",
-    "../src/**/*.ts",
-    "../src/**/*.tsx",
     "next.config.mjs",
     ".next/types/**/*.ts"
   ],
   "compilerOptions": {
-    "baseUrl": "./",
     "rootDir": "..",
     "paths": {
-      "@/*": ["../src/*"],
-      "@payload-config": ["./payload.config.ts"],
-      "@davipm/payload-better-auth": ["../src/index.ts"],
-      "@davipm/payload-better-auth/client": ["../src/exports/client.ts"],
-      "@davipm/payload-better-auth/rsc": ["../src/exports/rsc.ts"]
+      "@payload-config": ["./payload.config.ts"]
     },
     "noEmit": true,
     "emitDeclarationOnly": false

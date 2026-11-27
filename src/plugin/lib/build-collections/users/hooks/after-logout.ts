@@ -56,6 +56,7 @@ async function deleteSessionFromDb(
   const [token] = rawCookieValue.split('.');
   const { docs } = await payload.find({
     collection: slug,
+    overrideAccess: true,
     where: { token: { equals: token } },
     limit: 1,
     pagination: false,
@@ -66,6 +67,7 @@ async function deleteSessionFromDb(
   try {
     await payload.delete({
       collection: slug,
+      overrideAccess: true,
       where: { id: { equals: session.id } },
       req,
     });

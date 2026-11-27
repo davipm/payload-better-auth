@@ -2,7 +2,6 @@ import type {
   CheckboxField,
   DateField,
   Field,
-  FieldBase,
   NumberField,
   RelationshipField,
   SelectField,
@@ -27,7 +26,7 @@ export const COMMON_FIELD_KEYS = [
   'validate',
   'virtual',
   '_sanitized',
-] as const satisfies readonly (keyof FieldBase)[];
+] as const;
 
 export const TEXT_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
@@ -37,23 +36,23 @@ export const TEXT_FIELD_KEYS = [
   'minLength',
   'minRows',
   'hasMany',
-] as const satisfies readonly (keyof TextField)[];
+] as const;
 
 export const NUMBER_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
   'max',
   'min',
   'hasMany',
-] as const satisfies readonly (keyof NumberField)[];
+] as const;
 
 export const DATE_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
   'timezone',
-] as const satisfies readonly (keyof DateField)[];
+] as const;
 
 export const CHECKBOX_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
-] as const satisfies readonly (keyof CheckboxField)[];
+] as const;
 
 export const RELATIONSHIP_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
@@ -67,7 +66,7 @@ export const RELATIONSHIP_FIELD_KEYS = [
   'minRows',
   'relationTo',
   'type',
-] as const satisfies readonly (keyof RelationshipField)[];
+] as const;
 
 export const SELECT_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,
@@ -80,7 +79,7 @@ export const SELECT_FIELD_KEYS = [
   'validate',
   'defaultValue',
   'filterOptions',
-] as const satisfies readonly (keyof SelectField)[];
+] as const;
 
 export function getValidFieldPropertyKeysForType(type: Field['type']) {
   switch (type) {

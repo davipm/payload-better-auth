@@ -4,7 +4,7 @@ import {
   type BasePayload,
   type CollectionSlug,
   commitTransaction,
-  createLocalReq,
+  createPayloadRequest,
   initTransaction,
   killTransaction,
   type PayloadRequest,
@@ -225,6 +225,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         try {
           const { docs: related } = await s.payload.find({
             collection: getCollectionSlug(joinModelKey as ModelKey),
+            overrideAccess: true,
             where: { id: { in: [...ids] } },
             depth: DEPTH,
             limit: ids.size,
@@ -319,6 +320,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         if (id != null) {
           return (await s.payload.findByID({
             collection: s.slug,
+            overrideAccess: true,
             id,
             depth: DEPTH,
             disableErrors: true,
@@ -329,6 +331,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         }
         const res = await s.payload.find({
           collection: s.slug,
+          overrideAccess: true,
           where,
           depth: DEPTH,
           limit: 1,
@@ -364,6 +367,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             // depth 0: populated relationships would bloat the cookie-cached session.
             const doc = await s.payload.create({
               collection: s.slug,
+              overrideAccess: true,
               data: input,
               select: convertSelect(model as ModelKey, select, s.payload),
               req,
@@ -424,7 +428,12 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             async (s) => {
               const payloadWhere = s.where(where);
               const joins = buildPayloadJoins(join, s);
-              const shared = { depth: joins ? 1 : DEPTH, ...(joins && { joins }), req };
+              const shared = {
+                overrideAccess: true,
+                depth: joins ? 1 : DEPTH,
+                ...(joins && { joins }),
+                req,
+              };
 
               const id = offset === 0 ? singleIdQuery(payloadWhere) : null;
               let docs: Doc[];
@@ -480,6 +489,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               if (id != null) {
                 doc = await s.payload.update({
                   collection: s.slug,
+                  overrideAccess: true,
                   id,
                   data,
                   depth: DEPTH,
@@ -489,6 +499,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               } else {
                 const res = await s.payload.update({
                   collection: s.slug,
+                  overrideAccess: true,
                   where: payloadWhere,
                   data,
                   depth: DEPTH,
@@ -519,6 +530,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             async (s) => {
               const res = await s.payload.update({
                 collection: s.slug,
+                overrideAccess: true,
                 where: s.where(where),
                 data: s.input(update),
                 depth: DEPTH,
@@ -542,6 +554,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               if (id != null) {
                 await s.payload.delete({
                   collection: s.slug,
+                  overrideAccess: true,
                   id,
                   depth: DEPTH,
                   req,
@@ -550,6 +563,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               } else {
                 const res = await s.payload.delete({
                   collection: s.slug,
+                  overrideAccess: true,
                   where: payloadWhere,
                   depth: DEPTH,
                   req,
@@ -569,6 +583,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
             async (s) => {
               const res = await s.payload.delete({
                 collection: s.slug,
+                overrideAccess: true,
                 where: s.where(where),
                 depth: DEPTH,
                 req,
@@ -600,6 +615,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               // race gets a 404 here, which run() maps to null.
               await s.payload.delete({
                 collection: s.slug,
+                overrideAccess: true,
                 id: found.id,
                 depth: DEPTH,
                 req,
@@ -653,6 +669,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
                 const compareSnapshot = snapshot.length ? s.where(snapshot) : undefined;
                 const res = await s.payload.update({
                   collection: s.slug,
+                  overrideAccess: true,
                   where: {
                     and: [
                       { id: { equals: current.id } },
@@ -686,6 +703,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
               (
                 await s.payload.count({
                   collection: s.slug,
+                  overrideAccess: true,
                   where: s.where(where),
                   req,
                   context: s.ctx('count'),
@@ -725,7 +743,7 @@ const payloadAdapter: PayloadAdapter = ({ payloadClient, adapterConfig }) => {
         if (!useTransactions) return callback(build());
 
         const payload = await resolvePayloadClient();
-        const req = await createLocalReq({}, payload);
+        const req = await createPayloadRequest({ payload });
         const started = await initTransaction(req);
         try {
           const result = await callback(build(req));

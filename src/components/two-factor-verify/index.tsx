@@ -1,4 +1,4 @@
-import { MinimalTemplate } from '@payloadcms/next/templates';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { cookies } from 'next/headers.js';
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps } from 'payload';
@@ -67,6 +67,7 @@ async function TwoFactorVerify({
   }
   const { totalDocs: isValidTwoFactorToken } = await payload.count({
     collection: verificationsSlug,
+    overrideAccess: true,
     where: {
       identifier: {
         equals: twoFactorVerifyToken,

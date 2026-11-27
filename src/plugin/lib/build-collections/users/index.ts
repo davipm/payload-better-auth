@@ -70,7 +70,7 @@ export function buildUsersCollection({
         ...field,
         saveToJWT: false,
         admin: {
-          disableBulkEdit: true,
+          disabled: { bulkEdit: true },
           hidden: true,
         },
         index: true,
@@ -306,7 +306,7 @@ export function buildUsersCollection({
               name: 'managePasskeys',
               type: 'ui' as const,
               admin: {
-                disableBulkEdit: true,
+                disabled: { bulkEdit: true },
                 components: {
                   Field: {
                     path: '@davipm/payload-better-auth/rsc#Passkeys',

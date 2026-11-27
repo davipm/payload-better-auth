@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig, PayloadRequest } from 'payload';
 import { getFieldsToSign } from 'payload';
 import type { Session, User } from '../../types/generated-types.js';
 
@@ -12,11 +12,11 @@ export async function prepareUser({
   const newUser = getFieldsToSign({
     collectionConfig: userCollection,
     email: user.email,
-    user: {
+      user: {
       ...user,
       id: user.id,
       collection: userCollection.slug,
-    },
+    } as unknown as PayloadRequest['user'],
   });
 
   return newUser as User & Record<string, any>;
@@ -32,11 +32,11 @@ export async function prepareSession({
   const filteredSession = getFieldsToSign({
     collectionConfig: sessionCollection,
     email: '',
-    user: {
+      user: {
       ...session,
       id: session.id,
       collection: sessionCollection.slug,
-    },
+    } as unknown as PayloadRequest['user'],
   });
 
   delete filteredSession.email;

@@ -1,6 +1,6 @@
 import config from '@payload-config';
 import type { Payload } from 'payload';
-import { createPayloadRequest, getPayload } from 'payload';
+import { createPayloadRequestFromWebRequest, getPayload } from 'payload';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
 import { customEndpointHandler } from '../src/endpoints/customEndpointHandler.js';
@@ -21,7 +21,7 @@ describe('Plugin integration tests', () => {
       method: 'GET',
     });
 
-    const payloadRequest = await createPayloadRequest({ config, request });
+    const payloadRequest = await createPayloadRequestFromWebRequest({ config, request });
     const response = await customEndpointHandler(payloadRequest);
     expect(response.status).toBe(200);
 

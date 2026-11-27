@@ -39,6 +39,7 @@ export function getBeforeDeleteHook({
         if (slug) {
           await payload.delete({
             collection: slug,
+            overrideAccess: true,
             where: { user: { equals: userId } },
             req,
           });
@@ -51,6 +52,7 @@ export function getBeforeDeleteHook({
       if (verificationsSlug) {
         await payload.delete({
           collection: verificationsSlug,
+          overrideAccess: true,
           where: { value: { contains: `"${userId}"` } },
           req,
         });
@@ -71,6 +73,7 @@ export function getBeforeDeleteHook({
         if (slug) {
           await payload.delete({
             collection: slug,
+            overrideAccess: true,
             where: { user: { equals: userId } },
             req,
           });
@@ -82,6 +85,7 @@ export function getBeforeDeleteHook({
       if (apikeySlug && !apiKeyReferencesOrganization) {
         await payload.delete({
           collection: apikeySlug,
+          overrideAccess: true,
           where: { referenceId: { equals: String(userId) } },
           req,
         });
@@ -92,6 +96,7 @@ export function getBeforeDeleteHook({
       if (membersSlug) {
         await payload.delete({
           collection: membersSlug,
+          overrideAccess: true,
           where: { user: { equals: userId } },
           req,
         });
@@ -101,6 +106,7 @@ export function getBeforeDeleteHook({
       if (invitationsSlug) {
         await payload.delete({
           collection: invitationsSlug,
+          overrideAccess: true,
           where: { inviter: { equals: userId } },
           req,
         });

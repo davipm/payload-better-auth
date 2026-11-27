@@ -219,8 +219,8 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
         <div className={`${baseClass}__wrapper`}>
           <Button
             onClick={close}
-            buttonStyle="icon-label"
-            size="small"
+            buttonStyle="secondary"
+            size="medium"
             className={`${baseClass}__close-button`}
             aria-label="Close"
           >
@@ -251,8 +251,8 @@ export function TwoFactorAuth({ baseURL, basePath, twoFactorDigits = 6 }: TwoFac
                     <QRCodeSVG value={totpURI} size={200} />
                   </div>
                   <Button
-                    size="small"
-                    buttonStyle="transparent"
+                    size="medium"
+                    buttonStyle="ghost"
                     onClick={copyURI}
                     className={`${baseClass}__copy-btn`}
                   >

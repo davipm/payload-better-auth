@@ -103,7 +103,7 @@ export function buildSessionsCollection({
         ...field,
         saveToJWT: false,
         admin: {
-          disableBulkEdit: true,
+          disabled: { bulkEdit: true },
           hidden: true,
         },
         index: true,

@@ -10,6 +10,7 @@ export async function Passkeys({ ...props }: PasskeysServerComponentProps) {
 
   const { docs: userPasskeys } = (await payload.find({
     collection: passkeySlug,
+    overrideAccess: false,
     where: {
       [passkeyUserIdFieldName]: { equals: id },
     },

@@ -1,4 +1,4 @@
-import { MinimalTemplate } from '@payloadcms/next/templates';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent';
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps, Payload, ServerProps } from 'payload';
@@ -30,6 +30,7 @@ async function getOrCreateAdminInviteToken(
   const findToken = async (): Promise<string | undefined> => {
     const { docs } = await payload.find({
       collection,
+      overrideAccess: true,
       where: { role: { equals: role } },
       limit: 1,
       depth: 0,
@@ -43,7 +44,7 @@ async function getOrCreateAdminInviteToken(
 
   const token = crypto.randomUUID();
   try {
-    await payload.create({ collection, data: { role, token } });
+    await payload.create({ collection, data: { role, token }, overrideAccess: true });
     return token;
   } catch (err) {
     const winner = await findToken();
@@ -55,6 +56,7 @@ async function getOrCreateAdminInviteToken(
 export default async function AdminLogin({
   initPageResult,
   params,
+  server,
   searchParams,
   pluginOptions,
   adminInvitationsSlug,
@@ -84,6 +86,7 @@ export default async function AdminLogin({
 
   const adminCount = await payload.count({
     collection: userSlug,
+    overrideAccess: true,
     where: { role: { equals: adminRole } },
   });
 
@@ -123,6 +126,7 @@ export default async function AdminLogin({
     payload,
     permissions,
     searchParams,
+    server,
     user: user ?? undefined,
   } satisfies ServerProps;
 

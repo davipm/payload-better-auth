@@ -1,6 +1,6 @@
 import type { GenericEndpointContext } from 'better-auth';
 import { setCookieCache } from 'better-auth/cookies';
-import { type Endpoint, getFieldsToSign, refreshOperation, type TypedUser } from 'payload';
+import { type Endpoint, getFieldsToSign, refreshOperation, type PayloadRequest } from 'payload';
 import { adminEndpoints } from '../plugin/constants.js';
 import { getPayloadAuth } from '../plugin/index.js';
 import { getSignedCookie } from '../utils/plugin/get-signed-cookie.js';
@@ -57,6 +57,7 @@ export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
 
       const user = await payload.findByID({
         collection: userSlug as string,
+        overrideAccess: true,
         id: res.session.userId,
         depth: 0,
       });
@@ -70,7 +71,7 @@ export const getRefreshTokenEndpoint = (userSlug: string): Endpoint => {
       const cookieCacheFields = getFieldsToSign({
         collectionConfig: userCollection?.config,
         email: user.email,
-        user: user as TypedUser,
+        user: user as PayloadRequest['user'],
       });
 
       const responseData = {

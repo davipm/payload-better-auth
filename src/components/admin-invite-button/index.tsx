@@ -57,7 +57,7 @@ export function AdminInviteButton({ roles }: AdminInviteButtonProps) {
       <Button
         onClick={() => toggleModal(MODAL_SLUG)}
         type="button"
-        size="small"
+        size="medium"
         buttonStyle="pill"
         className="admin-invite-button"
       >
@@ -135,8 +135,8 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
       <Button
         onClick={onClose}
         type="button"
-        buttonStyle="icon-label"
-        size="small"
+        buttonStyle="secondary"
+        size="medium"
         className={`${baseClass}__close-button`}
         aria-label="Close"
       >
@@ -187,7 +187,7 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
             <Button
               type="button"
               size="medium"
-              buttonStyle="transparent"
+              buttonStyle="ghost"
               className={`${baseClass}__copy-button`}
               onClick={copyLink}
               disabled={!roleValue || pending !== null}

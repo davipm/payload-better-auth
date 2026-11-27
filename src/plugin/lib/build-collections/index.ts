@@ -76,19 +76,31 @@ export function buildCollections({
     const collectionSlug = getSchemaCollectionSlug(resolvedSchemas, modelKey);
     const builder = collectionBuilders[modelKey];
     if (!builder) continue;
-    collectionMap[collectionSlug] = builder({
+    const collection = builder({
       incomingCollections,
       pluginOptions,
       resolvedSchemas,
     });
+    // These collections store Better Auth records rather than editorial content.
+    // Keep Payload 3's schema behavior unless an existing collection explicitly opts in.
+    collectionMap[collectionSlug] = {
+      ...collection,
+      authorship: collection.authorship ?? false,
+      versions: collection.versions ?? false,
+    };
   }
 
   // Add adminInvitations collection as it's not in the collectionSchemaMap
   const adminInvitationsSlug = pluginOptions.adminInvitations?.slug ?? baseSlugs.adminInvitations;
-  collectionMap[adminInvitationsSlug] = buildAdminInvitationsCollection({
+  const adminInvitations = buildAdminInvitationsCollection({
     incomingCollections,
     pluginOptions,
   });
+  collectionMap[adminInvitationsSlug] = {
+    ...adminInvitations,
+    authorship: adminInvitations.authorship ?? false,
+    versions: adminInvitations.versions ?? false,
+  };
 
   // Then add incoming collections that don't conflict with required ones
   incomingCollections.forEach((c) => {

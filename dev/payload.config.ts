@@ -3,13 +3,14 @@ import { fileURLToPath } from 'node:url';
 import { betterAuthPlugin } from '@davipm/payload-better-auth';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { sharpTransformer } from '@payloadcms/transformer-sharp';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import { buildConfig } from 'payload';
-import sharp from 'sharp';
+import { buildConfig, type CollectionConfig } from 'payload';
 import { Projects } from './collections/projects.js';
 import { Users } from './collections/users.js';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
 import { payloadAuthOptions } from './lib/auth.js';
+import type {} from './payload-types.js';
 import { seed } from './seed.js';
 import { getServerSideURL } from './utils/get-url.js';
 
@@ -37,7 +38,7 @@ const buildConfigWithMemoryDB = async () => {
       user: 'users',
       importMap: { baseDir: path.resolve(dirname) },
     },
-    collections: [Projects, Users],
+    collections: [Projects as unknown as CollectionConfig, Users as unknown as CollectionConfig],
     cors: [getServerSideURL()].filter(Boolean),
     db: postgresAdapter({
       disableCreateDatabase: false,
@@ -53,7 +54,9 @@ const buildConfigWithMemoryDB = async () => {
     plugins: [betterAuthPlugin(payloadAuthOptions)],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
-    sharp,
+    upload: {
+      transformers: [sharpTransformer()],
+    },
     typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   });
 };

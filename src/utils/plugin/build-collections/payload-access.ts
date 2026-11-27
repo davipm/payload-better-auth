@@ -1,4 +1,4 @@
-import type { Access, FieldAccess, PayloadRequest } from 'payload';
+import type { Access, PayloadRequest } from 'payload';
 
 export type AdminRolesConfig = {
   adminRoles?: string[];
@@ -13,11 +13,14 @@ export type AdminOrCurrentUserUpdateConfig = AdminOrCurrentUserConfig & {
   userSlug: string;
 };
 
+type RequestAccess = (args: { req: PayloadRequest }) => boolean;
+
 export const isAdminWithRoles =
-  (config: AdminRolesConfig = {}): FieldAccess =>
+  (config: AdminRolesConfig = {}): RequestAccess =>
   ({ req }) => {
     const { adminRoles = ['admin'] } = config;
-    if (!req?.user || !req.user.role || !hasAdminRoles(adminRoles)({ req })) return false;
+    const user = req.user as (typeof req.user & { role?: string | string[] }) | null;
+    if (!user || !user.role || !hasAdminRoles(adminRoles)({ req })) return false;
     return true;
   };
 
@@ -37,16 +40,17 @@ export const isAdminOrCurrentUserWithRoles =
 export const hasAdminRoles = (adminRoles: string[]) => {
   return ({ req }: { req: PayloadRequest }): boolean => {
     let userRoles: string[] = [];
-    if (Array.isArray(req.user?.role)) {
-      userRoles = req.user.role;
-    } else if (typeof req.user?.role === 'string') {
-      if (req.user.role.includes(',')) {
-        userRoles = req.user.role
+    const user = req.user as (typeof req.user & { role?: string | string[] }) | null;
+    if (Array.isArray(user?.role)) {
+      userRoles = user.role;
+    } else if (typeof user?.role === 'string') {
+      if (user.role.includes(',')) {
+        userRoles = user.role
           .split(',')
           .map((r: string) => r.trim())
           .filter(Boolean);
-      } else if (req.user.role) {
-        userRoles = [req.user.role];
+      } else if (user.role) {
+        userRoles = [user.role];
       }
     }
     if (!userRoles) return false;
@@ -59,7 +63,7 @@ export const isAdminOrCurrentUserUpdateWithAllowedFields = (
 ): Access => {
   return async ({ req, id, data }) => {
     const { adminRoles = ['admin'], allowedFields = [], userSlug, idField = 'id' } = config;
-    const user = req.user;
+    const user = req.user as (typeof req.user & { [key: string]: any }) | null;
 
     if (isAdminWithRoles({ adminRoles })({ req })) return true;
 
