@@ -19,6 +19,7 @@
       "!src/components/ui",
       "!src/migrations",
       "!tests/dev/migrations",
+      "!dev/migrations",
       "!src/seed",
       "!public",
       "!dev/app/(payload)/admin/importMap.js",

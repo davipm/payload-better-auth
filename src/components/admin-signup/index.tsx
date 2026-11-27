@@ -57,7 +57,7 @@ async function AdminSignup({
   const {
     locale,
     permissions,
-    req,
+    // req,
     req: {
       i18n,
       user,
