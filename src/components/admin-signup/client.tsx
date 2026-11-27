@@ -1,151 +1,103 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast, useConfig, useTranslation } from '@payloadcms/ui';
-import { usernameClient } from 'better-auth/client/plugins';
-import { createAuthClient } from 'better-auth/react';
-import type { LoginWithUsernameOptions } from 'payload';
-import type React from 'react';
-import { useState } from 'react';
+import { toast, useTranslation } from '@payloadcms/ui';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import type { LoginMethod } from '../../plugin/index.js';
-import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
 import { createSignupSchema } from '../form/validation.js';
-import { AlternativeMethods, LoginFormProvider } from '../login-form/index.js';
-
-interface AdminSignupClientProps {
-  adminInviteToken: string;
-  loginMethods: LoginMethod[];
-  searchParams: { [key: string]: string | string[] | undefined };
-  loginWithUsername: false | LoginWithUsernameOptions;
-  loginIdentifiers: ('email' | 'username')[];
-  plugins?: {
-    username?: boolean;
-    passkey?: boolean;
-    magicLink?: boolean;
-  };
-  baseURL?: string;
-  basePath?: string;
-}
+import {
+  AlternativeMethods,
+  LoginFormProvider,
+  type LoginFormProviderProps,
+  useLoginForm,
+} from '../login-form/index.js';
 
 const baseClass = 'admin-signup';
+const VERIFY_MESSAGE = 'Check your email for a verification link';
+
+export type AdminSignupClientProps = Omit<LoginFormProviderProps, 'children' | 'isSignup'> & {
+  loginWithUsername: boolean;
+  requireUsername: boolean;
+};
 
 interface SignupFormProps {
-  adminInviteToken: string;
-  searchParams: { [key: string]: string | string[] | undefined };
-  loginWithUsername: false | LoginWithUsernameOptions;
-  requireEmailVerification: boolean;
-  setRequireEmailVerification: React.Dispatch<React.SetStateAction<boolean>>;
-  baseURL?: string;
-  basePath?: string;
+  loginWithUsername: boolean;
+  requireUsername: boolean;
+  onVerificationRequired: () => void;
 }
 
 function SignupForm({
-  searchParams,
   loginWithUsername,
-  requireEmailVerification,
-  setRequireEmailVerification,
-  adminInviteToken,
-  baseURL,
-  basePath,
+  requireUsername,
+  onVerificationRequired,
 }: SignupFormProps) {
-  const {
-    config: {
-      routes: { admin: adminRoute },
-    },
-  } = useConfig();
   const { t } = useTranslation();
-  const redirectUrl = getSafeRedirect(searchParams?.redirect as string, adminRoute);
-  const authClient = createAuthClient({
-    baseURL,
-    basePath,
-    plugins: [usernameClient()],
-  });
+  const { authClient, redirectUrl, adminInviteToken } = useLoginForm();
 
-  const requireUsername = Boolean(
-    loginWithUsername && typeof loginWithUsername === 'object' && loginWithUsername.requireUsername,
+  const signupSchema = useMemo(
+    () => createSignupSchema({ t, requireUsername, requireConfirmPassword: true }),
+    [t, requireUsername],
   );
-
-  const requireConfirmPassword = true;
-  const signupSchema = createSignupSchema({
-    t,
-    requireUsername,
-    requireConfirmPassword,
-  });
 
   const form = useForm({
     defaultValues: {
       name: '',
       email: '',
       password: '',
-      ...(requireConfirmPassword ? { confirmPassword: '' } : {}),
+      confirmPassword: '',
       ...(loginWithUsername ? { username: '' } : {}),
     },
     resolver: zodResolver(signupSchema),
     mode: 'onSubmit',
   });
 
-  const onSubmit = form.handleSubmit(async (value) => {
-    const { name, email, username, password } = value;
+  const onSubmit = form.handleSubmit(async ({ name, email, username, password }) => {
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name,
+        email,
+        password,
+        callbackURL: redirectUrl,
+        ...(loginWithUsername && username ? { username } : {}),
+        fetchOptions: { query: { adminInviteToken } },
+      });
 
-    const { data, error } = await authClient.signUp.email({
-      name,
-      email,
-      password,
-      callbackURL: redirectUrl,
-      ...(loginWithUsername && username ? { username } : {}),
-      fetchOptions: {
-        query: {
-          adminInviteToken,
-        },
-      },
-    });
+      if (
+        error?.code === 'EMAIL_NOT_VERIFIED' ||
+        (data && !data.token && !data.user.emailVerified)
+      ) {
+        toast.success(VERIFY_MESSAGE);
+        onVerificationRequired();
+        return;
+      }
 
-    if (
-      (error && error.code === 'EMAIL_NOT_VERIFIED') ||
-      (!error && !data.token && !data?.user.emailVerified)
-    ) {
-      setRequireEmailVerification(true);
-      toast.success('Check your email for a verification link');
-      return;
-    }
+      if (error) {
+        toast.error(error.message || t('error:unknown'));
+        return;
+      }
 
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    if (data?.token) {
       toast.success(t('general:success'));
-      window.location.href = redirectUrl;
+      // Hard navigation: the session cookie just changed, so drop cached RSC state
+      window.location.assign(redirectUrl);
+    } catch {
+      toast.error(t('error:unknown'));
     }
   });
-
-  if (requireEmailVerification) {
-    return (
-      <FormHeader
-        heading="Please verify your email"
-        description={'Check your email for a verification link.'}
-        style={{ textAlign: 'center' }}
-      />
-    );
-  }
 
   return (
     <Form className={baseClass} form={form} onSubmit={onSubmit}>
       <FormInputWrap className="login__form" style={{ marginBottom: '1.5rem' }}>
         <TextField
           name="name"
-          type="name"
+          type="text"
           className="text"
           autoComplete="name"
-          label="Name"
+          label={t('general:name')}
           required
         />
-
         <TextField
           name="email"
           type="email"
@@ -157,7 +109,7 @@ function SignupForm({
         {loginWithUsername && (
           <TextField
             name="username"
-            type="name"
+            type="text"
             className="text"
             autoComplete="username"
             label={t('authentication:username')}
@@ -168,6 +120,7 @@ function SignupForm({
           name="password"
           type="password"
           className="password"
+          autoComplete="new-password"
           label={t('authentication:newPassword')}
           required
         />
@@ -175,6 +128,7 @@ function SignupForm({
           name="confirmPassword"
           type="password"
           className="password"
+          autoComplete="new-password"
           label={t('authentication:confirmPassword')}
           required
         />
@@ -186,51 +140,32 @@ function SignupForm({
 }
 
 export function AdminSignupClient({
-  adminInviteToken,
-  searchParams,
-  loginMethods,
   loginWithUsername,
-  loginIdentifiers,
-  plugins,
-  baseURL,
-  basePath,
+  requireUsername,
+  ...providerProps
 }: AdminSignupClientProps) {
-  const {
-    config: {
-      routes: { admin: adminRoute },
-    },
-  } = useConfig();
-  const [requireEmailVerification, setRequireEmailVerification] = useState<boolean>(false);
-  const redirectUrl = getSafeRedirect(searchParams?.redirect as string, adminRoute);
+  const [verificationSent, setVerificationSent] = useState(false);
+
+  if (verificationSent) {
+    return (
+      <FormHeader
+        heading="Please verify your email"
+        description={`${VERIFY_MESSAGE}.`}
+        style={{ textAlign: 'center' }}
+      />
+    );
+  }
 
   return (
-    <>
-      {loginMethods.includes('emailPassword') && (
+    <LoginFormProvider {...providerProps} isSignup>
+      {providerProps.loginMethods.includes('emailPassword') && (
         <SignupForm
-          adminInviteToken={adminInviteToken}
-          searchParams={searchParams}
           loginWithUsername={loginWithUsername}
-          requireEmailVerification={requireEmailVerification}
-          setRequireEmailVerification={setRequireEmailVerification}
-          baseURL={baseURL}
-          basePath={basePath}
+          requireUsername={requireUsername}
+          onVerificationRequired={() => setVerificationSent(true)}
         />
       )}
-      {!requireEmailVerification && (
-        <LoginFormProvider
-          loginMethods={loginMethods}
-          redirectUrl={redirectUrl}
-          adminRoute={adminRoute}
-          baseURL={baseURL}
-          basePath={basePath}
-          isSignup={true}
-          loginIdentifiers={loginIdentifiers}
-          plugins={plugins}
-          adminInviteToken={adminInviteToken}
-        >
-          <AlternativeMethods />
-        </LoginFormProvider>
-      )}
-    </>
+      <AlternativeMethods />
+    </LoginFormProvider>
   );
 }

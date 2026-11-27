@@ -7,6 +7,7 @@ import type { PayloadAuthOptions } from '../../plugin/index.js';
 import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
 import { checkPluginExists } from '../../utils/plugin/check-plugin-exists.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
+import type { LoginIdentifier } from '../login-form/context.js';
 import { Logo } from '../logo.js';
 import { AdminLoginClient } from './client.js';
 
@@ -15,6 +16,20 @@ export const loginBaseClass = 'login';
 interface AdminLoginProps extends AdminViewServerProps {
   adminInvitationsSlug: string;
   pluginOptions: PayloadAuthOptions;
+}
+
+const firstParam = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
+
+function resolveLoginIdentifiers(
+  hasUsernamePlugin: boolean,
+  loginWithUsername?: boolean | { allowEmailLogin?: boolean },
+): LoginIdentifier[] {
+  if (!hasUsernamePlugin || !loginWithUsername) return ['email'];
+  if (typeof loginWithUsername === 'object' && loginWithUsername.allowEmailLogin === false) {
+    return ['username'];
+  }
+  return ['email', 'username'];
 }
 
 /**
@@ -62,37 +77,28 @@ export default async function AdminLogin({
   adminInvitationsSlug,
 }: AdminLoginProps) {
   const { locale, permissions, req } = initPageResult;
-  const {
-    i18n,
-    payload: { config, collections },
-    payload,
-    user,
-  } = req;
+  const { i18n, payload, user } = req;
+  const { config, collections } = payload;
 
   const {
     admin: { components: { afterLogin, beforeLogin } = {}, user: userSlug, autoLogin },
     routes: { admin: adminRoute },
   } = config;
 
-  const adminRole = pluginOptions.users?.defaultAdminRole ?? defaults.adminRole;
-
-  // searchParams.redirect can be string | string[]; normalize before sanitizing
-  const rawRedirect = Array.isArray(searchParams?.redirect)
-    ? searchParams.redirect[0]
-    : searchParams?.redirect;
-  const redirectUrl = getSafeRedirect(rawRedirect ?? '', adminRoute);
-
+  const redirectUrl = getSafeRedirect(firstParam(searchParams?.redirect) ?? '', adminRoute);
   if (user) redirect(redirectUrl);
 
-  const adminCount = await payload.count({
+  // First-run bootstrap: no admin yet → send to admin signup with a (reused) invite token
+  const adminRole = pluginOptions.users?.defaultAdminRole ?? defaults.adminRole;
+  const { totalDocs: adminCount } = await payload.count({
     collection: userSlug,
     overrideAccess: true,
     where: { role: { equals: adminRole } },
   });
 
-  if (adminCount.totalDocs === 0) {
+  if (adminCount === 0) {
     const token = await getOrCreateAdminInviteToken(payload, adminInvitationsSlug, adminRole);
-    redirect(`${adminRoute}${adminRoutes.adminSignup}?token=${token}`);
+    redirect(`${adminRoute}${adminRoutes.adminSignup}?token=${encodeURIComponent(token)}`);
   }
 
   // Drop the first afterLogin entry (the custom login redirect component) to avoid an infinite loop
@@ -111,14 +117,12 @@ export default async function AdminLogin({
     magicLink: checkPluginExists(baOptions, supportedBAPluginIds.magicLink),
   };
 
-  const loginWithUsername = collections?.[userSlug]?.config.auth.loginWithUsername;
-  const loginIdentifiers: ('email' | 'username')[] =
-    !plugins.username || !loginWithUsername
-      ? ['email']
-      : typeof loginWithUsername === 'object' && loginWithUsername.allowEmailLogin === false
-        ? ['username']
-        : ['email', 'username'];
+  const loginIdentifiers = resolveLoginIdentifiers(
+    plugins.username,
+    collections?.[userSlug]?.config.auth.loginWithUsername,
+  );
 
+  // `user` is always null here (redirected above), so it's omitted
   const serverProps = {
     i18n,
     locale,
@@ -127,7 +131,6 @@ export default async function AdminLogin({
     permissions,
     searchParams,
     server,
-    user: user ?? undefined,
   } satisfies ServerProps;
 
   return (

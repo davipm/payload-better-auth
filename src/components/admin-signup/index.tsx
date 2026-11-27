@@ -1,19 +1,20 @@
 import { MinimalTemplate } from '@payloadcms/ui/rsc';
-import type { AdminViewServerProps, Payload } from 'payload';
+import { redirect } from 'next/navigation.js';
+import type { AdminViewServerProps, Payload, ServerProps } from 'payload';
+import type { ReactNode } from 'react';
 import { z } from 'zod';
-import { supportedBAPluginIds } from '../../plugin/constants.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';
-import { checkPluginExists } from '../../utils/plugin/check-plugin-exists.js';
+import { getSafeRedirect } from '../../utils/get-safe-redirect.js';
+import { firstParam, getLoginPlugins, resolveLoginIdentifiers } from '../../utils/login-config.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Logo } from '../logo.js';
 import { AdminSignupClient } from './client.js';
 
-const baseClass = 'login admin-signup'; // reuse core login styles
+const rootClass = 'login'; // reuse core login styles
+const baseClass = 'admin-signup';
 
-const searchParamsSchema = z.object({
-  token: z.string().min(1),
-});
+const tokenSchema = z.string().min(1).max(256);
 
 interface AdminSignupProps extends AdminViewServerProps {
   adminInvitationsSlug: string;
@@ -24,10 +25,10 @@ async function isValidInvite(payload: Payload, slug: string, token: string) {
   try {
     const { totalDocs } = await payload.count({
       collection: slug,
-      where: { token: { equals: token } },
-      // add if your invitations collection has an expiry field:
-      // and: [{ expiresAt: { greater_than: new Date().toISOString() } }]
       overrideAccess: true,
+      // With an expiry field:
+      // where: { and: [{ token: { equals: token } }, { expiresAt: { greater_than: new Date().toISOString() } }] },
+      where: { token: { equals: token } },
     });
     return totalDocs > 0;
   } catch (err) {
@@ -46,7 +47,7 @@ function InvalidInvite() {
   );
 }
 
-async function AdminSignup({
+export default async function AdminSignup({
   initPageResult,
   params,
   searchParams,
@@ -54,76 +55,66 @@ async function AdminSignup({
   pluginOptions,
   adminInvitationsSlug,
 }: AdminSignupProps) {
+  const { locale, permissions, req } = initPageResult;
+  const { i18n, user, headers, payload } = req;
+  const { collections, config } = payload;
   const {
+    admin: { user: userSlug },
+    routes: { admin: adminRoute },
+  } = config;
+
+  const redirectUrl = getSafeRedirect(firstParam(searchParams?.redirect) ?? '', adminRoute);
+
+  // Signed-in users have nothing to sign up for (same behavior as the login view)
+  if (user) redirect(redirectUrl);
+
+  // `user` is always null past the redirect, so it's omitted
+  const serverProps = {
+    i18n,
     locale,
+    params,
+    payload,
     permissions,
-    // req,
-    req: {
-      i18n,
-      user,
-      headers,
-      payload,
-      payload: {
-        collections,
-        config: {
-          admin: { user: userSlug },
-        },
-      },
-    },
-  } = initPageResult;
+    searchParams,
+    server,
+  } satisfies ServerProps;
 
-  const parsed = searchParamsSchema.safeParse(searchParams);
-  const token = parsed.success ? parsed.data.token : null;
-  const validInvite = token !== null && (await isValidInvite(payload, adminInvitationsSlug, token));
-
-  const baAuthOptions = pluginOptions.betterAuthOptions ?? {};
-  const hasPlugin = (id: string) => checkPluginExists(baAuthOptions, id);
-
-  const plugins = {
-    username: hasPlugin(supportedBAPluginIds.username),
-    passkey: hasPlugin(supportedBAPluginIds.passkey),
-    magicLink: hasPlugin(supportedBAPluginIds.magicLink),
-  };
-
-  const rawLoginWithUsername = collections?.[userSlug]?.config.auth.loginWithUsername;
-  const loginWithUsername = plugins.username ? (rawLoginWithUsername ?? false) : false;
-
-  const loginIdentifiers: ('email' | 'username')[] = !loginWithUsername
-    ? ['email']
-    : typeof loginWithUsername === 'object' && loginWithUsername.allowEmailLogin === false
-      ? ['username']
-      : ['email', 'username'];
-
-  return (
-    <MinimalTemplate className={baseClass}>
-      <div className={`${baseClass.split(' ')[0]}__brand admin-signup__brand`}>
-        <Logo
-          i18n={i18n}
-          locale={locale}
-          params={params}
-          payload={payload}
-          permissions={permissions}
-          searchParams={searchParams}
-          server={server}
-          user={user ?? undefined}
-        />
+  const layout = (children: ReactNode) => (
+    <MinimalTemplate className={`${rootClass} ${baseClass}`}>
+      <div className={`${rootClass}__brand ${baseClass}__brand`}>
+        <Logo {...serverProps} />
       </div>
-      {validInvite && token ? (
-        <AdminSignupClient
-          adminInviteToken={token}
-          loginMethods={pluginOptions.admin?.loginMethods ?? []}
-          searchParams={searchParams ?? {}}
-          loginWithUsername={loginWithUsername}
-          loginIdentifiers={loginIdentifiers}
-          plugins={plugins}
-          baseURL={resolveBaseURL(baAuthOptions.baseURL, headers)}
-          basePath={baAuthOptions.basePath}
-        />
-      ) : (
-        <InvalidInvite />
-      )}
+      {children}
     </MinimalTemplate>
   );
-}
 
-export default AdminSignup;
+  const parsed = tokenSchema.safeParse(firstParam(searchParams?.token));
+  if (!parsed.success || !(await isValidInvite(payload, adminInvitationsSlug, parsed.data))) {
+    return layout(<InvalidInvite />);
+  }
+
+  const baOptions = pluginOptions.betterAuthOptions ?? {};
+  const plugins = getLoginPlugins(baOptions);
+
+  // Username options are only relevant when the BA username plugin is installed
+  const usernameOptions = plugins.username
+    ? collections?.[userSlug]?.config.auth.loginWithUsername
+    : undefined;
+
+  return layout(
+    <AdminSignupClient
+      adminInviteToken={parsed.data}
+      loginMethods={pluginOptions.admin?.loginMethods ?? []}
+      loginIdentifiers={resolveLoginIdentifiers(plugins.username, usernameOptions)}
+      loginWithUsername={Boolean(usernameOptions)}
+      requireUsername={
+        typeof usernameOptions === 'object' && Boolean(usernameOptions.requireUsername)
+      }
+      plugins={plugins}
+      redirectUrl={redirectUrl}
+      adminRoute={adminRoute}
+      baseURL={resolveBaseURL(baOptions.baseURL, headers)}
+      basePath={baOptions.basePath}
+    />,
+  );
+}

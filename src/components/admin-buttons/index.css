@@ -2,33 +2,29 @@
   order: 10;
 }
 
-.impersonate-button,
-.revoke-sessions-button,
-.ban-button,
-.unban-button {
+:is(.impersonate-button, .revoke-sessions-button, .ban-button, .unban-button) {
   display: inline-flex;
   align-items: center;
   margin-block: 0;
   padding-block: 0.23rem;
   text-wrap: nowrap;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+:is(.ban-button, .revoke-sessions-button) {
+  color: var(--color-text-danger);
+
+  &:not([disabled]):hover {
+    color: var(--color-text-ondanger);
+    background-color: var(--color-bg-danger);
+  }
 }
 
 .ban-button {
   background-color: var(--color-bg-danger-tertiary);
-  color: var(--color-text-danger);
   border: 1px solid var(--color-border-danger);
-}
-
-.ban-button:hover {
-  color: var(--color-text-ondanger);
-  background-color: var(--color-bg-danger);
-}
-
-.revoke-sessions-button {
-  color: var(--color-text-danger);
-}
-
-.revoke-sessions-button:hover {
-  color: var(--color-text-ondanger);
-  background-color: var(--color-bg-danger);
 }

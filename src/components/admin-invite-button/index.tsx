@@ -20,6 +20,7 @@ import './index.css';
 
 const MODAL_SLUG = 'admin-invite-modal';
 const baseClass = MODAL_SLUG;
+const EMAIL_RE = /^\S+@\S+\.\S+$/;
 
 type Pending = 'email' | 'link' | null;
 
@@ -35,8 +36,28 @@ async function post<T = unknown>(url: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.message ?? `Request failed (${res.status})`);
+  if (!res.ok) {
+    // Payload errors come back as { errors: [{ message }] }
+    throw new Error(
+      data?.errors?.[0]?.message ?? data?.message ?? `Request failed (${res.status})`,
+    );
+  }
   return data as T;
+}
+
+// Safari drops the user gesture after an `await`, so writeText() fails if the link
+// must be fetched first. Handing ClipboardItem the pending promise keeps the write
+// inside the click gesture.
+async function writeClipboard(text: Promise<string>) {
+  if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': text.then((t) => new Blob([t], { type: 'text/plain' })),
+      }),
+    ]);
+    return;
+  }
+  await navigator.clipboard.writeText(await text);
 }
 
 export function AdminInviteButton({ roles }: AdminInviteButtonProps) {
@@ -89,8 +110,11 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
 
   const endpoint = (path: string) => `${serverURL}${apiRoute}/${userSlug}${path}`;
   const roleValue = role ? String(role.value) : undefined;
-  const canSend = Boolean(roleValue && email.trim());
+  const emailValid = EMAIL_RE.test(email.trim());
+  const canSend = Boolean(roleValue && emailValid);
+  const busy = pending !== null;
 
+  // Reuses the generated link while the selected role hasn't changed
   const getLink = async (value: string) => {
     if (invite?.role === value) return invite.link;
     const { inviteLink } = await post<{ inviteLink: string }>(
@@ -101,6 +125,8 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
     return inviteLink;
   };
 
+  // task() runs synchronously up to its first await, so clipboard writes
+  // started inside it still count as part of the click gesture.
   const run = async (kind: Exclude<Pending, null>, task: () => Promise<string>) => {
     setPending(kind);
     try {
@@ -114,8 +140,8 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
   };
 
   const sendEmail = () => {
-    if (!roleValue || !canSend) return;
-    return run('email', async () => {
+    if (!roleValue || !canSend || busy) return;
+    void run('email', async () => {
       const link = await getLink(roleValue);
       await post(endpoint(adminEndpoints.sendInvite), { email: email.trim(), link });
       return 'Invite sent successfully';
@@ -123,9 +149,9 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
   };
 
   const copyLink = () => {
-    if (!roleValue) return;
-    return run('link', async () => {
-      await navigator.clipboard.writeText(await getLink(roleValue));
+    if (!roleValue || busy) return;
+    void run('link', async () => {
+      await writeClipboard(getLink(roleValue));
       return 'Invite link copied to clipboard';
     });
   };
@@ -179,7 +205,7 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
           </div>
 
           <div className={`${baseClass}__buttons`}>
-            <Button type="submit" disabled={!canSend || pending !== null}>
+            <Button type="submit" disabled={!canSend || busy}>
               {pending === 'email' && <LoaderCircle className="animate-spin" />}
               Send Email
             </Button>
@@ -190,7 +216,7 @@ function InviteForm({ roles, onClose }: AdminInviteButtonProps & { onClose: () =
               buttonStyle="ghost"
               className={`${baseClass}__copy-button`}
               onClick={copyLink}
-              disabled={!roleValue || pending !== null}
+              disabled={!roleValue || busy}
             >
               {pending === 'link' ? (
                 <LoaderCircle strokeWidth={1.5} className="animate-spin" />
