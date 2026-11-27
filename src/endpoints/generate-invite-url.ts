@@ -85,10 +85,7 @@ export const getGenerateInviteUrlEndpoint = ({
         );
       } catch (error) {
         req.payload.logger.error({ err: error, msg: 'Failed to generate admin invite URL' });
-        return Response.json(
-          { message: 'Error generating invite link' },
-          { status: 500 },
-        );
+        return Response.json({ message: 'Error generating invite link' }, { status: 500 });
       }
     },
   };

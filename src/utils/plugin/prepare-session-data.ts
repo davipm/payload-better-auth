@@ -12,7 +12,7 @@ export async function prepareUser({
   const newUser = getFieldsToSign({
     collectionConfig: userCollection,
     email: user.email,
-      user: {
+    user: {
       ...user,
       id: user.id,
       collection: userCollection.slug,
@@ -32,7 +32,7 @@ export async function prepareSession({
   const filteredSession = getFieldsToSign({
     collectionConfig: sessionCollection,
     email: '',
-      user: {
+    user: {
       ...session,
       id: session.id,
       collection: sessionCollection.slug,

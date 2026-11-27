@@ -47,7 +47,7 @@
     "db:reset": "bun run dev:payload migrate:reset",
     "db:fresh": "bun run dev:payload migrate:fresh",
     "lint": "biome check",
-    "format": "biome format --write",
+    "format": "biome check --write",
     "test": "bun test:int && bun test:e2e",
     "test:e2e": "playwright test",
     "test:int": "vitest"
@@ -67,6 +67,7 @@
     "@payloadcms/richtext-lexical": "4.0.0-beta.12",
     "@payloadcms/transformer-sharp": "^4.0.0-beta.12",
     "@payloadcms/ui": "4.0.0-beta.12",
+    "@payloadpack/theme": "^0.3.9",
     "@playwright/test": "1.65.1",
     "@swc-node/register": "1.12.1",
     "@swc/cli": "0.8.2",

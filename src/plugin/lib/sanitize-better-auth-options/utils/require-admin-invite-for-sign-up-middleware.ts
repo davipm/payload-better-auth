@@ -1,8 +1,8 @@
 import type { Where } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { z } from 'zod';
-import { baseSlugs } from '../../../constants.js';
 import type { PayloadAuthOptions, SanitizedBetterAuthOptions } from '../../../../types/plugin.js';
+import { baseSlugs } from '../../../constants.js';
 
 const throwUnauthorizedError = () => {
   throw new APIError('UNAUTHORIZED', {

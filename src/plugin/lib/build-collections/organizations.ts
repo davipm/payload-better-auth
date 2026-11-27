@@ -1,7 +1,5 @@
 import type { CollectionConfig, JoinField } from 'payload';
 import type { Organization } from '../../../types/generated-types.js';
-import { baModelFieldKeys, baModelKey } from '../../constants.js';
-import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
 import type { BuildCollectionProps, FieldOverrides } from '../../../types/plugin.js';
 import {
   assertAllSchemaFields,
@@ -9,6 +7,8 @@ import {
   getSchemaFieldName,
 } from '../../../utils/plugin/build-collections/collection-schema.js';
 import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
+import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
+import { baModelFieldKeys, baModelKey } from '../../constants.js';
 
 export function buildOrganizationsCollection({
   incomingCollections,

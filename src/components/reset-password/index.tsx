@@ -1,5 +1,5 @@
-import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { Button, Link, Translation } from '@payloadcms/ui';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
 import { z } from 'zod';

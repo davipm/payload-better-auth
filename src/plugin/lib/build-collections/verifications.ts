@@ -1,7 +1,5 @@
 import type { CollectionConfig } from 'payload';
 import type { Verification } from '../../../types/generated-types.js';
-import { baModelKey } from '../../constants.js';
-import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../types/plugin.js';
 import {
   assertAllSchemaFields,
@@ -9,6 +7,8 @@ import {
   getSchemaFieldName,
 } from '../../../utils/plugin/build-collections/collection-schema.js';
 import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
+import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
+import { baModelKey } from '../../constants.js';
 
 export function buildVerificationsCollection({
   incomingCollections,

@@ -48,10 +48,7 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
         req.payload.logger.error(
           'Send admin invite email function not configured, please add the function to the betterAuthPlugin options.',
         );
-        return Response.json(
-          { message: 'Send invite email function not found' },
-          { status: 500 },
-        );
+        return Response.json({ message: 'Send invite email function not found' }, { status: 500 });
       }
 
       try {
@@ -62,10 +59,7 @@ export const getSendInviteUrlEndpoint = (pluginOptions: PayloadAuthOptions): End
         });
 
         if (!res.success) {
-          return Response.json(
-            { message: res.message },
-            { status: 500 },
-          );
+          return Response.json({ message: res.message }, { status: 500 });
         }
 
         return Response.json(

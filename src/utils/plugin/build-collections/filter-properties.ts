@@ -38,21 +38,11 @@ export const TEXT_FIELD_KEYS = [
   'hasMany',
 ] as const;
 
-export const NUMBER_FIELD_KEYS = [
-  ...COMMON_FIELD_KEYS,
-  'max',
-  'min',
-  'hasMany',
-] as const;
+export const NUMBER_FIELD_KEYS = [...COMMON_FIELD_KEYS, 'max', 'min', 'hasMany'] as const;
 
-export const DATE_FIELD_KEYS = [
-  ...COMMON_FIELD_KEYS,
-  'timezone',
-] as const;
+export const DATE_FIELD_KEYS = [...COMMON_FIELD_KEYS, 'timezone'] as const;
 
-export const CHECKBOX_FIELD_KEYS = [
-  ...COMMON_FIELD_KEYS,
-] as const;
+export const CHECKBOX_FIELD_KEYS = [...COMMON_FIELD_KEYS] as const;
 
 export const RELATIONSHIP_FIELD_KEYS = [
   ...COMMON_FIELD_KEYS,

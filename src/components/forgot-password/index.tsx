@@ -1,5 +1,5 @@
-import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { Button, Translation } from '@payloadcms/ui';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import Link from 'next/link.js';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';

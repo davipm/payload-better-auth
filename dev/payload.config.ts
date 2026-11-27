@@ -4,6 +4,7 @@ import { betterAuthPlugin } from '@davipm/payload-better-auth';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { sharpTransformer } from '@payloadcms/transformer-sharp';
+import { themePlugin } from '@payloadpack/theme';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { buildConfig, type CollectionConfig } from 'payload';
 import { Projects } from './collections/projects.js';
@@ -51,7 +52,14 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload);
     },
-    plugins: [betterAuthPlugin(payloadAuthOptions)],
+    plugins: [
+      betterAuthPlugin(payloadAuthOptions),
+      themePlugin({
+        character: 'studio',
+        palette: 'neutral',
+        panel: false,
+      }),
+    ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
     upload: {

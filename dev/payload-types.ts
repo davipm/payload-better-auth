@@ -123,10 +123,14 @@ export interface Config {
     'admin-invitations': AdminInvitationsSelect<false> | AdminInvitationsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
-    'payload-llm-instructions': PayloadLlmInstructionsSelect<false> | PayloadLlmInstructionsSelect<true>;
+    'payload-llm-instructions':
+      | PayloadLlmInstructionsSelect<false>
+      | PayloadLlmInstructionsSelect<true>;
   };
   db: {
     defaultIDType: number;
@@ -1017,7 +1021,13 @@ export interface CollectionsWidget {
 export interface CollectionQueryWidget {
   data?: {
     title?: string | null;
-    relatedCollection: 'users' | 'sessions' | 'accounts' | 'verifications' | 'admin-invitations' | 'projects';
+    relatedCollection:
+      | 'users'
+      | 'sessions'
+      | 'accounts'
+      | 'verifications'
+      | 'admin-invitations'
+      | 'projects';
     where?:
       | {
           [k: string]: unknown;
@@ -1040,7 +1050,8 @@ export interface CollectionQueryWidget {
 export interface ActivityWidget {
   data?: {
     excludedCollections?:
-      ('users' | 'sessions' | 'accounts' | 'verifications' | 'admin-invitations' | 'projects')[] | null;
+      | ('users' | 'sessions' | 'accounts' | 'verifications' | 'admin-invitations' | 'projects')[]
+      | null;
   };
   width: 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
@@ -1097,7 +1108,8 @@ export interface SerializedLineBreakNode {
   version: number;
 }
 
-export interface SerializedParagraphNode<TChildren> extends SerializedLexicalElementBase<TChildren> {
+export interface SerializedParagraphNode<TChildren>
+  extends SerializedLexicalElementBase<TChildren> {
   type: 'paragraph';
   textFormat: number;
   textStyle: string;
@@ -1137,7 +1149,6 @@ export interface LexicalRichText<TNode> {
     version: number;
   };
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

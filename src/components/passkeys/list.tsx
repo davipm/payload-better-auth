@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@payloadcms/ui';
-import { Fingerprint, Trash } from '../icons.js';
 import type { PasskeyWithId } from '../../types/passkeys.js';
+import { Fingerprint, Trash } from '../icons.js';
 
 interface PasskeyListProps {
   passkeys: PasskeyWithId[];

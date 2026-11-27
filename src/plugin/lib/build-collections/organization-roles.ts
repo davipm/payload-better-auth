@@ -1,14 +1,13 @@
 import type { CollectionConfig } from 'payload';
 import type { OrganizationRole } from '../../../types/generated-types.js';
-import { baModelKey } from '../../constants.js';
-import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
 import type { BuildCollectionProps, FieldOverrides } from '../../../types/plugin.js';
 import {
   assertAllSchemaFields,
   getSchemaCollectionSlug,
-  getSchemaFieldName,
 } from '../../../utils/plugin/build-collections/collection-schema.js';
 import { getCollectionFields } from '../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
+import { getAdminAccess } from '../../../utils/plugin/get-admin-access.js';
+import { baModelKey } from '../../constants.js';
 
 export function buildOrganizationRolesCollection({
   incomingCollections,
@@ -44,15 +43,23 @@ export function buildOrganizationRolesCollection({
     additionalProperties: fieldOverrides,
   });
 
+  const titleFieldKey = ['role', 'name', 'title', 'label', 'permission'].find(
+    (key) => organizationRolesSchema.fields[key],
+  );
+  const firstSchemaField = Object.entries(organizationRolesSchema.fields)[0];
+  const titleField = titleFieldKey
+    ? (organizationRolesSchema.fields[titleFieldKey].fieldName ?? titleFieldKey)
+    : (firstSchemaField?.[1].fieldName ?? firstSchemaField?.[0] ?? 'id');
+
   let organizationRolesCollection: CollectionConfig = {
     ...existingOrganizationRolesCollection,
     slug: organizationRolesSlug,
     admin: {
       hidden: pluginOptions.hidePluginCollections ?? false,
-      useAsTitle: getSchemaFieldName(resolvedSchemas, baModelKey.organizationRole, 'role'),
       description: 'Organization roles are the roles that are available for an organization.',
       group: pluginOptions?.collectionAdminGroup ?? 'Auth',
       ...existingOrganizationRolesCollection?.admin,
+      useAsTitle: titleField,
     },
     access: {
       ...getAdminAccess(pluginOptions),

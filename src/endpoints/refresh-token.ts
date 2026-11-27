@@ -1,6 +1,6 @@
 import type { GenericEndpointContext } from 'better-auth';
 import { setCookieCache } from 'better-auth/cookies';
-import { type Endpoint, getFieldsToSign, refreshOperation, type PayloadRequest } from 'payload';
+import { type Endpoint, getFieldsToSign, type PayloadRequest, refreshOperation } from 'payload';
 import { adminEndpoints } from '../plugin/constants.js';
 import { getPayloadAuth } from '../plugin/index.js';
 import { getSignedCookie } from '../utils/plugin/get-signed-cookie.js';

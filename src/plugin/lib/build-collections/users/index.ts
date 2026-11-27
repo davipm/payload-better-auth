@@ -1,14 +1,10 @@
 import type { CollectionConfig, JoinField, UIField } from 'payload';
-import type { User } from '../../../../types/generated-types.js';
-import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import {
-  baModelFieldKeys,
-  baModelKey,
-  defaults,
-  supportedBAPluginIds,
-} from '../../../constants.js';
-import { checkPluginExists } from '../../../../utils/plugin/check-plugin-exists.js';
-import { getAllRoleOptions } from '../../../../utils/plugin/get-all-roles.js';
+  getGenerateInviteUrlEndpoint,
+  getRefreshTokenEndpoint,
+  getSendInviteUrlEndpoint,
+} from '../../../../endpoints/index.js';
+import type { User } from '../../../../types/generated-types.js';
 import type { BuildCollectionProps, FieldOverrides, FieldRule } from '../../../../types/plugin.js';
 import {
   assertAllSchemaFields,
@@ -22,12 +18,16 @@ import {
   isAdminWithRoles,
 } from '../../../../utils/plugin/build-collections/payload-access.js';
 import { getCollectionFields } from '../../../../utils/plugin/build-collections/transform-schema-fields-to-payload.js';
-import { betterAuthStrategy } from './better-auth-strategy.js';
+import { checkPluginExists } from '../../../../utils/plugin/check-plugin-exists.js';
+import { getAllRoleOptions } from '../../../../utils/plugin/get-all-roles.js';
+import { resolveBaseURL } from '../../../../utils/resolve-base-url.js';
 import {
-  getGenerateInviteUrlEndpoint,
-  getRefreshTokenEndpoint,
-  getSendInviteUrlEndpoint,
-} from '../../../../endpoints/index.js';
+  baModelFieldKeys,
+  baModelKey,
+  defaults,
+  supportedBAPluginIds,
+} from '../../../constants.js';
+import { betterAuthStrategy } from './better-auth-strategy.js';
 import { getAfterLogoutHook, getBeforeDeleteHook } from './hooks/index.js';
 
 export function buildUsersCollection({
