@@ -4,7 +4,7 @@ import type React from 'react';
 import type { ReactNode } from 'react';
 import { type FieldValues, FormProvider, type UseFormReturn } from 'react-hook-form';
 
-import './index.scss';
+import './index.css';
 
 interface FormFieldProps extends React.ComponentProps<'div'> {
   hasError?: boolean;

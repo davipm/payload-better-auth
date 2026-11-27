@@ -6,7 +6,7 @@ import { createAuthClient } from 'better-auth/react';
 import { useRouter } from 'next/navigation.js';
 import { useState } from 'react';
 
-import './index.scss';
+import './index.css';
 
 interface AdminButtonsProps {
   baseURL?: string;

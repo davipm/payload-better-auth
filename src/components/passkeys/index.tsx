@@ -1,5 +1,5 @@
 import { PasskeysClient } from './client.js';
-import './index.scss';
+import './index.css';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
 import type { PasskeysServerComponentProps, PasskeyWithId } from '../../types/passkeys.js';
 

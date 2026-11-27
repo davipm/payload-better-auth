@@ -1,0 +1,60 @@
+.login__form__inputWrap {
+  margin-bottom: 0.75rem;
+}
+
+.login-form-methods {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.login-form-methods--count-0,
+.login-form-methods--count-1,
+.login-form-methods--count-2 {
+  flex-direction: column;
+}
+
+.login-form-methods--count-0 .login-form-methods__button,
+.login-form-methods--count-1 .login-form-methods__button,
+.login-form-methods--count-2 .login-form-methods__button {
+  width: 100%;
+  justify-content: center;
+}
+
+.login-form-methods .btn__label {
+  gap: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.login-form-methods--count-many {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100% / 5, 60px), 1fr));
+  gap: 0.5rem;
+  max-width: 100%;
+}
+
+.login-form-methods--count-many .login-form-methods__button {
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form-methods__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 0;
+}
+
+.login-form-methods__icon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.login-form-methods__divider {
+  text-align: center;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  margin-top: -0.5rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 1.5rem;
+}

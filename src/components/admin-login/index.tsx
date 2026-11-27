@@ -1,5 +1,5 @@
-import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent';
+import { MinimalTemplate } from '@payloadcms/ui/rsc';
 import { redirect } from 'next/navigation.js';
 import type { AdminViewServerProps, Payload, ServerProps } from 'payload';
 import { adminRoutes, defaults, supportedBAPluginIds } from '../../plugin/constants.js';

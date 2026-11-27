@@ -16,7 +16,7 @@ import { usePathname } from 'next/navigation.js';
 import { type ChangeEvent, useState } from 'react';
 import { adminEndpoints } from '../../plugin/constants.js';
 import { LoaderCircle } from '../icons.js';
-import './index.scss';
+import './index.css';
 
 const MODAL_SLUG = 'admin-invite-modal';
 const baseClass = MODAL_SLUG;

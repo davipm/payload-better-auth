@@ -1,11 +1,9 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, toast, useConfig, useTranslation } from '@payloadcms/ui';
 import { formatAdminURL } from 'payload/shared';
 import { useState } from 'react';
-import { useLoginForm } from './context.js';
-import './index.scss';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { adminRoutes } from '../../plugin/constants.js';
 import { valueOrDefaultString } from '../../utils/value-or-default.js';
@@ -13,6 +11,8 @@ import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormError, FormInputWrap } from '../form/ui/index.js';
 import { createLoginSchema, isValidEmail } from '../form/validation.js';
+import { useLoginForm } from './context.js';
+import './index.css';
 
 const baseClass = 'login__form';
 

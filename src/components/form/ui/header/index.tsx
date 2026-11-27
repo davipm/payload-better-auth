@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import './index.scss';
+import './index.css';
 
 const baseClass = 'form-header';
 

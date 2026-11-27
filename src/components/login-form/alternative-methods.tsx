@@ -4,7 +4,7 @@ import { Button, toast } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation.js';
 import { useEffect, useRef, useState } from 'react';
 import { useLoginForm } from './context.js';
-import './index.scss';
+import './index.css';
 import { socialProviders } from '../../plugin/constants.js';
 import type { SocialProvider } from '../../types/plugin.js';
 import { isValidEmail } from '../form/validation.js';
