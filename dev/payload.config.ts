@@ -57,6 +57,7 @@ const buildConfigWithMemoryDB = async () => {
       themePlugin({
         character: 'studio',
         palette: 'neutral',
+        options: { studio: { radius: 'sm' } },
         panel: false,
       }),
     ],
