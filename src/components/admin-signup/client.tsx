@@ -136,7 +136,7 @@ function SignupForm({
 
   return (
     <Form className={baseClass} form={form} onSubmit={onSubmit}>
-      <FormInputWrap className="login__form">
+      <FormInputWrap className="login__form" style={{ marginBottom: '1.5rem' }}>
         <TextField
           name="name"
           type="name"
