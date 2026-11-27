@@ -35,6 +35,14 @@ export function TextField({
         <input
           {...field}
           {...inputProps}
+          // style={{
+          //   width: '100%',
+          //   display: 'block',
+          //   height: '2rem',
+          //   border: '1px solid var(--color-border)',
+          //   padding: '0 .5rem',
+          //   borderRadius: '0.25rem',
+          // }}
           id={name}
           type={type}
           autoComplete={autoComplete}
