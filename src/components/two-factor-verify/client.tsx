@@ -56,7 +56,7 @@ export function TwoFactorVerifyForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <FormHeader style={{ textAlign: 'center' }} heading={'Verify Two-Factor'} />
+      <FormHeader style={{ textAlign: 'center' }} heading="Verify Two-Factor" />
       <FormInputWrap>
         <TextField
           name="code"

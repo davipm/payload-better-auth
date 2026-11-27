@@ -17,6 +17,13 @@
     z-index: 0;
   }
 
+  .two-factor-enable-form,
+  .two-factor-verify-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .two-factor-auth-modal__wrapper {
     z-index: 1;
     position: relative;
@@ -99,9 +106,7 @@
     word-break: break-all;
   }
 
-  .two-factor-auth-modal__copy-btn {
-    margin-block: 0.5rem;
-    margin-inline: auto;
+  .two-factor-auth-modal__copy-btn .btn__label {
     display: flex;
     align-items: center;
     gap: 0.5rem;

@@ -100,6 +100,7 @@ function VerifyForm({
     resolver: zodResolver(schema),
     mode: 'onSubmit',
   });
+
   const submit = form.handleSubmit(({ otp }) => onSubmit(otp));
 
   return (

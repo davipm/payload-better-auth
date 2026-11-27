@@ -10,9 +10,7 @@ interface Props extends React.ComponentProps<'div'> {
 }
 
 export function FormHeader({ description, heading, ...props }: Props) {
-  if (!heading) {
-    return null;
-  }
+  if (!heading) return null;
 
   return (
     <div className={baseClass} {...props}>
