@@ -9,7 +9,11 @@ The plugin also supplies Payload admin login, signup, password reset, and two-fa
 
 ## Requirements
 
-The current package peer dependencies require Payload 3.90.0 or later in the 3.x line, Better Auth 1.7.25 or later in the 1.x line, Next.js 16.4.5 or later in the 16.x line, and React 19.2.1 or later in the 19.x line. The admin forms also require React Hook Form 7.92.0 or later and `@hookform/resolvers` 7.0.7 or later. Keep `@payloadcms/next` and `@payloadcms/ui` compatible with your Payload version, and configure a Payload database adapter in your app. Check `package.json` for the current peer dependency ranges when upgrading.
+This release targets Payload 4 and requires Payload `4.0.0-beta.12` or later in the 4.x line. Payload 3 is not supported. Keep `@payloadcms/next`, `@payloadcms/ui`, and your Payload database adapter on compatible Payload 4 versions; the package peer dependencies require `@payloadcms/next` and `@payloadcms/ui` `4.0.0-beta.12` or later in the 4.x line.
+
+Other minimum requirements are Node.js 24.22.3, Better Auth 1.7.25, Next.js 16.4.5, React 19.2.1, React Hook Form 7.92.0, and `@hookform/resolvers` 7.0.7. Better Auth, Next.js, React, React Hook Form, and `@hookform/resolvers` must remain within the major versions declared by this package in `package.json`.
+
+When upgrading an app from Payload 3, upgrade its Payload packages together to compatible 4.x versions, then regenerate the admin import map and Payload types and create/apply database migrations for the generated auth collections using your normal deployment workflow.
 
 Install the package and Better Auth in your Payload application:
 
