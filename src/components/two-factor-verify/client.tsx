@@ -68,7 +68,6 @@ export function TwoFactorVerifyForm({
         />
       </FormInputWrap>
       <Submit
-        onSubmit={onSubmit}
         label={t('authentication:verify') || 'Verify'}
         loadingLabel={t('general:loading') || 'Loading'}
       />

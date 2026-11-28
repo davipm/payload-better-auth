@@ -55,7 +55,7 @@ export function PassKeyAddButton({ onAdd, baseURL, basePath }: PassKeyAddButtonP
         <FormInputWrap className="passkeys-add-form__inputWrap">
           <TextField name="name" type="text" className="text name" label="Passkey Name" required />
         </FormInputWrap>
-        <Submit onSubmit={onSubmit} label="Create Passkey" loadingLabel="Creating" />
+        <Submit label="Create Passkey" loadingLabel="Creating" />
       </Form>
     );
   };

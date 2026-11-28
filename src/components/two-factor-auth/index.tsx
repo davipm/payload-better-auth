@@ -81,7 +81,7 @@ function PasswordForm({
           required
         />
       </FormInputWrap>
-      <Submit onSubmit={submit} label={label} loadingLabel={loadingLabel} />
+      <Submit label={label} loadingLabel={loadingLabel} />
     </Form>
   );
 }
@@ -122,7 +122,7 @@ function VerifyForm({
           required
         />
       </FormInputWrap>
-      <Submit onSubmit={submit} label="Verify" loadingLabel="Verifying" />
+      <Submit label="Verify" loadingLabel="Verifying" />
     </Form>
   );
 }

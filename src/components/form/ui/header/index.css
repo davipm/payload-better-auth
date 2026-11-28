@@ -2,7 +2,7 @@
   .form-header {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--spacer-3) * 0.5);
+    gap: calc(var(--spacer-3) / 2);
     margin-bottom: var(--spacer-3);
   }
 }

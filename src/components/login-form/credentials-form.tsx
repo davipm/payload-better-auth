@@ -36,10 +36,7 @@ export function CredentialsForm() {
     path: adminRoutes.forgotPassword as `/${string}`,
   });
 
-  const loginSchema = useMemo(
-    () => createLoginSchema({ t, loginType, canLoginWithUsername: loginType !== 'email' }),
-    [t, loginType],
-  );
+  const loginSchema = useMemo(() => createLoginSchema({ t, loginType }), [t, loginType]);
 
   const form = useForm({
     defaultValues: {
@@ -130,7 +127,7 @@ export function CredentialsForm() {
             </Link>
             <button type="submit" style={{ display: 'none' }} tabIndex={-1} />
             <Submit
-              onSubmit={onSubmit}
+              // onSubmit={onSubmit}
               label={t('authentication:login')}
               loadingLabel={t('general:loading')}
             />

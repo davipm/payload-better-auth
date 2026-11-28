@@ -135,7 +135,7 @@ function SignupForm({
         />
       </FormInputWrap>
       <button type="submit" style={{ display: 'none' }} tabIndex={-1} />
-      <Submit onSubmit={onSubmit} label={t('general:create')} loadingLabel={t('general:loading')} />
+      <Submit label={t('general:create')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }

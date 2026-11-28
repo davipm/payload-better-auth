@@ -1,21 +1,20 @@
-import type React from 'react';
+import clsx from 'clsx';
+import type { ComponentProps, ReactNode } from 'react';
 
 import './index.css';
 
-const baseClass = 'form-header';
-
-interface Props extends React.ComponentProps<'div'> {
-  description?: React.ReactNode | string;
+interface FormHeaderProps extends Omit<ComponentProps<'div'>, 'children'> {
+  description?: ReactNode;
   heading: string;
 }
 
-export function FormHeader({ description, heading, ...props }: Props) {
+export function FormHeader({ description, heading, className, ...props }: FormHeaderProps) {
   if (!heading) return null;
 
   return (
-    <div className={baseClass} {...props}>
+    <div {...props} className={clsx('form-header', className)}>
       <h1>{heading}</h1>
-      {Boolean(description) && <p>{description}</p>}
+      {description ? <p>{description}</p> : null}
     </div>
   );
 }

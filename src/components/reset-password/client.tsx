@@ -113,11 +113,7 @@ export function PasswordResetForm({ token, baseURL, basePath }: PasswordResetFor
           required
         />
       </FormInputWrap>
-      <Submit
-        onSubmit={onSubmit}
-        label={t('authentication:resetPassword')}
-        loadingLabel={t('general:loading')}
-      />
+      <Submit label={t('authentication:resetPassword')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }

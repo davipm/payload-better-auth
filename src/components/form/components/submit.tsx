@@ -1,26 +1,21 @@
+'use client';
+
 import { FormSubmit } from '@payloadcms/ui';
-import type React from 'react';
-import type { BaseSyntheticEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-type SubmitProps = {
+interface SubmitProps {
   label: string;
   loadingLabel: string;
-  onSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
-};
+}
 
-export const Submit: React.FC<SubmitProps> = ({ label, loadingLabel, onSubmit }) => {
-  const { formState } = useFormContext();
+export function Submit({ label, loadingLabel }: SubmitProps) {
+  const {
+    formState: { isSubmitting },
+  } = useFormContext();
 
   return (
-    <FormSubmit
-      buttonStyle="primary"
-      type="button"
-      onClick={() => void onSubmit()}
-      size="large"
-      disabled={formState.isSubmitting || (formState.isSubmitted && !formState.isValid)}
-    >
-      {formState.isSubmitting ? loadingLabel : label}
+    <FormSubmit buttonStyle="primary" type="submit" size="large" disabled={isSubmitting}>
+      {isSubmitting ? loadingLabel : label}
     </FormSubmit>
   );
-};
+}

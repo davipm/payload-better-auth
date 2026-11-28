@@ -19,34 +19,34 @@ interface ForgotPasswordFormProps {
 
 export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProps) {
   const { t } = useTranslation();
-  const { config } = useConfig();
-  const adminRoute = config.routes.admin;
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const authClient = useMemo(() => createAuthClient({ baseURL, basePath }), [basePath, baseURL]);
+  const {
+    config: {
+      routes: { admin: adminRoute },
+    },
+  } = useConfig();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const forgotSchema = z.object({
-    email: z.string().superRefine((val, ctx) => {
-      if (!val) {
-        ctx.addIssue({
-          code: 'custom',
-          message: t('validation:required') || 'Required',
-        });
-        return;
-      }
+  const authClient = useMemo(() => createAuthClient({ baseURL, basePath }), [baseURL, basePath]);
 
-      if (!emailRegex.test(val)) {
-        ctx.addIssue({
-          code: 'custom',
-          message: t('authentication:emailNotValid') || 'Invalid email',
-        });
-      }
-    }),
-  });
+  const forgotSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .trim()
+          .superRefine((val, ctx) => {
+            if (!val) {
+              ctx.addIssue({ code: 'custom', message: t('validation:required') });
+            } else if (!emailRegex.test(val)) {
+              ctx.addIssue({ code: 'custom', message: t('authentication:emailNotValid') });
+            }
+          }),
+      }),
+    [t],
+  );
 
   const form = useForm({
-    defaultValues: {
-      email: '',
-    },
+    defaultValues: { email: '' },
     resolver: zodResolver(forgotSchema),
     mode: 'onSubmit',
   });
@@ -57,26 +57,23 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
         email,
         redirectTo: `${adminRoute}${adminRoutes.resetPassword}`,
       });
-      if (error) {
-        toast.error(error.message || t('authentication:emailNotValid') || 'Error');
+
+      if (error || !data?.status) {
+        toast.error(error?.message || t('error:unknown'));
         return;
       }
-      if (data?.status) {
-        setHasSubmitted(true);
-        toast.success('Successfully sent reset email.');
-      } else {
-        toast.error(t('general:error') || 'Server Error');
-      }
+
+      setHasSubmitted(true);
     } catch {
-      toast.error(t('general:error') || 'An unexpected error occurred');
+      toast.error(t('error:unknown'));
     }
   });
 
   if (hasSubmitted) {
     return (
       <FormHeader
-        description={t('authentication:checkYourEmailForPasswordReset')}
         heading={t('authentication:emailSent')}
+        description={t('authentication:checkYourEmailForPasswordReset')}
       />
     );
   }
@@ -96,7 +93,7 @@ export function ForgotPasswordForm({ baseURL, basePath }: ForgotPasswordFormProp
           label={t('general:email')}
         />
       </FormInputWrap>
-      <Submit onSubmit={onSubmit} label={t('general:submit')} loadingLabel={t('general:loading')} />
+      <Submit label={t('general:submit')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }

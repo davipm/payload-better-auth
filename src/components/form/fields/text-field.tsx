@@ -1,5 +1,7 @@
-import type { ComponentPropsWithoutRef } from 'react';
-import { type FieldPath, useController, useFormContext } from 'react-hook-form';
+'use client';
+
+import { type ComponentPropsWithoutRef, useId } from 'react';
+import { type FieldPath, useController } from 'react-hook-form';
 import { FieldErrors, FieldInputWrap, FormField, FormLabel } from '../ui/index.js';
 
 type FormValues = Record<string, string>;
@@ -8,7 +10,7 @@ type TextFieldProps = Omit<
   ComponentPropsWithoutRef<'input'>,
   'value' | 'defaultValue' | 'onChange' | 'onBlur' | 'className' | 'id' | 'name' | 'label'
 > & {
-  className: string;
+  className?: string;
   label: string;
   name: FieldPath<FormValues>;
   onValueChange?: (value: string) => void;
@@ -24,18 +26,22 @@ export function TextField({
   onValueChange,
   ...inputProps
 }: TextFieldProps) {
-  const { control, formState } = useFormContext<FormValues>();
-  const { field, fieldState } = useController({ name, control });
-  const hasError = Boolean(fieldState.error && (fieldState.isTouched || formState.isSubmitted));
+  const id = useId();
+  const {
+    field,
+    fieldState: { error, isTouched },
+    formState: { isSubmitted },
+  } = useController<FormValues>({ name });
+  const hasError = Boolean(error && (isTouched || isSubmitted));
 
   return (
-    <FormField id={name} className={className} hasError={hasError}>
-      <FormLabel label={label} htmlFor={name} required={required} />
+    <FormField className={className} hasError={hasError}>
+      <FormLabel label={label} htmlFor={id} required={required} />
       <FieldInputWrap>
         <input
-          {...field}
           {...inputProps}
-          id={name}
+          {...field}
+          id={id}
           type={type}
           autoComplete={autoComplete}
           value={field.value ?? ''}
@@ -47,7 +53,7 @@ export function TextField({
           aria-invalid={hasError || undefined}
           className="text-field"
         />
-        <FieldErrors error={fieldState.error?.message} visible={hasError} />
+        <FieldErrors error={error?.message} visible={hasError} />
       </FieldInputWrap>
     </FormField>
   );

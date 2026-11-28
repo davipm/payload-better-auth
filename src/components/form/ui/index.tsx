@@ -1,34 +1,38 @@
+'use client';
+
 import { Tooltip } from '@payloadcms/ui/elements/Tooltip';
 import clsx from 'clsx';
-import type React from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { type FieldValues, FormProvider, type UseFormReturn } from 'react-hook-form';
-
 import './index.css';
 
-interface FormFieldProps extends React.ComponentProps<'div'> {
+interface FormFieldProps extends ComponentProps<'div'> {
   hasError?: boolean;
 }
 
 function FormField({ children, hasError, className, ...rest }: FormFieldProps) {
   return (
-    <div className={clsx('field-type', className, { error: hasError })} {...rest}>
+    <div {...rest} className={clsx('field-type', className, { error: hasError })}>
       {children}
     </div>
   );
 }
 
-interface FormLabelProps extends React.ComponentProps<'label'> {
+interface FormLabelProps extends Omit<ComponentProps<'label'>, 'htmlFor'> {
+  htmlFor: string; // required, so the label is always bound to a control
   label: ReactNode;
   required?: boolean;
 }
 
-function FormLabel({ label, required = false, className, ...rest }: FormLabelProps) {
+function FormLabel({ label, htmlFor, required = false, className, ...rest }: FormLabelProps) {
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
-    <label className={clsx('field-label', className)} {...rest}>
+    <label {...rest} htmlFor={htmlFor} className={clsx('field-label', className)}>
       {label}
-      {required && <span className="required">*</span>}
+      {required && (
+        <span className="required" aria-hidden="true">
+          *
+        </span>
+      )}
     </label>
   );
 }
@@ -59,43 +63,58 @@ interface FormErrorProps {
 }
 
 function FormError({ errors, className }: FormErrorProps) {
-  if (!errors) return null;
-  return <div className={clsx('form-error', className)}>{errors.join(', ')}</div>;
+  if (!errors?.length) return null;
+  return (
+    <div role="alert" className={clsx('form-error', className)}>
+      {errors.join(', ')}
+    </div>
+  );
 }
 
-interface FormProps<T extends FieldValues> extends React.ComponentProps<'form'> {
+interface FormProps<T extends FieldValues> extends ComponentProps<'form'> {
   form: UseFormReturn<T>;
 }
 
 function Form<T extends FieldValues>({ form, children, className, ...rest }: FormProps<T>) {
   return (
     <FormProvider {...form}>
-      <form className={clsx('form', className)} {...rest}>
+      {/* noValidate: zod owns validation; native bubbles would block submit before it runs */}
+      <form noValidate {...rest} className={clsx('form', className)}>
         {children}
       </form>
     </FormProvider>
   );
 }
 
-interface FormInputWrapProps extends React.ComponentProps<'div'> {}
+type FormInputWrapProps = ComponentProps<'div'>;
 
+/** BEM-style wrapper: `className="login__form"` → `login__form__inputWrap` */
 function FormInputWrap({ children, className, ...rest }: FormInputWrapProps) {
   return (
-    <div className={`${className}__inputWrap`} {...rest}>
+    <div {...rest} className={className ? `${className}__inputWrap` : undefined}>
       {children}
     </div>
   );
 }
 
-interface FieldInputWrapProps extends React.ComponentProps<'div'> {}
+type FieldInputWrapProps = ComponentProps<'div'>;
 
 function FieldInputWrap({ children, className, ...rest }: FieldInputWrapProps) {
   return (
-    <div className={clsx('field-type__wrap', className)} {...rest}>
+    <div {...rest} className={clsx('field-type__wrap', className)}>
       {children}
     </div>
   );
 }
 
-export type { FormErrorProps, FormFieldProps, FormInputWrapProps, FormLabelProps, FormProps };
+export type {
+  FieldErrorsProps,
+  FieldInputWrapProps,
+  FormErrorProps,
+  FormFieldProps,
+  FormInputWrapProps,
+  FormLabelProps,
+  FormProps,
+};
+
 export { FieldErrors, FieldInputWrap, Form, FormError, FormField, FormInputWrap, FormLabel };

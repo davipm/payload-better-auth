@@ -3,23 +3,18 @@
 import './index.css';
 
 import { Button, type TextField, useField } from '@payloadcms/ui';
-import { useRef } from 'react';
 
-export const GenerateUuidButton: typeof TextField = ({ path }) => {
-  const { setValue } = useField({ path });
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const handleGenerate = () => {
-    setValue(crypto.randomUUID());
-  };
+export const GenerateUuidButton: typeof TextField = ({ path, readOnly }) => {
+  const { setValue } = useField<string>({ path });
 
   return (
     <div className="generate-uuid-button-wrapper">
       <Button
-        ref={buttonRef}
+        type="button"
         buttonStyle="primary"
-        onClick={handleGenerate}
+        onClick={() => setValue(crypto.randomUUID())}
         className="generate-uuid-button"
+        disabled={readOnly}
       >
         Generate UUID
       </Button>

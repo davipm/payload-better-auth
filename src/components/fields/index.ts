@@ -1,2 +1,2 @@
-export * from './field-copy-button/index.js';
-export * from './generate-uuid-button/index.js';
+export { FieldCopyButton } from './field-copy-button/index.js';
+export { GenerateUuidButton } from './generate-uuid-button/index.js';

@@ -1,9 +1,7 @@
-import { Button, Translation } from '@payloadcms/ui';
+import { Button, Link, Translation } from '@payloadcms/ui';
 import { MinimalTemplate } from '@payloadcms/ui/rsc';
-import Link from 'next/link.js';
 import type { AdminViewServerProps } from 'payload';
 import { formatAdminURL } from 'payload/shared';
-import { Fragment } from 'react';
 import { adminRoutes } from '../../plugin/constants.js';
 import type { PayloadAuthOptions } from '../../plugin/index.js';
 import { resolveBaseURL } from '../../utils/resolve-base-url.js';
@@ -14,10 +12,12 @@ interface ForgotPasswordProps extends AdminViewServerProps {
   pluginOptions: PayloadAuthOptions;
 }
 
-function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) {
+export default function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) {
   const {
     req: {
       headers,
+      i18n,
+      user,
       payload: {
         config: {
           admin: {
@@ -26,56 +26,42 @@ function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) 
           routes: { admin: adminRoute },
         },
       },
-      user,
-      i18n,
     },
   } = initPageResult;
 
   if (user) {
     return (
-      <Fragment>
+      <MinimalTemplate>
         <FormHeader
+          heading={i18n.t('authentication:alreadyLoggedIn')}
           description={
             <Translation
+              i18nKey="authentication:loggedInChangePassword"
+              t={i18n.t}
               elements={{
                 '0': ({ children }) => (
-                  // @ts-expect-error
-                  <Link
-                    href={formatAdminURL({
-                      adminRoute,
-                      path: accountRoute,
-                    })}
-                    prefetch={false}
-                  >
+                  <Link href={formatAdminURL({ adminRoute, path: accountRoute })} prefetch={false}>
                     {children}
                   </Link>
                 ),
               }}
-              i18nKey="authentication:loggedInChangePassword"
-              t={i18n.t}
             />
           }
-          heading={i18n.t('authentication:alreadyLoggedIn')}
         />
         <Button buttonStyle="secondary" el="link" size="large" to={adminRoute}>
           {i18n.t('general:backToDashboard')}
         </Button>
-      </Fragment>
+      </MinimalTemplate>
     );
   }
 
+  const { baseURL, basePath } = pluginOptions.betterAuthOptions ?? {};
+
   return (
     <MinimalTemplate>
-      <ForgotPasswordForm
-        baseURL={resolveBaseURL(pluginOptions.betterAuthOptions?.baseURL, headers)}
-        basePath={pluginOptions.betterAuthOptions?.basePath}
-      />
-      {/* @ts-expect-error */}
+      <ForgotPasswordForm baseURL={resolveBaseURL(baseURL, headers)} basePath={basePath} />
       <Link
-        href={formatAdminURL({
-          adminRoute,
-          path: adminRoutes.adminLogin as `/${string}`,
-        })}
+        href={formatAdminURL({ adminRoute, path: adminRoutes.adminLogin as `/${string}` })}
         prefetch={false}
       >
         {i18n.t('authentication:backToLogin')}
@@ -83,5 +69,3 @@ function ForgotPassword({ pluginOptions, initPageResult }: ForgotPasswordProps) 
     </MinimalTemplate>
   );
 }
-
-export default ForgotPassword;
