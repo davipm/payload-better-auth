@@ -14,7 +14,7 @@ export interface PasskeysServerComponentProps extends UIFieldServerProps {
 export interface PasskeysClientComponentProps {
   initialPasskeys: PasskeyWithId[];
   documentId: string | number;
-  currentUserId: string | number;
+  canAdd: boolean;
   passkeySlug: string;
   passkeyUserIdFieldName: string;
   baseURL?: string;
