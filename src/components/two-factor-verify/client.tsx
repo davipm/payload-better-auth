@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, useTranslation } from '@payloadcms/ui';
 import { twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
-import { useRouter } from 'next/navigation.js';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,31 +26,35 @@ export function TwoFactorVerifyForm({
   basePath,
 }: TwoFactorVerifyFormProps) {
   const { t } = useTranslation();
-  const router = useRouter();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+
   const authClient = useMemo(
     () => createAuthClient({ baseURL, basePath, plugins: [twoFactorClient()] }),
-    [],
+    [baseURL, basePath],
   );
 
-  const otpSchema = z.object({
-    code: otpField({ digits: twoFactorDigits }),
-  });
+  const schema = useMemo(
+    () => z.object({ code: otpField({ digits: twoFactorDigits }) }),
+    [twoFactorDigits],
+  );
 
   const form = useForm({
     defaultValues: { code: '' },
-    resolver: zodResolver(otpSchema),
+    resolver: zodResolver(schema),
     mode: 'onSubmit',
   });
 
   const onSubmit = form.handleSubmit(async ({ code }) => {
-    const { error } = await authClient.twoFactor.verifyTotp({ code });
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { error } = await authClient.twoFactor.verifyTotp({ code });
+      if (error) {
+        toast.error(error.message || t('error:unknown'));
+        return;
+      }
+      // Hard navigation: the session cookie just changed, so drop cached RSC state
+      window.location.assign(redirect);
+    } catch {
+      toast.error(t('error:unknown'));
     }
-    router.push(redirect);
-    toast.success('Two-factor verified!');
   });
 
   return (
@@ -62,15 +65,13 @@ export function TwoFactorVerifyForm({
           name="code"
           type="text"
           className="text otp"
+          inputMode="numeric"
+          autoComplete="one-time-code"
           label={`${twoFactorDigits}-digit Code`}
           required
-          autoComplete="one-time-password"
         />
       </FormInputWrap>
-      <Submit
-        label={t('authentication:verify') || 'Verify'}
-        loadingLabel={t('general:loading') || 'Loading'}
-      />
+      <Submit label={t('authentication:verify')} loadingLabel={t('general:loading')} />
     </Form>
   );
 }
