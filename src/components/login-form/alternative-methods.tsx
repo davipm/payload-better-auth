@@ -1,60 +1,57 @@
 'use client';
 
 import { Button, toast } from '@payloadcms/ui';
-import { useRouter } from 'next/navigation.js';
-import { useEffect, useRef, useState } from 'react';
-import { useLoginForm } from './context.js';
-import './index.css';
+import { useState } from 'react';
 import { socialProviders } from '../../plugin/constants.js';
 import type { SocialProvider } from '../../types/plugin.js';
+import { getErrorCode } from '../../utils/get-error-code.js';
 import { isValidEmail } from '../form/validation.js';
 import { Icons, Key, Mail } from '../icons.js';
+import { useLoginForm } from './context.js';
+import './index.css';
 
 const baseClass = 'login-form-methods';
 
-function MagicLinkButton() {
+const isSocialProvider = (method: string): method is SocialProvider =>
+  (socialProviders as readonly string[]).includes(method);
+
+const getErrorMessage = (err: unknown, fallback: string) =>
+  err instanceof Error && err.message ? err.message : fallback;
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+interface MethodButtonProps {
+  disabled: boolean;
+  pending: string | null;
+  run: (method: string, task: () => Promise<void>) => Promise<void>;
+}
+
+function MagicLinkButton({ disabled, pending, run }: MethodButtonProps) {
   const { email, authClient, redirectUrl, showIconOnly } = useLoginForm();
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const sentEmailRef = useRef('');
+  // Derived: editing the email automatically flips back to "Magic Link" (no effect/ref needed)
+  const [sentTo, setSentTo] = useState<string>();
+  const sent = sentTo === email;
 
-  useEffect(() => {
-    if (sent && email !== sentEmailRef.current) {
-      setSent(false);
-    }
-  }, [email, sent]);
-
-  const handleClick = async () => {
-    if (!email) {
-      toast.error('Please enter your email address');
-      return;
-    }
-    if (!isValidEmail(email)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await authClient.signIn.magicLink({
-        email,
-        callbackURL: redirectUrl,
-      });
+  const handleClick = () =>
+    run('magicLink', async () => {
+      if (!email) {
+        toast.error('Please enter your email address');
+        return;
+      }
+      if (!isValidEmail(email)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
+      const { error } = await authClient.signIn.magicLink({ email, callbackURL: redirectUrl });
       if (error) {
         toast.error(error.message || 'Failed to send magic link');
-      } else {
-        sentEmailRef.current = email;
-        setSent(true);
-        toast.success('Magic link sent! Check your email.');
+        return;
       }
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to send magic link');
-    } finally {
-      setLoading(false);
-    }
-  };
+      setSentTo(email);
+      toast.success('Magic link sent! Check your email.');
+    });
 
-  const label = sent ? 'Resend Magic Link' : 'Magic Link';
+  const label = pending === 'magicLink' ? 'Sending...' : sent ? 'Resend Magic Link' : 'Magic Link';
 
   return (
     <Button
@@ -62,43 +59,31 @@ function MagicLinkButton() {
       size="large"
       className={`${baseClass}__button provider--magic-link`}
       onClick={handleClick}
-      disabled={loading}
+      disabled={disabled}
       iconPosition="left"
       icon={<Mail className={`${baseClass}__icon`} />}
       tooltip={showIconOnly ? 'Sign in with Magic Link' : undefined}
     >
-      {!showIconOnly && <span>{loading ? 'Sending...' : label}</span>}
+      {!showIconOnly && <span>{label}</span>}
     </Button>
   );
 }
 
-interface PasskeyButtonProps {
-  setLoading: (loading: boolean) => void;
-}
-
-function PasskeyButton({ setLoading }: PasskeyButtonProps) {
-  const router = useRouter();
+function PasskeyButton({ disabled, run }: MethodButtonProps) {
   const { authClient, redirectUrl, showIconOnly } = useLoginForm();
 
-  const handleClick = async () => {
-    setLoading(true);
-    try {
-      await authClient.signIn.passkey({
-        fetchOptions: {
-          onSuccess() {
-            if (redirectUrl) router.push(redirectUrl);
-          },
-          onError(context: any) {
-            toast.error(context.error.message || 'Failed to sign in with passkey');
-          },
-        },
-      });
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to sign in with passkey');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleClick = () =>
+    run('passkey', async () => {
+      const { error } = await authClient.signIn.passkey();
+      if (error) {
+        // The user dismissing the browser prompt isn't worth an error toast
+        if (getErrorCode(error) !== 'AUTH_CANCELLED') {
+          toast.error(error.message || 'Failed to sign in with passkey');
+        }
+        return;
+      }
+      window.location.assign(redirectUrl);
+    });
 
   return (
     <Button
@@ -106,6 +91,7 @@ function PasskeyButton({ setLoading }: PasskeyButtonProps) {
       size="large"
       className={`${baseClass}__button provider--passkey`}
       onClick={handleClick}
+      disabled={disabled}
       iconPosition="left"
       icon={<Key className={`${baseClass}__icon`} />}
       tooltip={showIconOnly ? 'Sign in with Passkey' : undefined}
@@ -115,40 +101,27 @@ function PasskeyButton({ setLoading }: PasskeyButtonProps) {
   );
 }
 
-interface SocialButtonProps {
-  provider: SocialProvider;
-  setLoading: (loading: boolean) => void;
-}
-
-function SocialButton({ provider, setLoading }: SocialButtonProps) {
+function SocialButton({
+  provider,
+  disabled,
+  run,
+}: Pick<MethodButtonProps, 'disabled' | 'run'> & { provider: SocialProvider }) {
   const { authClient, redirectUrl, isSignup, showIconOnly, adminInviteToken } = useLoginForm();
   const Icon = Icons[provider as keyof typeof Icons] ?? null;
-  const providerName = provider.charAt(0).toUpperCase() + provider.slice(1);
+  const providerName = capitalize(provider);
+  const invite = isSignup && adminInviteToken ? { adminInviteToken } : undefined;
 
-  const handleClick = async () => {
-    setLoading(true);
-    try {
+  const handleClick = () =>
+    run(provider, async () => {
       const { error } = await authClient.signIn.social({
         provider,
-        fetchOptions: {
-          query: {
-            ...(isSignup && adminInviteToken && { adminInviteToken }),
-          },
-        },
-        ...(isSignup && adminInviteToken ? { additionalData: { adminInviteToken } } : {}),
-        errorCallbackURL: window.location.href,
         callbackURL: redirectUrl,
+        errorCallbackURL: window.location.href,
         ...(isSignup && { requestSignUp: true }),
+        ...(invite && { additionalData: invite, fetchOptions: { query: invite } }),
       });
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch {
-      toast.error(`Failed to sign in with ${providerName}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (error) toast.error(error.message || `Failed to sign in with ${providerName}`);
+    });
 
   return (
     <Button
@@ -156,6 +129,7 @@ function SocialButton({ provider, setLoading }: SocialButtonProps) {
       size="large"
       className={`${baseClass}__button provider--${provider}`}
       onClick={handleClick}
+      disabled={disabled}
       iconPosition="left"
       icon={Icon ? <Icon className={`${baseClass}__icon`} /> : undefined}
       tooltip={showIconOnly ? `Sign in with ${providerName}` : undefined}
@@ -167,9 +141,23 @@ function SocialButton({ provider, setLoading }: SocialButtonProps) {
 
 export function AlternativeMethods() {
   const { alternativeMethods, hasMethod, isSignup, showIconOnly } = useLoginForm();
-  const [_, setLoading] = useState(false);
+  // One shared in-flight flag: only one auth flow at a time, and every button is disabled meanwhile
+  const [pending, setPending] = useState<string | null>(null);
 
   if (alternativeMethods.length === 0) return null;
+
+  const run = async (method: string, task: () => Promise<void>) => {
+    setPending(method);
+    try {
+      await task();
+    } catch (err) {
+      toast.error(getErrorMessage(err, `Failed to sign in with ${method}`));
+    } finally {
+      setPending(null);
+    }
+  };
+
+  const shared = { disabled: pending !== null, pending, run };
 
   return (
     <>
@@ -181,27 +169,13 @@ export function AlternativeMethods() {
       <div
         className={`${baseClass} ${baseClass}--count-${showIconOnly ? 'many' : alternativeMethods.length}`}
       >
+        {/* passkey / magicLink are already filtered out for signup in the provider */}
         {alternativeMethods.map((method) => {
-          if (method === 'passkey') {
-            if (isSignup) return null;
-            return <PasskeyButton key={method} setLoading={setLoading} />;
+          if (method === 'passkey') return <PasskeyButton key={method} {...shared} />;
+          if (method === 'magicLink') return <MagicLinkButton key={method} {...shared} />;
+          if (isSocialProvider(method)) {
+            return <SocialButton key={method} provider={method} {...shared} />;
           }
-
-          if (method === 'magicLink') {
-            if (isSignup) return null;
-            return <MagicLinkButton key={method} />;
-          }
-
-          if (socialProviders.includes(method as SocialProvider)) {
-            return (
-              <SocialButton
-                key={method}
-                provider={method as SocialProvider}
-                setLoading={setLoading}
-              />
-            );
-          }
-
           return null;
         })}
       </div>

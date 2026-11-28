@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast, useTranslation } from '@payloadcms/ui';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { getErrorCode } from '../../utils/get-error-code.js';
 import { Submit, TextField } from '../form/index.js';
 import { FormHeader } from '../form/ui/header/index.js';
 import { Form, FormInputWrap } from '../form/ui/index.js';
@@ -66,7 +67,7 @@ function SignupForm({
       });
 
       if (
-        error?.code === 'EMAIL_NOT_VERIFIED' ||
+        getErrorCode(error) === 'EMAIL_NOT_VERIFIED' ||
         (data && !data.token && !data.user.emailVerified)
       ) {
         toast.success(VERIFY_MESSAGE);

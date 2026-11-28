@@ -24,17 +24,15 @@ export interface LoginPlugins {
   magicLink?: boolean;
 }
 
-// Typed against the full plugin set. The runtime client only includes the enabled ones.
-type FullClientOptions = {
-  plugins: [
-    ReturnType<typeof usernameClient>,
-    ReturnType<typeof twoFactorClient>,
-    ReturnType<typeof passkeyClient>,
-    ReturnType<typeof magicLinkClient>,
-  ];
-};
+// Type-only: describes the full client shape (all plugins). Never called at runtime.
+const createFullClient = (baseURL?: string, basePath?: string) =>
+  createAuthClient({
+    baseURL,
+    basePath,
+    plugins: [usernameClient(), twoFactorClient(), passkeyClient(), magicLinkClient()],
+  });
 
-export type LoginAuthClient = ReturnType<typeof createAuthClient<FullClientOptions>>;
+export type LoginAuthClient = ReturnType<typeof createFullClient>;
 
 interface LoginFormContextValue {
   loginMethods: LoginMethod[];
